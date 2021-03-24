@@ -1,12 +1,13 @@
 <template>
 <div id="navbar">
-    <el-menu :default-active="activeIndex" class="el-menu-demo" mode="horizontal" @select="handleSelect" background-color="#00000000">
-      <el-menu-item index="1"><i class="el-icon-s-home"></i>首页</el-menu-item>
-      <el-menu-item index="2"><i class="el-icon-s-promotion"></i>关注</el-menu-item>
-      <el-menu-item index="3"><i class="el-icon-s-custom"></i>私人</el-menu-item>
-      <el-menu-item index="4"><i class="el-icon-s-claim"></i>计划</el-menu-item>
-      <el-menu-item index="5"><i class="el-icon-s-comment"></i>聊天</el-menu-item>
-      <el-menu-item index="6"><i class="el-icon-picture"></i>相册</el-menu-item>
+    <el-menu :default-active="activeIndex" class="el-menu-demo" mode="horizontal" @select="handleSelect" background-color="#00000000" router>
+      <el-menu-item index="home"><i class="el-icon-s-home"></i>首页</el-menu-item>
+      <el-menu-item index="watch"><i class="el-icon-s-promotion"></i>关注</el-menu-item>
+      <el-menu-item index="myself"><i class="el-icon-s-custom"></i>私人</el-menu-item>
+      <el-menu-item index="plan"><i class="el-icon-s-claim"></i>计划</el-menu-item>
+      <el-menu-item index="album"><i class="el-icon-picture"></i>相册</el-menu-item>
+      <el-menu-item index="friend"><i class="el-icon-s-comment"></i>好友</el-menu-item>
+      <el-menu-item index="upload"><i class="el-icon-circle-plus"></i>发表</el-menu-item>
       <el-menu-item>
         <el-switch
           v-model="value">

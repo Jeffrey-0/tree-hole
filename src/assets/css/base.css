@@ -76,3 +76,480 @@
 #library .introduceItem .el-form-item__content {
   width: 470px;
 }
+
+
+
+/* 登录页面 */
+
+#login #container .el-tabs--border-card {
+    background: rgba(17, 34, 78, 0.71);
+    background: transparent;
+}
+
+#app #login .el-tabs__item.is-active {
+    border: 0px;
+}
+#app #login .el-form-item__label {
+    color: #eee;
+}
+#app #login .el-input__inner{
+    background: transparent;
+    border: 0px;
+    border-radius: 0px;
+    border-bottom: 2px solid #0e325c;
+    color: #9ea6b2;
+}
+
+#app #login .el-tabs__item {
+    background: rgba(17, 34, 78, 0.71);
+    background: transparent;
+    border: 0px;
+}
+
+#app #login   .el-tabs--border-card>.el-tabs__header {
+    background: transparent;
+    border-radius: 5px;
+    border: 0px;
+    box-shadow: 0 0px 0px #ddd;
+}
+
+#app #login #container .el-tabs--border-card {
+    border-radius: 5px;
+    box-shadow: 0 0px 0px 0 rgb(0 0 0 / 12%), 0 0 0px 0 rgb(0 0 0 / 4%);
+}
+
+#app #login #container {
+  /* background: rgba(17, 34, 78, 0.71); */
+  background: #141a3080;
+  border-radius: 5px;
+  border: 1px solid rgba(131, 194, 255, 0.22);
+}
+
+
+/* secretItem中图片 */
+
+#secret .el-image img{
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    background-position: center;
+    cursor: pointer;
+    left: 0;
+    top: 0;
+  }
+
+  #secret .el-image {
+      height: 0;
+      padding-bottom: 100%;
+  }
+
+
+/* 聊天室 */
+#friend .el-tabs__header {
+    box-shadow: 0 0px 0px #ddd;
+    font-size: 20px;
+    margin: 0;
+    height: auto;
+}
+
+#friend .el-tabs__item {
+    font-size: 18px;
+}
+
+#friend  .el-tabs__nav {
+    left: 50%;
+    transform: translateX(-50%) !important;
+}
+#friend .el-tabs__nav-wrap {
+    z-index: 0;
+}
+
+/* 聊天输入框 */
+#chat 
+.el-textarea {
+    height: 100%;
+}
+#chat  .el-textarea  textarea {
+  background: transparent;
+  border: 0px;
+  height: 100%;
+  overflow: hidden;
+}
+
+.el-divider--horizontal {
+    margin: 17px 0px;
+    
+}
+
+.vue-waterfall-easy-scroll {
+    /* overflow-y: hidden  !important; */
+}
+
+/* 计划打卡 */
+
+#plan .el-tabs__header {
+    box-shadow: 0 0px 0px #ddd;
+    font-size: 20px;
+    margin: 0;
+    height: auto;
+}
+
+#plan .el-tabs__item {
+    font-size: 18px;
+}
+
+#plan  .el-tabs__nav {
+    left: 50%;
+    transform: translateX(-50%) !important;
+}
+#plan .el-tabs__nav-wrap {
+    z-index: 0;
+}
+/* 日历 */
+#plan .wh_content_all {
+    /* background: #66b1ff; */
+    background: #fff;
+    box-shadow: 1px 1px 2px 2px #8888881c;
+    border-radius: 5px;
+}
+#plan .wh_content_item .wh_isToday {
+    background: #67C23A;
+}
+#plan .wh_content_item .wh_chose_day {
+    background: #409EFF;
+}
+#plan .wh_item_date {
+    border-radius: 50%;
+}
+#plan .wh_item_date:hover {
+    background: #409EFF;
+    /* border-radius: 50%; */
+}
+#plan .wh_content_item {
+    /* border-radius: 50%; */
+}
+
+#plan .wh_content_item {
+    color: black;
+}
+#plan .wh_top_changge li {
+    color: black;
+}
+#plan .wh_jiantou1 {
+    border-top: 2px solid #000;
+    border-left: 2px solid #000;
+}
+#plan .wh_jiantou2 {
+    border-top: 2px solid #000;
+    border-right: 2px solid #000;
+}
+
+#icons .el-button{
+    margin: 10px !important;
+}
+
+#plan .el-form-item__label {
+    text-align: left;
+    width: 100%;
+}
+#plan .el-form-item__content {
+    margin-left: 0px;
+}
+#plan .el-dialog {
+    width: 40%;
+}
+
+
+/* 上传 */
+
+#upload .el-tabs__header {
+    box-shadow: 0 0px 0px #ddd;
+    font-size: 20px;
+    margin: 0;
+    height: auto;
+}
+
+#upload .el-tabs__item {
+    font-size: 18px;
+}
+
+#upload  .el-tabs__nav {
+    left: 50%;
+    transform: translateX(-50%) !important;
+}
+#upload .el-tabs__nav-wrap {
+    z-index: 0;
+}
+#upload .el-form-item__label {
+    text-align: left;
+    width: 100%;    
+}
+
+#upload .el-form-item__content {
+    margin-left: 0px;
+}
+#upload .el-form .el-button {
+    width: 100%;
+}
+.navbar #container  .el-input input{
+    text-align: center;
+    border: 0px;
+    font-size: 20px;
+    color: #000;
+}
+
+/* 表情 */
+#chat .emoji-wysiwyg-editor {
+  margin: 0 !important;
+  padding: 0 !important;
+  width: 0 !important; 
+  height: 0 !important;
+  min-height: 0 !important;
+  overflow: hidden;
+}
+#chat i.emoji-picker-icon.emoji-picker {
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+#chat i.emoji-picker-icon.emoji-picker {
+     /* background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAAAXNSR0IArs4c6QAAA1tJREFUSA3FVU1oE1EQntmkaQ9qUGltWg+CaVIpglpF8OfQiopSrIngQQoitSBaEUVBEYueBBWEnkToRerBShIrimARvQh6EA9qqU2qIDYpLTa09JAm2TfOrFndpLtG9OC7vDfzfd/MvPd25wH8r7F6MNUSjE60lssfiCa3BQfHtzrxNEdAQUgHdS84OLXYidP0fHKRDhDRFRxy4jgmUOi5DkCLdZU/4yTOTuunEchb4cFrThwsBaSqbDq/i4AaCKCd8Q0IeBOI5ou4iJVEdJp9bxHhAXPinqXupx9aauasvKIE/th4JxFw5ZjlgO945hOANbyTYQ6StwqZ5waEJiAcZtwFiGt59jDvXCJU32flGuvV0dRZfyQ51xBNHblM5Hh0C4QFh2hEKzEklskzdtAYnQrkKfde07B9NOR7YoJ/MwdiqT2K6KEbKppGwtWjRqU5yB7l7b741+BSUCHGcyMm2+ZRNPP5PTMrlrvwR1LHTbvcLFzR/OIZsTgm8EUZA72EkP6x5qsl+KJQDfB5tnqXVHW+2blsxsSsc/PQtHdmNtNHqHZoBAdNjBDTQOAV29yBiRlzPFw/5PK4mznpqpnZ+beNj5K7iwhsiE8w4QhXNKUcsW0TCDDatuITi68SqNr8PFwRn3WITzDhCNeKWde2CaQ9+KPjfRrRXUCtpyPs22IVydrwMSYc4Tq1FNsEej53gWM0uzXXprGw78ZlRFWaQHyCCYd/uo26njtfyhG7cMnF0Pqw79IAwEVEvu4yY2R/7TtuGev4hrWEDdc2wX1E3ewhgQfJ7UqHZ9ybKqx6xrMuN7R+bK9/WShE2sqCYXtEVpYiV5K3sZCHqAG6klau3doQcjXT/N1W2xESoRVjGkI3V/mz2XHnzPHPcuzjvtrPdhqJZcRk0EjAn9ordu6xJbMzHq67xdU2ctHdCNoJV4UWtO2YhQBItNeIybZx1P7It5UEmThq2JUI1fU7JfoTvz+W7CBFtxGqAokDy78aCUQYiKYOK1K3OeeVymXu3tKHo1xweagy6fwprr6HUOviT/iOaH4mEKMhOtFGpHr5fOv4IUnwNjPiLzf4Y65ijZ81Sb6fk/EDvsempiiBOOXh6I9NbuY20MCiKpP425kww3cT7wjVvC79Kb8DAUpTLTuW+H8AAAAASUVORK5CYII=); */
+     background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAB5UlEQVR4AWIYMDBz5kzH2bNnOxGhzmbOnDnWJFswa9asSYDWygCigSgO41YAJQAoWSMgAIQASQoUQJbEZAGM0aRERQAEuAFgAkIpAVXDUAzAKLBEQWptcf0+Hp6zd3fPGp+z//u+7/9/9+67Q/wWBMGoi1Or1UbgvMI99W5QrVYnEHfYxV7M9LvisIPJ1MaaCtMVpiojvpcBOAb7EajWgfcgrjTSxppD2kT0jqANrsEleKZ2wfXchmrgRRzDbUsrD9c9L4FPCBthGA753lJppJWHvKLm03Tvcl0c9OmTB149edqHdULh6r8ecXnJ0y7cgLJ9FvwvehgW7XsvL3nahAaEgtVgntoHOGOSMZex1sQRVxpLX5Cns4HJwZTqoAUWouaqmbWGuKp5NdCPFK8y5Rfr9T4N6loTR/+9Guj1QC0wQSr1e2xV05rhBNKkbsD/I4SPYCbpgMWB/8T1MHUDIj/MhBmPkGWk8T4DQ55TCEFoA82P4zXt1wCzHOu/Mo2ghyabtoGSV4kJ0pYMLfOuguXiy0ueduGAwm3CYeYw3TapzSYk+06e9pbGKX5zXRv0PSQP5UOe0QnXdXAs7CR+ONyfz4rxyLu2tgxaJjxN0EiJpjRGu5T44SCVs5oCFFIiL02/xP8BToUvO6m2Rg4AAAAASUVORK5CYII=) center/24px no-repeat;
+}
+#chat i.emoji-picker-icon.emoji-picker:hover {
+ background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAAAXNSR0IArs4c6QAAA1tJREFUSA3FVU1oE1EQntmkaQ9qUGltWg+CaVIpglpF8OfQiopSrIngQQoitSBaEUVBEYueBBWEnkToRerBShIrimARvQh6EA9qqU2qIDYpLTa09JAm2TfOrFndpLtG9OC7vDfzfd/MvPd25wH8r7F6MNUSjE60lssfiCa3BQfHtzrxNEdAQUgHdS84OLXYidP0fHKRDhDRFRxy4jgmUOi5DkCLdZU/4yTOTuunEchb4cFrThwsBaSqbDq/i4AaCKCd8Q0IeBOI5ou4iJVEdJp9bxHhAXPinqXupx9aauasvKIE/th4JxFw5ZjlgO945hOANbyTYQ6StwqZ5waEJiAcZtwFiGt59jDvXCJU32flGuvV0dRZfyQ51xBNHblM5Hh0C4QFh2hEKzEklskzdtAYnQrkKfde07B9NOR7YoJ/MwdiqT2K6KEbKppGwtWjRqU5yB7l7b741+BSUCHGcyMm2+ZRNPP5PTMrlrvwR1LHTbvcLFzR/OIZsTgm8EUZA72EkP6x5qsl+KJQDfB5tnqXVHW+2blsxsSsc/PQtHdmNtNHqHZoBAdNjBDTQOAV29yBiRlzPFw/5PK4mznpqpnZ+beNj5K7iwhsiE8w4QhXNKUcsW0TCDDatuITi68SqNr8PFwRn3WITzDhCNeKWde2CaQ9+KPjfRrRXUCtpyPs22IVydrwMSYc4Tq1FNsEej53gWM0uzXXprGw78ZlRFWaQHyCCYd/uo26njtfyhG7cMnF0Pqw79IAwEVEvu4yY2R/7TtuGev4hrWEDdc2wX1E3ewhgQfJ7UqHZ9ybKqx6xrMuN7R+bK9/WShE2sqCYXtEVpYiV5K3sZCHqAG6klau3doQcjXT/N1W2xESoRVjGkI3V/mz2XHnzPHPcuzjvtrPdhqJZcRk0EjAn9ordu6xJbMzHq67xdU2ctHdCNoJV4UWtO2YhQBItNeIybZx1P7It5UEmThq2JUI1fU7JfoTvz+W7CBFtxGqAokDy78aCUQYiKYOK1K3OeeVymXu3tKHo1xweagy6fwprr6HUOviT/iOaH4mEKMhOtFGpHr5fOv4IUnwNjPiLzf4Y65ijZ81Sb6fk/EDvsempiiBOOXh6I9NbuY20MCiKpP425kww3cT7wjVvC79Kb8DAUpTLTuW+H8AAAAASUVORK5CYII=);
+}
+
+/* 计划 */
+#mIndex #plan .el-tabs__header{
+    width: 100%;
+    z-index: 100;
+    position: fixed;
+    height: 45px;
+    color: red;
+    line-height: 45px;
+    top: 0;
+    left: 0;
+}
+
+#mIndex .el-tabs__content {
+    height: calc(100% - 45px);
+    overflow-y: scroll;
+    margin-top: 45px;
+}
+/* 隐藏滚动条 */
+#mIndex .el-tabs__content::-webkit-scrollbar {
+     display:none;
+}
+#mIndex ::-webkit-scrollbar {
+    display:none !important;
+}
+
+#mIndex #plan .el-tabs--top, #mIndex #friend .el-tabs--top{
+    height: 100%;
+    padding: 0;
+    min-height: 0;
+    padding: 0;
+    min-height: 0;
+    /* background-color: red; */
+    top: 0;
+    margin: 0;
+    position: absolute;
+}
+/* #mIndex #plan .el-tab-pane {
+    height: 100%;
+} */
+#mIndex #plan .targerItem, #mIndex #plan .clockItem {
+    width: 30%;
+    height: 150px;
+    margin: 6% 1% 4% 2%;
+    overflow: hidden;
+}
+#mIndex #plan .targerItem .content, #mIndex #plan .clockItem .content {
+    padding: 8px 2px;
+    line-height: 30px;
+}
+#mIndex #plan .targer,#mIndex #plan .clock {
+    min-height: 0;
+}
+#mIndex #plan #updatePlan .el-dialog {
+    width: 100%;
+    margin-top: 50px !important;
+    
+    /* vertical-align: middle; */
+}
+
+#mIndex #plan #updatePlan .el-dialog .el-checkbox-group {
+    text-align: left;
+}
+#mIndex .el-tabs__content {
+    background: #f2f2f2 !important;
+}
+#mIndex #plan .title{
+    margin: 0;
+    margin-top: 30px;
+}
+/* #mIndex #calendar .left {
+    top: 0;
+    width: 100%;
+    left: 0;
+} */
+#mIndex #calendar .left {
+    position: static;
+    width: 100%;
+    margin-top: 20px;
+}
+#mIndex #calendar .right {
+    position: static;
+    width: 100%;
+    margin-top: 20px;
+}
+#mIndex .el-timeline-item__wrapper {
+    padding-left: 0;
+}
+#mIndex .el-timeline-item__timestamp.is-bottom{
+    width: 50%;
+    position: absolute;
+    left: 0;
+    top: 0;
+    font-size: 20px;
+    margin-top: 0;
+}
+#mIndex .el-timeline-item__content {
+    color: #303133;
+    position: absolute;
+    left: 50%;
+    width: 50%;
+    text-align: left;
+}
+#mIndex #plan .record {
+    min-height: 0;
+}
+#mIndex #upload .el-tabs--top, #mIndex #m-secret .el-tabs--top {
+    padding: 0px;
+    min-height: 0;
+    height: 100%;
+}
+
+#mIndex #upload .el-tabs__header, #mIndex #friend .el-tabs__header, #mIndex #m-secret .el-tabs__header {
+    height: 45px;
+    line-height: 45px;
+}
+#mIndex #upload .el-tabs__content {
+    margin-top: 0px;
+}
+#mIndex #upload .secret,#mIndex #upload .targer,#mIndex #upload .album {
+    width: 100%;
+    margin:40px 0px 0px 0px;
+    box-shadow: 0 0 0 0 black;
+}
+#mIndex #upload .el-upload-list--picture-card .el-upload-list__item,#mIndex #upload  .el-upload--picture-card {
+    width: 30%;
+    height: 0;
+    padding-bottom: 30%;
+    position: relative;
+    margin: 1.5%;
+    display: inline-block;
+}
+#mIndex #upload .el-upload-list--picture-card .el-upload-list__item>div{
+    position: absolute;
+    width: 100%;
+    height: 100%;
+}
+#mIndex #upload .el-upload-list--picture-card .el-upload-list__item>div img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+#mIndex #upload .photos {
+    text-align: left;
+}
+
+#mIndex #upload .el-upload--picture-card i{
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+#mIndex #upload .secret .photos{
+    min-height: 250px;
+}
+#mIndex #upload .targer .el-checkbox-group {
+    text-align: left;
+}
+
+#mIndex #upload  .el-date-range-picker__content {
+    width: 100% !important;
+}
+.el-popper {
+    top: 0 !important;
+    left: 0 !important;
+    width: 100%;
+}
+#mIndex #navbar{
+    display: none;
+}
+#mIndex #friend .el-tabs__content{
+    margin-top: 0;
+}
+
+/* 消息-》评论 */
+#mIndex #comment .center .commentInfo > div {
+    margin-right: 0;
+}
+#mIndex #comment .center .commentInfo .username{
+    max-width: 60px;
+    white-space: nowrap;
+    overflow: hidden
+}
+#mIndex #comment .center {
+    text-align: left;
+}
+#mIndex #comment .center .commentText {
+    padding: 10px;
+}
+#mIndex #commentList .el-pagination {
+    display: none;
+}
+
+/* 秘密 */
+#mIndex #m-secret  .el-tabs__nav {
+    left: 50%;
+    transform: translateX(-50%) !important;
+}
+#mIndex #m-secret .el-tabs__header {
+    box-shadow: 0 0 0 #ddd;
+    margin: 0;
+}
+#mIndex #m-secret  .el-tabs__item {
+    font-size: 18px;
+}
+#mIndex #m-secret .el-tabs__content {
+    margin-top: 0;
+}
+#mIndex #secret .imgs{
+    text-align: left;
+}
+#mIndex #secret .imgs .imgWrap {
+    margin: 1% 4% 1% 3%;
+}
+#mIndex #secret .interact .icon {
+    margin-left: 0;
+}
+
+/* 聊天窗口 */
+#mIndex #messageItem {
+    padding: 8px 3px;
+    text-align: left;
+}
+
+#mIndex #messageItem .text {
+    max-width: calc(75% - 50px);
+}
+#mIndex #m-chat .el-textarea__inner {
+    padding: 0;
+    height: 100%;
+    padding: 5px;
+    font-size: 16px;
+}

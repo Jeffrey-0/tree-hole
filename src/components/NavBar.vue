@@ -1,9 +1,19 @@
 <template>
   <div id="container">
-    <img class="portrait" title="点击切换头像" @click="changeAvatar" :src='avatarUrl'>
-    <div class="username"  @click="toInfo">{{ $user && $user.userName ? $user.userName : '无名氏'}}</div>
+  <el-upload
+  class="avatar-uploader"
+  action="https://jsonplaceholder.typicode.com/posts/"
+  :show-file-list="false"
+  :on-success="handleAvatarSuccess"
+  :before-upload="beforeAvatarUpload"
+>
+<!-- <img class="portrait" title="点击切换头像" :src='avatarUrl'>  -->
+ <img v-if="imageUrl" :src="imageUrl" class="portrait">
+ <img v-else class="portrait" title="点击切换头像" src="../assets/img/avatar.png">
+</el-upload>
+    <el-input v-model="user.userName" placeholder="无名氏" maxlength="10"></el-input>
     <div class="username motto">
-      <el-input v-model="motto" placeholder="个性签名" type="textarea">
+      <el-input v-model="motto" placeholder="个性签名" type="textarea" maxlength="20">
       </el-input>
     </div>
     
@@ -11,19 +21,19 @@
       <div class="item">
         <div class="number">12</div>
         <div>
-          <router-link  to="/index/library">秘密</router-link>
+          <router-link  to="/myself">秘密</router-link>
         </div>
       </div>
       <div class="item">
         <div class="number">12</div>
         <div>
-          <router-link  to="/index/library">关注</router-link>
+          <router-link  to="/plan">计划</router-link>
         </div>
       </div>
       <div class="item">
         <div class="number">12</div>
         <div>
-          <router-link  to="/index/library">粉丝</router-link>
+          <router-link  to="/album">相册</router-link>
         </div>
       </div>
     </div>
@@ -44,7 +54,9 @@ export default {
 
       },
       avatar: 0,
-      motto: ''
+      motto: '',
+      avatarPhoto: '',
+      imageUrl:''
     }
   },
   computed: {
@@ -72,6 +84,23 @@ export default {
     changeAvatar () {
       this.avatar = (this.avatar + 1) % 10
       localStorage.setItem('avatar', this.avatar)
+    },
+    handleAvatarSuccess(res, file) {
+      console.log('上传头像成功', file)
+      this.imageUrl = URL.createObjectURL(file.raw);
+      console.log('上传头像成功2', this.imageUrl)
+    },
+    beforeAvatarUpload(file) {
+      const isJPG = file.type === 'image/jpeg';
+      const isLt2M = file.size / 1024 / 1024 < 2;
+
+      if (!isJPG) {
+        this.$message.error('上传头像图片只能是 JPG 格式!');
+      }
+      if (!isLt2M) {
+        this.$message.error('上传头像图片大小不能超过 2MB!');
+      }
+      return isJPG && isLt2M;
     }
   },
   created () {
@@ -90,14 +119,17 @@ export default {
 
 <style scoped>
 #container {
-  position: absolute;
-  top: 50px;
-  left: 70px;
-  width: 280px;
+  /* display: inline-block; */
+  /* margin-top: 50px; */
+  /* position: sticky; */
+  /* float: left; */
+  /* top: 60px; */
+  /* left: 70px; */
+  width: 100%;
   height: 420px;
   background: #fff;
   border-radius: 4px;
-  overflow: hidden;
+  /* overflow: hidden; */
   text-align: center;
 }
 .portrait {

@@ -4,9 +4,96 @@
       <router-link to="/">Home</router-link> |
       <router-link to="/about">About</router-link>
     </div> -->
-    <router-view/>
+    <!-- <router-view/> -->
+    <m-index v-if="mobile"></m-index>
+    <login v-else-if="login"></login>
+    <album v-else-if="path === '/album'"></album>
+    <index v-else></index>
   </div>
 </template>
+
+<script>
+import Index from '@/views/Index.vue'
+import Album from '@/views/Album.vue'
+import Login from '@/views/Login.vue'
+import mIndex from '@/views/m/Index.vue'
+
+export default {
+  name: '',
+  components: {
+    Index: Index,
+    Login: Login,
+    Album,
+    mIndex
+  },
+  data () {
+    return {
+      login: 0,
+      path: '',
+      mobile: 0  // 手机端
+    }
+  },
+  methods: {
+    // 判断是否是手机端
+    _isMobile() {
+      let flag = navigator.userAgent.match(
+     /(phone|pad|iPhone|iPod|ios|iPad|Android|Mobile|BlackBerry|IEMobile|MQQBrowser|JUC|Fennec|wOSBrowser|BrowserNG|WebOS|Symbian|Windows phone)/i
+      );
+      return flag;
+    }
+  },
+  created () {
+    console.log(this.$route.path)
+    if (this.$route.path === '/login') {
+      this.login = 1
+    } else {
+      this.login = 0
+    }
+    this.path = this.$route.path
+    window.addEventListener('scroll', function () {
+      console.log(112)
+    })
+  },
+  mounted () {
+    console.log('判断是否是手机', this._isMobile())
+    if (this._isMobile()) {
+      // 手机端
+      console.log('是手机')
+      // this.$router.replace("/mobile/");
+      this.mobile = 1
+    } else {
+      // pc端
+      this.mobile = 0
+      console.log('是pc')
+      // this.$router.replace("/");
+    }
+  },
+  watch: {
+    $route: {
+      handler (to, form = null) {
+        // const currentTab = this.editableTabs.filter((item) => item.content === to.path)
+        
+        this.path = this.$route.path
+        if (this.$route.path === '/login') {
+          this.login = 1
+        } else {
+          this.login = 0
+        }
+        console.log('路由切换1', to)
+        console.log('路由切换2', form.path, this.$el.querySelector(`#content`), document.getElementById('content'))
+        if (this.$el.querySelector(`#content`) && to.path !== '/' && to.path !== '/home') {
+          this.$el.querySelector(`#content`).scrollIntoView({
+            behavior: "smooth",  // 平滑过渡
+            block:    "start"  // 上边框与视窗顶部平齐。默认值
+          });
+        }
+      }
+    }
+  }
+}
+</script>
+
+
 
 <style>
 #app {

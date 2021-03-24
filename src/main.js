@@ -5,8 +5,11 @@ import router from './router'
 import ElementUI from 'element-ui'
 import 'element-ui/lib/theme-chalk/index.css'
 import './assets/css/base.css'
+// 引入图片懒加载
+import VueLazyLoad from 'vue-lazyload'
 
 Vue.use(ElementUI)
+Vue.use(VueLazyLoad)
 Vue.config.productionTip = false
 
 Vue.prototype.$user = Object.assign({
@@ -21,6 +24,7 @@ Vue.prototype.$user = Object.assign({
   userCategory: ''
 }, JSON.parse(window.sessionStorage.getItem('user')))
 
+Vue.prototype.$baseImgUrl = 'http://localhost:8080/img/' // 服务器图片接口地址
 new Vue({
   router,
   render: h => h(App)
