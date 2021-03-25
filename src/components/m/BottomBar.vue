@@ -32,7 +32,7 @@
         消息
       </div>
     </div>
-    <div class="item"  @click="$router.push('album')">
+    <div class="item"  @click="$router.push('m-user')">
       <div class="icon">
         <i class="el-icon-user"></i>
       </div>

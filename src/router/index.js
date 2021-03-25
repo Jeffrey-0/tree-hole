@@ -10,6 +10,7 @@ import Plan from '../views/Plan.vue'
 import Upload from '../views/Upload.vue'
 import Secret from '../views/m/Secret.vue'
 import Chat from '../views/m/Chat.vue'
+import User from '../views/m/User.vue'
 
 Vue.use(VueRouter)
 
@@ -108,6 +109,11 @@ const routes = [
     path: '/m-chat',
     name: 'Chat',
     component: Chat
+  },
+  {
+    path: '/m-user',
+    name: 'User',
+    component: User
   }
 
 ]
