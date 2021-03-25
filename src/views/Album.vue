@@ -9,7 +9,7 @@
 
 <script>
 import vueWaterfallEasy from 'vue-waterfall-easy'
-import TopNavbar from "@/components/TopNavbar.vue";
+import TopNavbar from "@/components/TopNavbar.vue"
 
 export default {
   name: '',

@@ -157,7 +157,7 @@
     font-size: 18px;
 }
 
-#friend  .el-tabs__nav {
+#friend  .el-tabs__nav, #mIndex #user  .el-tabs__nav {
     left: 50%;
     transform: translateX(-50%) !important;
 }
@@ -360,17 +360,17 @@
 /* #mIndex #plan .el-tab-pane {
     height: 100%;
 } */
-#mIndex #plan .targerItem, #mIndex #plan .clockItem {
+#mIndex #plan .targerItem, #mIndex #plan .clockItem, #mIndex #user .targerItem {
     width: 30%;
     height: 150px;
     margin: 6% 1% 4% 2%;
     overflow: hidden;
 }
-#mIndex #plan .targerItem .content, #mIndex #plan .clockItem .content {
+#mIndex #plan .targerItem .content, #mIndex #plan .clockItem .content,#mIndex #user .targerItem .content {
     padding: 8px 2px;
     line-height: 30px;
 }
-#mIndex #plan .targer,#mIndex #plan .clock {
+#mIndex #plan .targer,#mIndex #plan .clock, #mIndex #user .targer {
     min-height: 0;
 }
 #mIndex #plan #updatePlan .el-dialog {
@@ -426,17 +426,17 @@
 #mIndex #plan .record {
     min-height: 0;
 }
-#mIndex #upload .el-tabs--top, #mIndex #m-secret .el-tabs--top {
+#mIndex #upload .el-tabs--top, #mIndex #m-secret .el-tabs--top, #mIndex #user .el-tabs--top {
     padding: 0px;
     min-height: 0;
     height: 100%;
 }
 
-#mIndex #upload .el-tabs__header, #mIndex #friend .el-tabs__header, #mIndex #m-secret .el-tabs__header {
+#mIndex #upload .el-tabs__header, #mIndex #friend .el-tabs__header, #mIndex #m-secret .el-tabs__header, #mIndex #user .el-tabs__header {
     height: 45px;
     line-height: 45px;
 }
-#mIndex #upload .el-tabs__content {
+#mIndex #upload .el-tabs__content, #mIndex #user .el-tabs__header {
     margin-top: 0px;
 }
 #mIndex #upload .secret,#mIndex #upload .targer,#mIndex #upload .album {
@@ -518,7 +518,7 @@
     left: 50%;
     transform: translateX(-50%) !important;
 }
-#mIndex #m-secret .el-tabs__header {
+#mIndex #m-secret .el-tabs__header, #mIndex #user .el-tabs__header {
     box-shadow: 0 0 0 #ddd;
     margin: 0;
 }
@@ -552,4 +552,22 @@
     height: 100%;
     padding: 5px;
     font-size: 16px;
+}
+
+/* 用户 */
+#mIndex #user .el-tabs__item {
+    font-size: 20px;
+}
+#mIndex #user .el-tabs__content {
+    margin-top: 0;
+}
+#mIndex #user #secret {
+    padding: 10px;
+}
+#mIndex #user #secret .content {
+  text-align: left;
+}
+#mIndex #user .el-tab-pane {
+    height: 100%;
+    overflow-y: scroll;
 }
