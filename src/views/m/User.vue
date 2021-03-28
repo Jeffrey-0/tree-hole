@@ -14,20 +14,20 @@
         <div class="nav">
           <div class="item">
             <div class="number">10</div>
-            <div class="title">关注</div>
-          </div>
-          <div class="item">
-            <div class="number">10</div>
             <div class="title">粉丝</div>
           </div>
           <div class="item">
             <div class="number">10</div>
-            <div class="title">获赞</div>
+            <div class="title">秘密</div>
+          </div>
+          <div class="item">
+            <div class="number">10</div>
+            <div class="title">计划</div>
           </div>
         </div>
         <div class="editBt">
           <el-button round>编辑</el-button>
-          <el-button icon="el-icon-search" round></el-button>
+          <el-button icon="el-icon-setting" round></el-button>
         </div>
       </div>
     </div>
