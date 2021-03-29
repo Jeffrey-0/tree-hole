@@ -54,17 +54,20 @@ export default {
       console.log(112)
     })
   },
-  mounted () {
+  created () {
     console.log('判断是否是手机', this._isMobile())
     if (this._isMobile()) {
       // 手机端
       console.log('是手机')
       // this.$router.replace("/mobile/");
       this.mobile = 1
+      this.$ifMobile.res = true
+      console.log('this.$ifMobile', this.$ifMobile)
     } else {
       // pc端
       this.mobile = 0
       console.log('是pc')
+      this.$ifMobile.res = false
       // this.$router.replace("/");
     }
   },

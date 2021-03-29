@@ -25,6 +25,11 @@ Vue.prototype.$user = Object.assign({
 }, JSON.parse(window.sessionStorage.getItem('user')))
 
 Vue.prototype.$baseImgUrl = 'http://localhost:8080/img/' // 服务器图片接口地址
+
+// 记录是手机端还是PC端
+
+Vue.prototype.$ifMobile = {}
+console.log('跑一趟main.js', Vue.prototype.$ifMobile)
 new Vue({
   router,
   render: h => h(App)

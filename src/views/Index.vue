@@ -12,6 +12,9 @@
       </div>
     </div>
     <top-navbar :defaultActive="1"></top-navbar>
+    <div class="navbar">
+      <nav-bar></nav-bar>
+    </div>
     <div id="content">
 <!--       <nav-bar></nav-bar>
       <div class="content">
@@ -19,9 +22,9 @@
           <router-view></router-view>
         </keep-alive>
       </div> -->
-      <div class="navbar">
+      <!-- <div class="navbar">
         <nav-bar></nav-bar>
-      </div>
+      </div> -->
       <div class="content">
         <keep-alive>
           <router-view></router-view>
@@ -141,10 +144,14 @@ export default {
 }
 
 #content {
+  vertical-align: top;
   position: relative;
   text-align: left;
   width: 100%;
   min-height: 100%;
+  width: calc(100% - 350px);
+  display: inline-block;
+
 }
 /* #content::after, .content::after {
   content: '';
@@ -211,8 +218,8 @@ export default {
   .content {
     vertical-align: top;
     display: inline-block;
-    width: calc(100% - 550px);
-    margin-left: 100px;
+    width: 70%;
+    margin-left: 15%;
     // min-height: 662px;
     // background: white;
     // border: 1px solid black;
@@ -226,6 +233,10 @@ export default {
     top: 60px;
     bottom: 0;
     height: calc(100% - 60px);
-  
+    &::after {
+      display: block;
+      content: '';
+      clear: both;
+    }
   }
 </style>

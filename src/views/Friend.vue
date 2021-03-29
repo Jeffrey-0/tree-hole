@@ -59,11 +59,18 @@ export default {
     padding: 20px 15px;
     border-radius: 5px;
     width: 100%;
-    min-height: 100%;
+    height: 100%;
     box-sizing: border-box;
     }
     .el-tabs__header {
       box-shadow: 0 0px 0px #ddd
+    }
+    .el-tabs__content {
+      height: calc(100% - 40px);
+      background: yellow;
+      .el-tab-pane {
+        height: 100%;
+      }
     }
 
 }

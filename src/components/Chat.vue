@@ -118,10 +118,12 @@ export default {
 
 <style scoped lang='scss'>
 #chat {
+  width: 100%;
+  height: 100%;
   .person {
     display: inline-block;
     width: 200px;
-    height: 590px;
+    height: 100%;
     // background: red;
     vertical-align: top;
     // border-right: 1px solid grey;
@@ -134,7 +136,7 @@ export default {
   .chatWrap{
     display: inline-block;
     width: calc(100% - 200px);
-    height: 590px;
+    height: 100%;
     background: #f4f5f7;
     vertical-align: top;
     .chat-content {

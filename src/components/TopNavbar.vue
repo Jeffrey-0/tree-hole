@@ -8,13 +8,15 @@
       <el-menu-item index="album"><i class="el-icon-picture"></i>相册</el-menu-item>
       <el-menu-item index="friend"><i class="el-icon-s-comment"></i>好友</el-menu-item>
       <el-menu-item index="upload"><i class="el-icon-circle-plus"></i>发表</el-menu-item>
-      <el-menu-item>
+      <!-- <el-menu-item>
         <el-switch
           v-model="value">
         </el-switch>
-      </el-menu-item>
+      </el-menu-item> -->
       <el-menu-item class="search">
         <el-input v-model="input" placeholder="搜索">
+          <!-- <el-button slot="append" icon="el-icon-search"></el-button> -->
+          <i slot="prefix" class="el-input__icon el-icon-search"></i>
         </el-input>
       </el-menu-item>
     </el-menu>

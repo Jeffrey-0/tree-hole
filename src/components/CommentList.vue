@@ -1,17 +1,19 @@
 <template>
   <div id="commentList">
     <!-- 聊天组件 -->
-    <comment-item></comment-item>
-    <el-divider></el-divider>
-    <comment-item></comment-item>    
-    <el-divider></el-divider>
-    <comment-item></comment-item>
-    <el-divider></el-divider>
-    <comment-item></comment-item>
-    <el-divider></el-divider>
-    <comment-item></comment-item>
-    <el-divider></el-divider>
-    <!-- <comment-item></comment-item> -->
+    <div class="top">
+      <comment-item></comment-item>
+      <el-divider></el-divider>
+      <comment-item></comment-item>    
+      <el-divider></el-divider>
+      <comment-item></comment-item>
+      <el-divider></el-divider>
+      <comment-item></comment-item>
+      <el-divider></el-divider>
+      <comment-item></comment-item>
+      <el-divider></el-divider>
+    </div>
+    <div class="bottom">
     <!-- 分页 -->
       <div class="block">
         <span class="demonstration"></span>
@@ -24,6 +26,10 @@
           :total="1000">
         </el-pagination>
       </div>
+    </div>
+
+    <!-- <comment-item></comment-item> -->
+
   </div>
 </template>
 
@@ -56,6 +62,13 @@ export default {
   .el-pagination {
     text-align: center;
   }
-  min-height: 530px;
+  height: 100%;
+  .top {
+    height: calc(100% - 70px);
+  }
+  .bottom {
+    height: 50px;
+    padding: 10px 0px;
+  }
 }
 </style>

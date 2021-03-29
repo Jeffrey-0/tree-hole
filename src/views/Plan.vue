@@ -48,13 +48,27 @@
     <!-- 取消打卡模态框 -->
     <el-dialog
       :visible.sync="dialogVisible"
-      width="60%">
+      width="60%"
+      v-if="ifMobile"
+      >
       <span>是否取消打卡</span>
       <span slot="footer" class="dialog-footer">
         <el-button @click="dialogVisible = false">否</el-button>
         <el-button type="primary" @click="cancleClock">是</el-button>
       </span>
     </el-dialog>
+        <el-dialog
+      :visible.sync="dialogVisible"
+      width="20%"
+      v-else
+      >
+      <span>是否取消打卡</span>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="dialogVisible = false">否</el-button>
+        <el-button type="primary" @click="cancleClock">是</el-button>
+      </span>
+    </el-dialog>
+
 
     <!-- 计划模态框 -->
     <el-dialog title="修改目标" :visible.sync="dialogFormVisible" id="updatePlan">
@@ -149,6 +163,7 @@ export default {
   },
   data() {
     return {
+      ifMobile: false,
       // clock模态框
       dialogVisible: false,
       // 打卡模态框的clock的位置
@@ -169,7 +184,7 @@ export default {
         days: ['周一', '周二', '周三', '周四', '周五']
       },
       formLabelWidth: '0',
-      activeName: 'second',
+      activeName: 'first',
       clocks: [{
         id: 1,
         content: '学英语换行的反馈了上搭建费李',
@@ -301,7 +316,8 @@ export default {
     }
   },
   mounted () {
-
+    this.ifMobile = this.$ifMobile.res
+    console.log('this.ifMobile', this.ifMobile)
   },
   computed : {
     endTargers: function () {

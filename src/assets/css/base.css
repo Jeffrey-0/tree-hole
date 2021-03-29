@@ -579,3 +579,9 @@
 .el-date-range-picker .el-picker-panel__content {
     width: 40%;
 }
+
+/* 改变pc端布局 */
+#friend .el-tabs__content {
+    height: calc(100% - 40px);
+    /* background: yellow; */
+}

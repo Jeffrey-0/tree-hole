@@ -225,7 +225,7 @@ export default {
   // margin-bottom: 30px;
   box-sizing: border-box;
   margin-bottom: 10px;
-  margin-top: 10px;
+  margin-top: 0px;
   border-bottom: 1px solid #f2f2f2;
   padding: 30px 50px;
   .user, .content, .imgs, .interact, .comments {
