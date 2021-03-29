@@ -255,6 +255,7 @@
 }
 #plan .el-form-item__content {
     margin-left: 0px;
+    text-align: left;
 }
 #plan .el-dialog {
     width: 40%;
@@ -288,6 +289,7 @@
 
 #upload .el-form-item__content {
     margin-left: 0px;
+    text-align: left;
 }
 #upload .el-form .el-button {
     width: 100%;
@@ -375,8 +377,8 @@
 }
 #mIndex #plan #updatePlan .el-dialog {
     width: 100%;
-    margin-top: 50px !important;
-    
+    margin: 0px !important;
+    height: 100%;
     /* vertical-align: middle; */
 }
 
@@ -384,7 +386,7 @@
     text-align: left;
 }
 #mIndex .el-tabs__content {
-    background: #f2f2f2 !important;
+    /* background: #f2f2f2 !important; */
 }
 #mIndex #plan .title{
     margin: 0;
@@ -441,7 +443,7 @@
 }
 #mIndex #upload .secret,#mIndex #upload .targer,#mIndex #upload .album {
     width: 100%;
-    margin:40px 0px 0px 0px;
+    margin:10px 0px 0px 0px;
     box-shadow: 0 0 0 0 black;
 }
 #mIndex #upload .el-upload-list--picture-card .el-upload-list__item,#mIndex #upload  .el-upload--picture-card {
@@ -482,10 +484,11 @@
 #mIndex #upload  .el-date-range-picker__content {
     width: 100% !important;
 }
+/* 日历 */
 .el-popper {
-    top: 0 !important;
+    /* top: 0 !important;
     left: 0 !important;
-    width: 100%;
+    width: 100%; */
 }
 #mIndex #navbar{
     display: none;
@@ -570,4 +573,9 @@
 #mIndex #user .el-tab-pane {
     height: 100%;
     overflow-y: scroll;
+}
+
+/* 日历 */
+.el-date-range-picker .el-picker-panel__content {
+    width: 40%;
 }

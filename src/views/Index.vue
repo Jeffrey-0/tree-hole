@@ -36,7 +36,6 @@
 import TopNavbar from "@/components/TopNavbar.vue";
 import BottomNavbar from "@/components/BottomNavbar.vue";
 import NavBar from "@/components/NavBar.vue";
-import clickVue from '../../../../../Vue/Vue源码/vue/test/weex/cases/event/click.vue';
 export default {
   name: "Index",
   components: {
@@ -145,6 +144,7 @@ export default {
   position: relative;
   text-align: left;
   width: 100%;
+  min-height: 100%;
 }
 /* #content::after, .content::after {
   content: '';
@@ -157,6 +157,7 @@ export default {
 .content {
   width: 100%;
   height: 100%;
+
 }
 .title{
   position: absolute;
@@ -212,13 +213,19 @@ export default {
     display: inline-block;
     width: calc(100% - 550px);
     margin-left: 100px;
-    min-height: 662px;
+    // min-height: 662px;
     // background: white;
     // border: 1px solid black;
     // padding: 10px 30px;
     border-radius: 5px;
-    margin-top: 60px;
+    // margin-top: 60px;
     // margin-bottom: 30px;
     position: relative;
+    // 修改
+    position: absolute;
+    top: 60px;
+    bottom: 0;
+    height: calc(100% - 60px);
+  
   }
 </style>

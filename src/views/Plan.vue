@@ -93,14 +93,26 @@
             </template>
           </el-input>
         </el-form-item>
-        <el-form-item label="起止时间">
-          <el-date-picker
+        <el-form-item label="开始时间">
+          <!-- <el-date-picker
             v-model="form.times"
             type="daterange"
             range-separator="至"
             start-placeholder="开始日期"
             end-placeholder="结束日期">
-          </el-date-picker>
+          </el-date-picker> -->
+            <el-date-picker
+              v-model="form.times"
+              type="date"
+              placeholder="开始时间">
+            </el-date-picker>
+        </el-form-item>
+        <el-form-item label="结束时间">
+            <el-date-picker
+              v-model="form.times"
+              type="date"
+              placeholder="结束时间">
+            </el-date-picker>
         </el-form-item>
         <el-form-item label="重复方式">
           <el-checkbox-group v-model="form.days">
@@ -153,7 +165,7 @@ export default {
         type: [],
         resource: '',
         desc: '',
-        times:[],
+        times:'',
         days: ['周一', '周二', '周三', '周四', '周五']
       },
       formLabelWidth: '0',
@@ -418,7 +430,7 @@ export default {
     text-align: center;
     // padding: 20px;
     box-sizing: border-box;
-    border-top: 1px solid #ddd;
+    // border-top: 1px solid #ddd;
   }
 }
 </style>

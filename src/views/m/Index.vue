@@ -66,7 +66,7 @@ export default {
   width: 100%;
   height: 60px;
   // background: red;
-  // border-top: 1px solid #aaa;
+  border-top: 1px solid #f2f2f2;
   box-sizing: border-box;
 }
 </style>
