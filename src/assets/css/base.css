@@ -585,3 +585,8 @@
     height: calc(100% - 40px);
     /* background: yellow; */
 }
+
+/* 秘密item */
+#secret .el-input-group__append {
+    /* background: #409EFF; */
+}

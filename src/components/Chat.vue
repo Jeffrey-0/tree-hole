@@ -51,7 +51,7 @@
         <div class="tool">
           <div class="sendPic"></div>
           <div class="sendEmjoy">
-            <vue-emoji ref="emoji" @input="onInput" :value="emojiInput" />
+            <!-- <vue-emoji ref="emoji" @input="onInput" :value="emojiInput" /> -->
           </div>
         </div>
         <div class="input-content">
@@ -75,12 +75,12 @@
 <script>
 import MessageItem from '@/components/MessageItem'
 // 引入表情库
-import VueEmoji from 'emoji-vue'
+// import VueEmoji from 'emoji-vue'
 export default {
   name: '',
   components: {
     MessageItem,
-    VueEmoji
+    // VueEmoji
   },
   data () {
     return {

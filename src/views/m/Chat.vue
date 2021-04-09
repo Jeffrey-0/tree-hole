@@ -38,12 +38,12 @@
 <script>
 import MessageItem from '@/components/MessageItem'
 // 引入表情库
-import VueEmoji from 'emoji-vue'
+// import VueEmoji from 'emoji-vue'
 export default {
   name: '',
   components: {
     MessageItem,
-    VueEmoji
+    // VueEmoji
   },
   data () {
     return {

@@ -1,47 +1,44 @@
 <template>
   <div id="secret">
     <div class="user">
-      <img class="portrait" :src="require('../assets/img/' + secret.user_portrait)">
-      <!-- <img v-if="secret.user_portrait" :src="$baseImgUrl + secret.user_portrait" > -->
-      <div class="username">{{ secret.user_name }}</div>
-      <div class="create_time">{{ secret.create_time }}</div>
+      <img class="portrait" :src="$baseImgUrl + secret.portrait">
+      <div class="username">{{ secret.username }}</div>
+      <div class="create_time">{{ isOverOneDay(secret.createTime) ? $moment(secret.createTime).format('YYYY-MM-DD h:mm') : $moment(secret.createTime).fromNow()}}</div>
     </div>
     <div class="content">{{ secret.content }}</div>
-    <div class="imgs" v-if="secret.imgs && secret.imgs.length > 0">
-      <div v-if="secret.imgs.length === 1">
-        <div class="imgWrap imgWrap1" v-for="item in secret.imgs" :key="item.id">
-          <!-- <img :src="require('../assets/img/' + item.img_url)" alt="" width="100%" height="100%"> -->
+    <div class="imgs" v-if="secret.pictures && secret.pictures.length > 0">
+      <div v-if="secret.pictures.length === 1">
+        <div class="imgWrap imgWrap1" v-for="item in secret.pictures" :key="item.pictureId">
           <el-image 
             style="width: 100%"
-            :src="require('../assets/img/' + item.img_url)" 
-            :preview-src-list="srcList">
+            :src="$baseImgUrl + item.path" 
+            :preview-src-list="imgList">
           </el-image>
         </div>
       </div>
-      <div v-else-if="secret.imgs.length === 2 || secret.imgs.length === 4">
-        <div class="imgWrap imgWrap2" v-for="item in secret.imgs" :key="item.id">
-          <!-- <img :src="require('../assets/img/' + item.img_url)" alt="" width="100%" height="100%"> -->
+      <div v-else-if="secret.pictures.length === 2 || secret.pictures.length === 4">
+        <div class="imgWrap imgWrap2" v-for="item in secret.pictures" :key="item.pictureId">
           <el-image 
             style="width: 100%"
-            :src="require('../assets/img/' + item.img_url)" 
-            :preview-src-list="srcList">
+            :src="$baseImgUrl + item.path" 
+            :preview-src-list="imgList">
           </el-image>
         </div>
       </div>
       <div v-else>
-        <div class="imgWrap" v-for="item in secret.imgs" :key="item.id">
-          <!-- <img :src="require('../assets/img/' + item.img_url)" alt="" width="100%" height="100%"> -->
+        <div class="imgWrap" v-for="item in secret.pictures" :key="item.pictureId">
+          <!-- <img :src="$baseImgUrl + item.img_url" alt="" width="100%" height="100%"> -->
            <el-image 
             style="width: 100%"
-            :src="require('../assets/img/' + item.img_url)" 
-            :preview-src-list="srcList">
+            :src="$baseImgUrl + item.path" 
+            :preview-src-list="imgList">
           </el-image>
 
         </div>
       </div>
     </div>
     <div class="interact">
-      <div class="icon">
+      <div class="icon" v-if="secret.userId === $user.userId">
         <i class="el-icon-error" title="删除"></i>
       </div>
       <div class="icon">
@@ -51,37 +48,33 @@
         <!-- <i class="el-icon-s-comment" title="评论" @click="showComments"></i> -->
         <!-- <el-badge :value="12" class="item"> -->
           <i class="el-icon-s-comment" title="评论" @click="showComments"></i>
-          <span class="commentNumber number" v-if="commentNumber">{{ commentNumber }}</span>
+          <span class="commentNumber number" v-if="secret.comments">{{ secret.comments.length }}</span>
         <!-- </el-badge> -->
       </div>
-      <div class="icon" @click="clickLike">
-        <!-- <el-badge :value="12" class="item"> -->
-          <img v-if="secret.is_like" class="love" title="点赞" style="" src="@/assets/img/icon/点赞.png">
-          <img v-else class="love" title="点赞" style="" src="@/assets/img/icon/未点赞.png">
-          <!-- <i class="love" title="点赞" style="background: url('@/assets/img/icon/未点赞.png')"></i> -->
-          <span class="loveNumber number" v-if="loveNumber">{{ loveNumber }}</span>
-        <!-- </el-badge> -->
+      <div class="icon" @click="clickLike(false)"  v-if="secret.likes.filter(item => item.userId === $user.userId).length > 0">
+          <img class="love" title="取消点赞" style="" src="@/assets/img/icon/点赞.png">
+          <span class="loveNumber number" v-if="secret.likes">{{ secret.likes.length }}</span>
       </div>
-      <!-- <el-badge :value="12" class="item">
-        <el-button size="small">评论</el-button>
-      </el-badge>
-      <el-badge :value="3" class="item">
-        <el-button size="small">回复</el-button>
-      </el-badge> -->
+      <div class="icon" @click="clickLike(true)"  v-else>
+          <img class="love" title="点赞" style="" src="@/assets/img/icon/未点赞.png">
+          <span class="loveNumber number" v-if="secret.likes">{{ secret.likes.length }}</span>
+      </div>
 
     </div>
     <div class="comments" :class="{show: ifShowComment}">
       <div style="margin-top: 15px;">
-        <el-input :placeholder="this.reply_name ? '回复' + this.reply_name : '评论' " v-model="commentInput" class="input-with-select">
-          <el-button slot="append" icon="el-icon-finished"></el-button>
+        <el-input :placeholder="this.replyname ? '回复' + this.replyname : '评论' " v-model="commentInput" class="input-with-select">
+          <el-button  type="success" slot="append" icon="el-icon-finished" @click="sureComment"></el-button>
         </el-input>
       </div>
-      <div v-for="item in secret.comments" :key="item.id" class="comment-item">
-        <span class="comment-username">{{ item.user_name }}:</span>
-        <span class="comment-content" @click="clickComment(item.user_name)">{{ item.content }}</span>
+      <div v-for="item in secret.comments" :key="item.commentId" class="comment-item">
+        <span class="comment-username">{{ item.username }}</span>
+        <span v-if="item.replyname"> 回复 </span>
+        <span class="comment-username" v-if="item.replyname">{{ item.replyname }}</span>:
+        <span class="comment-content" @click="clickComment(item)">  {{ item.content }}</span>
       </div>
       <!-- 分页 -->
-      <div class="block">
+      <!-- <div class="block">
         <span class="demonstration"></span>
         <el-pagination
           @size-change="handleSizeChange"
@@ -90,105 +83,34 @@
           :page-size="100"
           layout="prev, pager, next, jumper"
           :total="1000">
-        </el-pagination>
-      </div>
+        </el-pagination> -->
+      <!-- </div> -->
     </div>
   </div>
 </template>
 
 <script>
+import {selectLikeById, showAllLikeByPage, deleteLikeById, insertLike, updateLikeById} from '@/network/like'
+import {selectCommentById, showAllCommentByPage, deleteCommentById, insertComment, updateCommentById} from '@/network/comment'
+
 export default {
   name: '',
   components: {
   },
   data () {
     return {
-      url: 'https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg',
-        srcList: [
-          'https://fuss10.elemecdn.com/8/27/f01c15bb73e1ef3793e64e6b7bbccjpeg.jpeg',
-          'https://fuss10.elemecdn.com/1/8e/aeffeb4de74e2fde4bd74fc7b4486jpeg.jpeg'
-      ],
       ifShowComment: 0,
       commentInput: '',
-      loveNumber: 10,
-      commentNumber: 3,
-      reply_name: '',
-      currentPage: 5,
-      secret: {
-        id: '1',
-        content: `呐，其实马上就上高二了。我是想考清华的，没和别人说过，因为怕没有毅力啊。
-        还有不到两年，一定努力，一定加油。清华虽然很远但请一定要相信我能考上！`,
-        create_time: '2020-07-12 13:27:08',
-        status: 0,
-        user_id: 5,
-        user_name: '小疯子',
-        user_portrait: 'avatar.png',
-        likes: [1, 2, 4, 5],
-        is_like: 0,
-        comments: [
-          {
-            id: '2',
-            content: '为自己理想奋斗！为自己理想奋斗！为自己理想奋斗！为自己理想奋斗！为自己理想奋斗！为自己理想奋斗！为自己理想奋斗！为自己理想奋斗！为自己理想奋斗！为自己理想奋斗！',
-            user_name: 'Jeffrey',
-            reply_name: 'Json'
-          },
-          {
-            id: '3',
-            content: '加油加油，传播正能量，人人有责',
-            user_name: 'JSON',
-            reply_name: 'XFZ'
-          },
-          {
-            id: '4',
-            content: '努力总有收获',
-            user_name: 'Jeffrey',
-            reply_name: ''
-          }
-        ],
-        imgs: [
-          {
-            id: 1,
-            img_url: 'avatar.png'
-          },
-          {
-            id: 2,
-            img_url: 'bg_index.jpg'
-          },
-          {
-            id: 3,
-            img_url: 'bg.jpg'
-          },
-          // {
-          //   id: 4,
-          //   img_url: 'avatar.png'
-          // },
-          // {
-          //   id: 5,
-          //   img_url: 'bg_index.jpg'
-          // },
-          // {
-          //   id: 6,
-          //   img_url: 'bg.jpg'
-          // },
-          // {
-          //   id: 7,
-          //   img_url: 'avatar.png'
-          // },
-          // {
-          //   id: 8,
-          //   img_url: 'bg_index.jpg'
-          // },
-          // {
-          //   id: 9,
-          //   img_url: 'bg.jpg'
-          // }
-        ]
-      }
+      replyname: '',
+      replyId: 0,
     }
+  },
+  props: {
+    secret: {}
   },
   computed : {
     imgList: function () {
-      return this.secret.imgs && this.secret.imgs.map((item) => this.$baseImgUrl + item.img_url)
+      return this.secret.pictures && this.secret.pictures.map((item) => this.$baseImgUrl + item.path)
     }
   },
   methods: {
@@ -196,21 +118,78 @@ export default {
       console.log(123)
       this.ifShowComment = this.ifShowComment ? 0 : 1
     },
-    clickComment (user_name) {
-      console.log(user_name)
-      this.reply_name = user_name
+    clickComment (user) {
+      console.log(user)
+      this.replyname = user.username
+      this.replyId = user.userId
       this.commentInput = ''
     },
-    clickLike() {
-      // console.log(this.secret.is_like)
-      this.secret.is_like = this.secret.is_like ? 0 : 1
-      // console.log(this.imgList)
+    clickLike(like) {
+      if (like) {
+        let like = {
+          userId: this.$user.userId,
+          secretId: this.secret.secretId
+        }
+        insertLike(like).then(res => {
+          if (res) {
+            this.secret.likes.push({likeId: res, secretId: this.secret.secretId, userId: this.$user.userId})
+          } else {
+            this.$message.error('点赞失败')
+          }
+        })
+        
+      } else {
+        let deletelike = this.secret.likes.filter(item => item.userId === this.$user.userId)[0]
+        deleteLikeById(deletelike.likeId).then(res => {
+          if (res) {
+            let likes = this.secret.likes.filter(item => item.userId !== this.$user.userId)
+            this.secret.likes = likes
+          } else {
+            this.$message.error('取消点赞失败')
+          }
+        })
+        
+      }
     },
     handleSizeChange(val) {
       console.log(`每页 ${val} 条`);
     },
     handleCurrentChange(val) {
       console.log(`当前页: ${val}`);
+    },
+    // 判断该时间是否与当前时间超过一天
+    isOverOneDay (time) {
+      // let time1 = new Date(time).getTime()
+      let curTime = new Date().getTime()
+      // console.log('Math.abs(time, curTime)', Math.abs(time, curTime), time, curTime)
+      if (curTime - time < 86400000 && time - curTime < 86400000) {
+        return false
+      } else {
+        return true
+      }
+    },
+    // 发送评论
+    sureComment () {
+      let comment = {
+        secretId: this.secret.secretId,
+        userId: this.$user.userId,
+        replyId: this.replyId ? this.replyId : '',
+        content: this.commentInput,
+        createTime: new Date(),
+        username: this.$user.username,
+        replyname: this.replyname
+      }
+      console.log('发送评论', comment)
+      insertComment(comment).then(res => {
+        if (res) {
+          comment.commentId = res
+          this.$message.success('评论成功!')
+          this.secret.comments.push(comment)
+          this.commentInput = ''
+        } else {
+          this.$message.error('评论失败!')
+        }
+      })
     }
   }
 }
@@ -317,7 +296,7 @@ export default {
     max-height: 0;
     overflow: hidden;
     &.show{
-      max-height: 500px;
+      max-height: 1500px;
     }
     .comment-item {
       padding: 5px;
@@ -339,9 +318,6 @@ export default {
     text-align: center;
     border-radius: 5px;
   }
-}
-.el-image {
-
 }
 #secret .el-image__inner{
   width: 100%;

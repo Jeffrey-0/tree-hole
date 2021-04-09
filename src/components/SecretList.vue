@@ -1,20 +1,15 @@
 <template>
   <div id="secretList">
-    <secret-item></secret-item>
-    <secret-item></secret-item>
-    <secret-item></secret-item>
-    <secret-item></secret-item>
-    <secret-item></secret-item>
-    <secret-item></secret-item>
+    <secret-item v-for="secret in secretList" :key="secret.secretId" :secret="secret"></secret-item>
     <div class="block">
       <span class="demonstration"></span>
       <el-pagination
         @size-change="handleSizeChange"
         @current-change="handleCurrentChange"
         :current-page.sync="currentPage"
-        :page-size="100"
+        :page-size="pageSize"
         layout="prev, pager, next, jumper"
-        :total="1000">
+        :total="total">
       </el-pagination>
     </div>
   </div>
@@ -22,6 +17,7 @@
 
 <script>
 import SecretItem from './SecretItem'
+import {showAllSecretByPage} from '@/network/secret'
 export default {
   name: '',
   components: {
@@ -29,16 +25,42 @@ export default {
   },
   data () {
     return {
-      currentPage: 5
+      currentPage: 1,
+      pageSize: 6,
+      total: 0,
+      secretList: []
     }
   },
   methods: {
     handleSizeChange(val) {
-      console.log(`每页 ${val} 条`);
+      console.log(`每页 ${val} 条`)
+      this.refresh()
     },
     handleCurrentChange(val) {
-      console.log(`当前页: ${val}`);
+      console.log(`当前页: ${val}`)
+      this.refresh()
+    },
+    // 刷新数据
+    refresh () {
+      if(window.document.getElementById(`content`)) {
+        window.document.getElementById(`content`).scrollIntoView({
+          behavior: "smooth",  // 平滑过渡
+          block:    "start"  // 上边框与视窗顶部平齐。默认值
+        })
+      }
+
+      showAllSecretByPage(this.currentPage, this.pageSize).then(res => {
+        this.secretList = res.data
+        this.total = res.total
+        console.log(this.secretList)
+      })
     }
+  },
+  created () {
+    console.log('route', this.$route.path)
+    // if (this.$route.path === '/home' || this.$route.path === '/') {
+      this.refresh()
+    // }
   }
 }
 </script>
