@@ -4,11 +4,11 @@
       <el-tab-pane label="打卡" name="first">
         <!-- <chat></chat> -->
         <div class="clock">
-          <div class="clockItem" v-for="(item,index) in clocks" :key="item.id" @click="clockClick(item, index)" :class="{'finish' : item.finish}">
+          <div class="clockItem" v-for="(item,index) in clocks" :key="item.planId" @click="clockClick(item, index)" :class="{'finish' : item.finish}">
             <div class="icon">
-              <i :class="item.finish ? 'el-icon-circle-check' : item.icon"></i>
+              <i :class="item.finish ? 'el-icon-circle-check' : item.content"></i>
             </div>
-            <div class="content">{{ item.content }}</div>
+            <div class="content">{{ item.name }}</div>
           </div>
         </div>
       </el-tab-pane>
@@ -17,21 +17,21 @@
         <!-- <div class="targer">目标</div> -->
         <div class="targer">
           <div class="doingTarger">
-            <div class="targerItem" v-for="(item,index) in doingTargers" :key="item.id" @click="targerClick(item, index)">
+            <div class="targerItem" v-for="(item,index) in doingTargers" :key="item.planId" @click="targerClick(item, index)">
               <div class="icon">
-                <i :class="item.icon"></i>
+                <i :class="item.content"></i>
               </div>
-              <div class="content">{{ item.content }}</div>
+              <div class="content">{{ item.name }}</div>
             </div>
           </div>
           <!-- <el-divider></el-divider> -->
           <div class="title">已结束</div>
           <div class="endTarger">
-            <div class="targerItem" v-for="(item,index) in endTargers" :key="item.id" @click="targerClick(item, index)">
+            <div class="targerItem" v-for="(item,index) in endTargers" :key="item.planId" @click="targerClick(item, index)">
               <div class="icon">
-                <i :class="item.icon"></i>
+                <i :class="item.content"></i>
               </div>
-              <div class="content">{{ item.content }}</div>
+              <div class="content">{{ item.name }}</div>
             </div>
             
           </div>
@@ -149,6 +149,9 @@
 </template>
 
 <script>
+import {selectPlanById, showAllPlanByPage, deletePlanById, insertPlan, updatePlanById, showAllPlanByUserId, showAllByCurrentDate} from '@/network/plan'
+import {selectSignById, showAllSignByPage, deleteSignById, insertSign, updateSignById, showAllSignByUserId, deleteByPlanIdAndTime} from '@/network/sign'
+
 import Chat from '@/components/Chat'
 import CommentList from '@/components/CommentList'
 // import Calendar from '@/components/Calendar'
@@ -163,6 +166,8 @@ export default {
   },
   data() {
     return {
+      endTargers: [],
+      doingTargers: [],
       ifMobile: false,
       // clock模态框
       dialogVisible: false,
@@ -185,88 +190,8 @@ export default {
       },
       formLabelWidth: '0',
       activeName: 'first',
-      clocks: [{
-        id: 1,
-        content: '学英语换行的反馈了上搭建费李',
-        createTime: '2021-3-16',
-        endTime: '2021-2-16',
-        days: [1, 2, 3, 4, 5],
-        icon: 'el-icon-baseball',
-        finish: 0
-      },{
-        id: 2,
-        content: '看书',
-        createTime: '2021-3-16',
-        endTime: '2021-1-16',
-        days: [1, 2, 3, 4, 5, 6, 7],
-        icon: 'el-icon-service',
-        finish: 0
-      },{
-        id: 3,
-        content: '背单词',
-        createTime: '2021-3-16',
-        endTime: '2021-4-16',
-        days: [1],
-        icon: 'el-icon-coffee-cup',
-        finish: 1
-      },{
-        id: 4,
-        content: '锻炼',
-        createTime: '2021-3-16',
-        endTime: '2021-4-16',
-        days: [6, 7],
-        icon: 'el-icon-bicycle',
-        finish: 0
-      },{
-        id: 5,
-        content: '看书',
-        createTime: '2021-3-16',
-        endTime: '2021-4-16',
-        days: [1, 2, 3, 4, 5, 6, 7],
-        icon: 'el-icon-service',
-        finish: 1
-      }],
-      targers: [{
-        id: 1,
-        content: '学英语换行的反馈了上搭建费李',
-        createTime: '2021-3-16',
-        endTime: '2021-2-16',
-        days: [1, 2, 3, 4, 5],
-        icon: 'el-icon-baseball',
-        finish: 0
-      },{
-        id: 2,
-        content: '看书',
-        createTime: '2021-3-16',
-        endTime: '2021-1-16',
-        days: [1, 2, 3, 4, 5, 6, 7],
-        icon: 'el-icon-service',
-        finish: 0
-      },{
-        id: 3,
-        content: '背单词',
-        createTime: '2021-3-16',
-        endTime: '2021-4-16',
-        days: [1],
-        icon: 'el-icon-coffee-cup',
-        finish: 1
-      },{
-        id: 4,
-        content: '锻炼',
-        createTime: '2021-3-16',
-        endTime: '2021-4-16',
-        days: [6, 7],
-        icon: 'el-icon-bicycle',
-        finish: 0
-      },{
-        id: 5,
-        content: '看书',
-        createTime: '2021-3-16',
-        endTime: '2021-4-16',
-        days: [1, 2, 3, 4, 5, 6, 7],
-        icon: 'el-icon-service',
-        finish: 1
-      }],
+      clocks: [],
+      // targers: [],
       records: [],
       icons: [
         'el-icon-user-solid',
@@ -296,14 +221,35 @@ export default {
         this.dialogVisible = true
         this.currentClockIndex = index
       } else {
-        item.finish = item.finish ? 0 : 1
+        let sign = {
+          planId: item.planId,
+          createTime: new Date()
+        }
+        insertSign(sign).then(res => {
+          if (res) {
+            console.log('打卡')
+            this.$message.success('打卡成功')
+            item.finish = item.finish ? 0 : 1
+          } else {
+            this.$message.error('打卡失败')
+          }
+        })
       }
       console.log(this.clocks)
     },
     // 模态框取消打卡
     cancleClock () {
-      this.clocks[this.currentClockIndex].finish = 0
-      this.dialogVisible = false
+      deleteByPlanIdAndTime(this.clocks[this.currentClockIndex].planId, this.$moment(new Date()).format('YYYY-MM-DD')).then(res => {
+          if (res) {
+            console.log('打卡')
+            this.$message.success('取消打卡成功')
+            this.clocks[this.currentClockIndex].finish = 0
+            this.dialogVisible = false
+          } else {
+            this.$message.error('取消打卡失败')
+          }
+      })
+      
     },
     // 计划模态框
     targerClick() {
@@ -313,27 +259,26 @@ export default {
     chanceIcon (item) {
       this.form.icon = item
       this.iconsVisible = false
+    },
+    // 刷新
+    refresh () {
+      // 获取目标数据
+      showAllPlanByUserId(this.$user.userId).then(res => {
+        this.doingTargers = res.doing
+        this.endTargers = res.finish
+      })
+
+      // 查询今日打卡目标
+      showAllByCurrentDate(this.$user.userId).then(res => {
+        this.clocks = res.data
+      })
     }
   },
   mounted () {
     this.ifMobile = this.$ifMobile.res
-    console.log('this.ifMobile', this.ifMobile)
+    this.refresh()
   },
   computed : {
-    endTargers: function () {
-      return this.targers.filter((item) => {
-        let endTime = new Date(Date.parse(item.endTime))
-        let curTime = new Date()
-        return endTime < curTime
-      })
-    },
-    doingTargers: function () {
-      return this.targers.filter((item) => {
-        let endTime = new Date(Date.parse(item.endTime))
-        let curTime = new Date()
-        return endTime >= curTime
-      })
-    }
   }
 }
 </script>

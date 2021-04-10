@@ -38,10 +38,10 @@
       </div>
     </div>
     <div class="interact">
-      <div class="icon" v-if="secret.userId === $user.userId">
+      <div class="icon" v-if="secret.userId === $user.userId" @click="clickDelete()">
         <i class="el-icon-error" title="删除"></i>
       </div>
-      <div class="icon">
+      <div class="icon"  @click="clickReport()">
         <i class="el-icon-warning" title="举报"></i>
       </div>
       <div class="icon">
@@ -68,9 +68,9 @@
         </el-input>
       </div>
       <div v-for="item in secret.comments" :key="item.commentId" class="comment-item">
-        <span class="comment-username">{{ item.username }}</span>
+        <span class="comment-username">{{ item.userId === $user.userId ? '我' :  item.username}}</span>
         <span v-if="item.replyname"> 回复 </span>
-        <span class="comment-username" v-if="item.replyname">{{ item.replyname }}</span>:
+        <span class="comment-username" v-if="item.replyname">{{  item.replyId === $user.userId ? '我' :  item.replyname }}</span>:
         <span class="comment-content" @click="clickComment(item)">  {{ item.content }}</span>
       </div>
       <!-- 分页 -->
@@ -92,6 +92,7 @@
 <script>
 import {selectLikeById, showAllLikeByPage, deleteLikeById, insertLike, updateLikeById} from '@/network/like'
 import {selectCommentById, showAllCommentByPage, deleteCommentById, insertComment, updateCommentById} from '@/network/comment'
+import {selectSecretById, showAllSecretByPage, deleteSecretById, insertSecret, updateSecretById} from '@/network/secret'
 
 export default {
   name: '',
@@ -114,16 +115,38 @@ export default {
     }
   },
   methods: {
+    // 点击评论，切换评论可不可见
     showComments () {
       console.log(123)
       this.ifShowComment = this.ifShowComment ? 0 : 1
     },
-    clickComment (user) {
-      console.log(user)
-      this.replyname = user.username
-      this.replyId = user.userId
-      this.commentInput = ''
+    // 点击某条评论里的内容
+    clickComment (comment) {
+      console.log(comment)
+      if (comment.userId === this.$user.userId) {
+        this.$confirm('是否删除这条评论?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'error'
+        }).then(() => {
+          deleteCommentById(comment.commentId).then(res => {
+            if (res) {
+              this.$message.success('删除成功!')
+              this.secret.comments = this.secret.comments.filter(item => item.commentId !== comment.commentId)
+            } else {
+              this.$message.error('删除失败!')
+            }
+          })
+
+        }).catch(() => {
+        })
+      } else {
+        this.replyname = comment.username
+        this.replyId = comment.userId
+        this.commentInput = ''
+      }
     },
+    // 点赞
     clickLike(like) {
       if (like) {
         let like = {
@@ -148,8 +171,44 @@ export default {
             this.$message.error('取消点赞失败')
           }
         })
-        
       }
+    },
+    // 点击举报
+    clickReport () {
+      console.log('点击举报111', this.$common, this.$common.report)
+      this.$common.report(this, this.secret.secretId, this.$user.userId, 1)
+      // this.$moment.report()
+      // this.$prompt('请输入备注', '举报', {
+      //     confirmButtonText: '确定',
+      //     cancelButtonText: '取消',
+      //     inputPattern: /a{10,}/,
+      //     inputErrorMessage: '备注不能小于10个字符'
+      //   }).then(({ value }) => {
+      //     this.$message({
+      //       type: 'success',
+      //       message: '备注: ' + value
+      //     })
+      //   }).catch(() => {})
+    },
+    // 点击删除
+    clickDelete () {
+      // if (secret.userId === this.$user.userId) {
+        this.$confirm('是否删除这条秘密?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'error'
+        }).then(() => {
+          deleteSecretById(this.secret.secretId).then(res => {
+            if (res) {
+              this.$message.success('删除成功!')
+              // 通知父组件已经删除，刷新数据
+              this.$emit('deleteSecret')
+            } else {
+              this.$message.error('删除失败!')
+            }
+          })
+        }).catch(() => {})
+      // }
     },
     handleSizeChange(val) {
       console.log(`每页 ${val} 条`);
