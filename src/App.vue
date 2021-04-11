@@ -42,18 +42,10 @@ export default {
       return flag;
     }
   },
-  created () {
-    console.log(this.$route.path)
-    if (this.$route.path === '/login') {
-      this.login = 1
-    } else {
-      this.login = 0
-    }
-    this.path = this.$route.path
-    window.addEventListener('scroll', function () {
-      console.log(112)
-    })
-  },
+  // created () {
+  //   console.log(this.$route.path)
+
+  // },
   created () {
     console.log('判断是否是手机', this._isMobile())
     if (this._isMobile()) {
@@ -70,6 +62,15 @@ export default {
       this.$ifMobile.res = false
       // this.$router.replace("/");
     }
+    if (this.$route.path === '/login') {
+      this.login = 1
+    } else {
+      this.login = 0
+    }
+    this.path = this.$route.path
+    window.addEventListener('scroll', function () {
+      console.log(112)
+    })
   },
   watch: {
     $route: {

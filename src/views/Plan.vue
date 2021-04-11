@@ -73,21 +73,6 @@
     <!-- 计划模态框 -->
     <el-dialog title="修改目标" :visible.sync="dialogFormVisible" id="updatePlan">
       <el-form :model="form">
-        <!-- <el-form-item label="图标" :label-width="formLabelWidth" > -->
-          <!-- <el-popover
-            placement="right"
-            width="400"
-            trigger="click"
-             v-model="iconsVisible"
-            >
-            <div id="icons">
-              <el-button v-for="item in icons" :key="item" @click="chanceIcon(item)">
-                <i :class="item"></i>
-              </el-button>
-            </div>
-            <el-button slot="reference"><i class="icon" :class="form.icon"></i></el-button>
-          </el-popover> -->
-        <!-- </el-form-item> -->
         <el-form-item label="名称">
           <el-input v-model="form.name" autocomplete="off">
             <template slot="append">
@@ -102,54 +87,49 @@
                     <i :class="item"></i>
                   </el-button>
                 </div>
-                <el-button slot="reference"><i class="icon" :class="form.icon"></i></el-button>
+                <el-button slot="reference"><i class="icon" :class="form.content"></i></el-button>
               </el-popover>
             </template>
           </el-input>
         </el-form-item>
         <el-form-item label="开始时间">
-          <!-- <el-date-picker
-            v-model="form.times"
-            type="daterange"
-            range-separator="至"
-            start-placeholder="开始日期"
-            end-placeholder="结束日期">
-          </el-date-picker> -->
             <el-date-picker
-              v-model="form.times"
+              v-model="form.startTime"
               type="date"
-              placeholder="开始时间">
+              placeholder="开始时间"
+              value-format="yyyy-MM-dd">
             </el-date-picker>
         </el-form-item>
         <el-form-item label="结束时间">
             <el-date-picker
-              v-model="form.times"
+              v-model="form.endTime"
               type="date"
-              placeholder="结束时间">
+              placeholder="结束时间"
+              value-format="yyyy-MM-dd">
             </el-date-picker>
         </el-form-item>
         <el-form-item label="重复方式">
-          <el-checkbox-group v-model="form.days">
-            <el-checkbox label="周一"></el-checkbox>
-            <el-checkbox label="周二"></el-checkbox>
-            <el-checkbox label="周三"></el-checkbox>
-            <el-checkbox label="周四"></el-checkbox>
-            <el-checkbox label="周五"></el-checkbox>
-            <el-checkbox label="周六"></el-checkbox>
-            <el-checkbox label="周日"></el-checkbox>
+          <el-checkbox-group v-model="form.repeats">
+            <el-checkbox :label="1">周一</el-checkbox>
+            <el-checkbox :label="2">周二</el-checkbox>
+            <el-checkbox :label="3">周三</el-checkbox>
+            <el-checkbox :label="4">周四</el-checkbox>
+            <el-checkbox :label="5">周五</el-checkbox>
+            <el-checkbox :label="6">周六</el-checkbox>
+            <el-checkbox :label="7">周日</el-checkbox>
           </el-checkbox-group>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialogFormVisible = false">取 消</el-button>
-        <el-button type="primary" @click="dialogFormVisible = false">确 定</el-button>
+        <el-button type="primary" @click="updatePlan">确 定</el-button>
       </div>
     </el-dialog>
   </div>
 </template>
 
 <script>
-import {selectPlanById, showAllPlanByPage, deletePlanById, insertPlan, updatePlanById, showAllPlanByUserId, showAllByCurrentDate} from '@/network/plan'
+import {selectPlanById, showAllPlanByPage, deletePlanById, insertPlan, updatePlanById, showAllPlanByUserId, showAllByCurrentDate, updatePlanByIdSelective} from '@/network/plan'
 import {selectSignById, showAllSignByPage, deleteSignById, insertSign, updateSignById, showAllSignByUserId, deleteByPlanIdAndTime} from '@/network/sign'
 
 import Chat from '@/components/Chat'
@@ -177,19 +157,14 @@ export default {
       dialogFormVisible: false,
       form: {
         name: '',
-        icon: 'el-icon-edit',
-        region: '',
-        date1: '',
-        date2: '',
-        delivery: false,
-        type: [],
-        resource: '',
-        desc: '',
-        times:'',
-        days: ['周一', '周二', '周三', '周四', '周五']
+        content: 'el-icon-edit', // 图标
+        startTime: '',
+        endTime: '',
+        repeats: [],
+        createTime: ''
       },
       formLabelWidth: '0',
-      activeName: 'first',
+      activeName: 'second',
       clocks: [],
       // targers: [],
       records: [],
@@ -252,12 +227,17 @@ export default {
       
     },
     // 计划模态框
-    targerClick() {
+    targerClick(item) {
+      console.log('点击编辑计划', item)
+      this.form = Object.assign(item)
+      this.form.startTime = this.$moment(this.form.startTime).format('YYYY-MM-DD')
+      this.form.endTime = this.$moment(this.form.endTime).format('YYYY-MM-DD')
+      this.form.createTime = new Date(item.createTime)
       this.dialogFormVisible = true
     },
     // 改变图标
     chanceIcon (item) {
-      this.form.icon = item
+      this.form.content = item
       this.iconsVisible = false
     },
     // 刷新
@@ -271,6 +251,33 @@ export default {
       // 查询今日打卡目标
       showAllByCurrentDate(this.$user.userId).then(res => {
         this.clocks = res.data
+      })
+    },
+    // 修改目标
+    updatePlan () {
+      
+      // 格式数据
+      this.form.repeat = ''
+      this.form.repeats.map(item => {
+        this.form.repeat = this.form.repeat + item + ','
+      })
+      // this.form.createTime = new Date()
+      this.form.userId = this.$user.userId
+
+      console.log('修改目标', this.form)
+      updatePlanById(this.form).then(res => {
+        console.log(res)
+        if (res) {
+          this.$message.success('修改目标成功')
+          this.dialogFormVisible = false
+          // 修改成功，更新目标数据
+          showAllPlanByUserId(this.$user.userId).then(res => {
+            this.doingTargers = res.doing
+            this.endTargers = res.finish
+          })
+        } else {
+          this.$message.error('修改目标失败')
+        }
       })
     }
   },

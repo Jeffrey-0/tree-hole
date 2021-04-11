@@ -3,48 +3,16 @@
     <!-- 聊天组件 -->
     <div class="person">
       <!-- <div class="title">最近聊天</div> -->
-      <div class="user">
-        <img class="portrait" :src="require('../assets/img/avatar.png')">
-        <div class="username">小疯子</div>
-      </div>
-      <div class="user">
-        <img class="portrait" :src="require('../assets/img/avatar.png')">
-        <div class="username">小疯子哈哈哈哈哈哈</div>
-      </div>
-      <div class="user">
-        <img class="portrait" :src="require('../assets/img/avatar.png')">
-        <div class="username">小疯子</div>
-      </div>
-      <div class="user">
-        <img class="portrait" :src="require('../assets/img/avatar.png')">
-        <div class="username">小疯子</div>
-      </div>
-      <div class="user">
-        <img class="portrait" :src="require('../assets/img/avatar.png')">
-        <div class="username">小疯子</div>
-      </div>
-      <div class="user">
-        <img class="portrait" :src="require('../assets/img/avatar.png')">
-        <div class="username">小疯子</div>
-      </div>
-      <div class="user">
-        <img class="portrait" :src="require('../assets/img/avatar.png')">
-        <div class="username">小疯子</div>
-      </div>
-      <div class="user">
-        <img class="portrait" :src="require('../assets/img/avatar.png')">
-        <div class="username">小疯子</div>
-      </div>
-      <div class="user">
-        <img class="portrait" :src="require('../assets/img/avatar.png')">
-        <div class="username">小疯子</div>
+      <div class="user" v-for="item in users" :key="item.userId" @click="changeAcceptUser(item)">
+        <img class="portrait" :src="$baseImgUrl + item.portrait">
+        <div class="username">{{ item.username }}</div>
       </div>
     </div>
     <div class="chatWrap">
-      <div class="title">小疯子</div>
+      <div class="title">{{ acceptUser.username }}</div>
       <div class="chat-content">
         <div v-for="(item, index) in messages" :key="index">
-          <message-item :message="item"></message-item>
+          <message-item :message="item" :acceptUser="acceptUser"></message-item>
         </div>
       </div>
       <div class="edit">
@@ -59,7 +27,7 @@
         </div>
         <div class="send">
           <div class="button">
-            <el-button v-if="chatInput">发送</el-button>
+            <el-button v-if="chatInput" @click="addChat">发送</el-button>
             <el-button v-else disabled>发送</el-button>
           </div>
           <div class="number">
@@ -73,6 +41,7 @@
 </template>
 
 <script>
+import {selectChatById, showAllChatByPage, deleteChatById, insertChat, updateChatById, showAllByTowUserId} from '@/network/chat'
 import MessageItem from '@/components/MessageItem'
 // 引入表情库
 // import VueEmoji from 'emoji-vue'
@@ -86,32 +55,66 @@ export default {
     return {
       chatInput: '',
       emojiInput: '',
-      messages: [{
-        myself: 0,
-        text: '红红火火恍恍惚惚',
-        userAvatar: 'avatar.png'
-      },{
-        myself: 1,
-        text: '红红火火恍恍惚惚asdfasf拉肯德基发撒旦法拉开始的疯狂垃圾地方了家代理费加水砥砺奋进沙路口的附近受得了科技分散了京东方就撒老地方as',
-        userAvatar: 'avatar.png'
-      },{
-        myself: 1,
-        text: '红红火火恍恍惚惚',
-        userAvatar: 'avatar.png'
-      }]
+      page: 1,
+      rows: 10,
+      acceptUser: {
+        userId: 0,
+        username: '暂无选中用户',
+        portrait: 'user/114.jpg'
+      },
+      messages: []
     }
+  },
+  props : {
+    users: {}
   },
   methods: {
     onInput(event) {
-          //事件。数据包含文本区域的值
-          this.chatInput = this.chatInput + event.data
-          
-          console.log(event, this.emojiInput, this.chatInput)
-          this.clearTextarea()
-      },
-      clearTextarea(){
-        this.$refs.emoji.clear()
+        //事件。数据包含文本区域的值
+        this.chatInput = this.chatInput + event.data
+        
+        console.log(event, this.emojiInput, this.chatInput)
+        this.clearTextarea()
+    },
+    clearTextarea(){
+      this.$refs.emoji.clear()
+    },
+    // 刷新聊天记录
+    refresh () {
+      showAllByTowUserId(this.$user.userId, this.acceptUser.userId, this.page, this.rows).then(res => {
+        console.log('获取聊天记录', res)
+        this.messages = res.data
+      })
+    },
+    // 点击切换发送用户
+    changeAcceptUser (item) {
+      this.acceptUser = item
+      console.log('切换发送用户', item)
+      this.refresh()
+    },
+    // 发送消息
+    addChat() {
+      let chat = {
+        userId: this.$user.userId,
+        acceptId: this.acceptUser.userId,
+        content: this.chatInput,
+        createTime: new Date(),
+        type: 1
       }
+      insertChat(chat).then(res => {
+        if (res) {
+          console.log('发送成功', res)
+          this.chatInput = ''
+          chat.chatId = res
+          this.messages.push(chat)
+        } else {
+          this.$message.error('发送失败!')
+        }
+      })
+    }
+  },
+  created () {
+    this.refresh()
   }
 }
 </script>

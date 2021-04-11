@@ -3,14 +3,19 @@
     <div class="top">
       <div class="info">
         <div class="avatar">
-          <img class="portrait" :src="require('../../assets/img/avatar.png')">
+          <img class="portrait" :src=" $baseImgUrl + this.currentUser.portrait">
         </div>
         <div class="usernameMotto">
-          <div class="username">小疯子</div>
-          <div class="motto">座右铭座右铭座右铭座右铭座右铭座右铭</div>
+          <div class="username">
+            <span>{{ this.currentUser.username }}</span>
+            <el-button round size="small">关注</el-button>
+            <!-- <el-button icon="el-icon-setting" round size="small">聊天</el-button> -->
+            <el-button round size="small">聊天</el-button>
+          </div>
+          <div class="motto">{{ this.currentUser.motto }}</div>
         </div>
       </div>
-      <div class="edit">
+      <!-- <div class="edit">
         <div class="nav">
           <div class="item">
             <div class="number">10</div>
@@ -26,45 +31,42 @@
           </div>
         </div>
         <div class="editBt">
-          <el-button round>编辑</el-button>
+          <el-button round>发送</el-button>
           <el-button icon="el-icon-setting" round></el-button>
         </div>
-      </div>
+      </div> -->
     </div>
     <div class="bottom">
       <el-tabs v-model="activeName" @tab-click="handleClick">
         <el-tab-pane label="秘密" name="first">
           <div class="secretList">
-            <secret-item></secret-item>
-            <secret-item></secret-item>
-            <secret-item></secret-item>
-            <secret-item></secret-item>
-            <secret-item></secret-item>
-            <secret-item></secret-item>
+            <secret-item v-for="secret in SecretList" :key="secret.secretId" :secret="secret"></secret-item>
           </div>
         </el-tab-pane>
         <el-tab-pane label="计划" name="second">
           <div class="targer">
             <div class="doingTarger">
-              <div class="targerItem" v-for="(item,index) in doingTargers" :key="item.id" @click="targerClick(item, index)">
+              <div class="targerItem" v-for="(item,index) in doingTargers" :key="item.planId" @click="targerClick(item, index)">
                 <div class="icon">
-                  <i :class="item.icon"></i>
+                  <i :class="item.content"></i>
                 </div>
-                <div class="content">{{ item.content }}</div>
+                <div class="content">{{ item.name }}</div>
               </div>
             </div>
+            <!-- <el-divider></el-divider> -->
             <div class="title">已结束</div>
             <div class="endTarger">
-              <div class="targerItem" v-for="(item,index) in endTargers" :key="item.id" @click="targerClick(item, index)">
+              <div class="targerItem" v-for="(item,index) in endTargers" :key="item.planId" @click="targerClick(item, index)">
                 <div class="icon">
-                  <i :class="item.icon"></i>
+                  <i :class="item.content"></i>
                 </div>
-                <div class="content">{{ item.content }}</div>
+                <div class="content">{{ item.name }}</div>
               </div>
+              
             </div>
           </div>
         </el-tab-pane>
-        <el-tab-pane label="相册" name="third">
+        <el-tab-pane label="相册" name="third" v-if="this.$ifMobile.res">
           <!-- <div id="wrap"> -->
             
           <!-- </div> -->
@@ -82,6 +84,10 @@
 import SecretItem from '@/components/SecretItem'
 import Album from '@/views/Album'
 import vueWaterfallEasy from 'vue-waterfall-easy'
+import {showAllByUserId} from "@/network/album"
+import {showAllSecretByPage, showAllSecretByPower, showAllSecretByFollows, showAllSecretByUserId, showAllSecretByMyself} from '@/network/secret'
+import {selectPlanById, showAllPlanByPage, deletePlanById, insertPlan, updatePlanById, showAllPlanByUserId, showAllByCurrentDate} from '@/network/plan'
+import {selectUserById, showAllUserByPage, deleteUserById, insertUser, updateUserById} from '@/network/user'
 export default {
   name: '',
   components: {
@@ -100,41 +106,26 @@ export default {
         days: [1, 2, 3, 4, 5],
         icon: 'el-icon-baseball',
         finish: 0
-      },{
-        id: 2,
-        content: '看书',
-        createTime: '2021-3-16',
-        endTime: '2021-1-16',
-        days: [1, 2, 3, 4, 5, 6, 7],
-        icon: 'el-icon-service',
-        finish: 0
-      },{
-        id: 3,
-        content: '背单词',
-        createTime: '2021-3-16',
-        endTime: '2021-4-16',
-        days: [1],
-        icon: 'el-icon-coffee-cup',
-        finish: 1
-      },{
-        id: 4,
-        content: '锻炼',
-        createTime: '2021-3-16',
-        endTime: '2021-4-16',
-        days: [6, 7],
-        icon: 'el-icon-bicycle',
-        finish: 0
-      },{
-        id: 5,
-        content: '看书',
-        createTime: '2021-3-16',
-        endTime: '2021-4-16',
-        days: [1, 2, 3, 4, 5, 6, 7],
-        icon: 'el-icon-service',
-        finish: 1
       }],
       imgsArr: [],         //存放所有已加载图片的数组（即当前页面会加载的所有图片）
-      fetchImgsArr: []     //存放每次滚动时下一批要加载的图片的数组
+      fetchImgsArr: [],     //存放每次滚动时下一批要加载的图片的数组
+      SecretList: [],
+      currentUserId: 0,
+      currentUser: {
+        userId: 3,
+        username: '无名',
+        portrait: 'user/111.jpg'
+      },
+      // 秘密
+      currentPage: 1,
+      pageSize: 6,
+      total: 0,
+      // 目标
+      endTargers: [],
+      doingTargers: [],
+      // 相册
+      page: 1,
+      rows: 16
     }
   },
   methods: {
@@ -144,47 +135,77 @@ export default {
      targerClick() {
       // this.dialogFormVisible = true
     },
-    initImgsArr (n, m) {   //初始化图片数组的方法，把要加载的图片装入
-　　　　var arr = []
-　　　　for (var i = n; i < m; i++) {
-　　　　　　if(i % 5 == 1) arr.push({ src: `http://xfz.zone/assets/img/blog/helloworld-1.jpg`, link: '', info: '一些图片描述文字' + i }) //src为加载的图片的地址、link为超链接的链接地址、 info为自定义的图片展示信息，请根据自己的情况自行填写
-　　　　　　else if (i % 5 == 2) arr.push({ src: `http://xfz.zone/images/avatar.png`, link: '', info: '一些图片描述文字' + i }) //src为加载的图片的地址、link为超链接的链接地址、 info为自定义的图片展示信息，请根据自己的情况自行填写
-　　　　　　else if (i % 5 == 3) arr.push({ src: `http://browser9.qhimg.com/bdm/384_237_0/t01a78941bc25ae2cf9.jpg`, link: '', info: '一些图片描述文字' + i }) //src为加载的图片的地址、link为超链接的链接地址、 info为自定义的图片展示信息，请根据自己的情况自行填写
-　　　　　　else if (i % 5 == 4) arr.push({ src: `http://browser9.qhimg.com/bdm/768_474_0/t0148bbf85c878da0b8.jpg`, link: '', info: '一些图片描述文字' + i }) //src为加载的图片的地址、link为超链接的链接地址、 info为自定义的图片展示信息，请根据自己的情况自行填写
-　　　　　　else arr.push({ src: `http://browser9.qhimg.com/bdm/768_474_0/t013a4ed4683039d101.jpg`, link: '', info: '一些图片描述文字' + i }) //src为加载的图片的地址、link为超链接的链接地址、 info为自定义的图片展示信息，请根据自己的情况自行填写
-　　　　}
-　　　　return arr
-　　　},
-
-　　　fetchImgsData () {    //获取新的图片数据的方法，用于页面滚动满足条件时调用
-        if(this.imgsArr.length >= 100) {
-          console.log('已经到底了')
-          return
+　　　fetchImgsData () {
+        if (this.fetchImgsArr.length > 0) {
+          this.imgsArr = this.imgsArr.concat(this.fetchImgsArr)   //数组拼接，把下一批要加载的图片放入所有图片的数组中
+          if (this.fetchImgsArr.length === this.rows) {
+            this.page ++
+            showAllByUserId(this.$user.userId, this.page + 1, this.rows).then(res => {
+              this.fetchImgsArr = res.data.map(item => {
+                item.src = this.$baseImgUrl + item.path
+                return item
+              })
+              console.log('获取图片', this.imgsArr, this.fetchImgsArr)
+            })
+          } else {
+            this.fetchImgsArr = []
+          }
+        } else {
+          this.$message.success('已经到底了')
         }
-　　　　this.imgsArr = this.imgsArr.concat(this.fetchImgsArr)   //数组拼接，把下一批要加载的图片放入所有图片的数组中
-        console.log('加载更多')
-// 　　　　this.imgsArr = this.imgsArr.concat(this.imgsArr)   //数组拼接，把下一批要加载的图片放入所有图片的数组中
-　　　}
-  },
-  computed : {
-    endTargers: function () {
-      return this.targers.filter((item) => {
-        let endTime = new Date(Date.parse(item.endTime))
-        let curTime = new Date()
-        return endTime < curTime
+　　　},
+    // 刷新
+    refresh () {
+      // 获取用户
+      selectUserById(this.currentUser.userId).then(res => {
+        this.currentUser = res
       })
-    },
-    doingTargers: function () {
-      return this.targers.filter((item) => {
-        let endTime = new Date(Date.parse(item.endTime))
-        let curTime = new Date()
-        return endTime >= curTime
+
+      // 获取秘密
+      if (this.currentUser.userId === this.$user.userId) {
+      showAllSecretByMyself(this.currentUser.userId, this.currentPage, this.pageSize).then(res => {
+          this.SecretList = res.data
+          this.total = res.total
+      })
+    } else {
+      showAllSecretByUserId(this.currentUser.userId, this.currentPage, this.pageSize).then(res => {
+          this.SecretList = res.data
+          this.total = res.total
       })
     }
+
+      // 获取目标数据
+      showAllPlanByUserId(this.currentUser.userId).then(res => {
+        this.doingTargers = res.doing
+        this.endTargers = res.finish
+      })
+
+      // 获取相册
+      showAllByUserId(this.$user.userId, this.page, this.rows).then(res => {
+        this.imgsArr = res.data
+        this.imgsArr = res.data.map(item => {
+          item.src = this.$baseImgUrl + item.path
+          return item
+        })
+      })
+
+      showAllByUserId(this.$user.userId, this.page + 1, this.rows).then(res => {
+        // this.fetchImgsArr = res.data
+        this.fetchImgsArr = res.data.map(item => {
+          item.src = this.$baseImgUrl + item.path
+          return item
+        })
+        console.log('获取图片', this.imgsArr, this.fetchImgsArr)
+      })
+    },
+  },
+  computed : {
   },
   created () {
-    this.imgsArr = this.initImgsArr(0, 20)       //初始化第一次（即页面加载完毕时）要加载的图片数据
-    this.fetchImgsArr = this.initImgsArr(10, 20) // 模拟每次请求的下一批新的图片的数据数据
+    
+    // console.log('当前路由', this.$route, this.$route.path)
+    this.currentUser.userId = this.$route.query.userId ? this.$route.query.userId - 0 :this.$user.userId
+    this.refresh()
   }
 }
 </script>
@@ -196,7 +217,7 @@ export default {
   text-align: left;
   .top {
     width: 100%;
-    height: 180px;
+    height: 100px;
     background: #fff;
     .info {
       width: 100%;
@@ -227,6 +248,11 @@ export default {
           height: 30px;
           font-size: 22px;
           line-height: 30px;
+          // display: flex;
+          // justify-content: space-between;
+          button {
+            margin-left: 30px;
+          }
         }
         .motto {
           width: 100%;
@@ -245,9 +271,10 @@ export default {
       padding: 10px;
       box-sizing: border-box;
       .nav {
+        display: none;
         width: 200px;
         height: 100%;
-        display: inline-block;
+        // display: inline-block;
         vertical-align: top;
         .item {
           width: 50px;
@@ -259,15 +286,21 @@ export default {
       }
       .editBt{
         vertical-align: top;
-        width: calc(100% - 200px);
+        // width: calc(100% - 200px);
+        width: 100%;
+        // float: right;
         height: 100%;
-        display: inline-block;          
+        display: flex;
+        justify-content: space-between;
+        button {
+          
+        }      
       }
     }
   }
   .bottom {
     width: 100%;
-    height: calc(100% - 180px);
+    height: calc(100% - 100px);
     // background: red;
     background: #fff;
     position: relative;

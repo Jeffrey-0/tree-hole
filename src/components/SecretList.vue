@@ -1,6 +1,6 @@
 <template>
   <div id="secretList">
-    <secret-item v-for="secret in secretList" :key="secret.secretId" :secret="secret"></secret-item>
+    <secret-item v-for="secret in secretList" :key="secret.secretId" :secret="secret" @deleteSecret="refresh(true)"></secret-item>
     <div class="block">
       <span class="demonstration"></span>
       <el-pagination
@@ -12,6 +12,7 @@
         :total="total">
       </el-pagination>
     </div>
+    <div class="bottom"></div>
   </div>
 </template>
 
@@ -41,12 +42,14 @@ export default {
       this.refresh()
     },
     // 刷新数据
-    refresh () {
-      if(window.document.getElementById(`content`)) {
-        window.document.getElementById(`content`).scrollIntoView({
-          behavior: "smooth",  // 平滑过渡
-          block:    "start"  // 上边框与视窗顶部平齐。默认值
-        })
+    refresh (ifNoScroll = false) {
+      if (!ifNoScroll) {
+        if(window.document.getElementById(`content`)) {
+          window.document.getElementById(`content`).scrollIntoView({
+            behavior: "smooth",  // 平滑过渡
+            block:    "start"  // 上边框与视窗顶部平齐。默认值
+          })
+        }
       }
       if (this.$route.path === '/watch') {
         showAllSecretByFollows(this.$user.userId, this.currentPage, this.pageSize).then(res => {
@@ -88,6 +91,10 @@ export default {
   background: #fff;
   text-align: center;
   border-radius: 5px;
-  margin-bottom: 50px;
+  // margin-bottom: 50px;
+}
+.bottom {
+  width: 100%;
+  height: 20px;
 }
 </style>

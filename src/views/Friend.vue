@@ -8,23 +8,24 @@
     </div> -->
 
     <el-tabs v-model="activeName" @tab-click="handleClick">
-      <el-tab-pane label="消息" name="first">
-        <chat></chat>
-      </el-tab-pane>
+      <!-- <el-tab-pane label="消息" name="first">
+        <chat :users="latelyUsers"></chat>
+      </el-tab-pane> -->
       <el-tab-pane label="关注" name="second">
-        <chat></chat>
+        <chat :users="followUsers"></chat>
       </el-tab-pane>
       <el-tab-pane label="粉丝" name="third">
-        <chat></chat>
+        <chat :users="fanUsers"></chat>
       </el-tab-pane>
-      <el-tab-pane label="评论" name="fourth">
+      <!-- <el-tab-pane label="评论" name="fourth">
         <comment-list></comment-list>
-      </el-tab-pane>
+      </el-tab-pane> -->
     </el-tabs>
   </div>
 </template>
 
 <script>
+import {selectrelationById, showAllrelationByPage, deleterelationById, insertrelation, updaterelationById, showAllFansByUserId, showAllFollowsByUserId} from '@/network/relation'
 import Chat from '@/components/Chat'
 import CommentList from '@/components/CommentList'
 export default {
@@ -35,13 +36,25 @@ export default {
   },
   data() {
     return {
-      activeName: 'first'
+      activeName: 'second',
+      fanUsers: [],
+      followUsers: [],
+      latelyUsers: [],
+
     };
   },
   methods: {
     handleClick(tab, event) {
       console.log(tab, event);
     }
+  },
+  created () {
+    showAllFansByUserId(this.$user.userId).then (res => {
+      this.fanUsers = res
+    })
+    showAllFollowsByUserId(this.$user.userId).then (res => {
+      this.followUsers = res
+    })
   }
 }
 </script>

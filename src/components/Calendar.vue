@@ -13,8 +13,8 @@
           v-for="(activity, index) in activities"
           :key="index"
           size="large"
-          :timestamp="activity.timestamp">
-          {{activity.content}}
+          :timestamp="$moment(activity.createTime).format('YYYY-MM-DD')">
+          {{activity.name}}
         </el-timeline-item>
       </el-timeline>
     </div>
@@ -22,7 +22,7 @@
 </template>
 
 <script>
-
+import {showHistoryByUserIdAndTime} from '@/network/sign'
 import Calendar from 'vue-calendar-component'
 export default {
   name: '',
@@ -32,21 +32,15 @@ export default {
   data () {
     return {
       reverse: true,
-      activities: [{
-        content: '背单词',
-        timestamp: '20:30'
-      }, {
-        content: '看书',
-        timestamp: '23:20'
-      }, {
-        content: '锻炼',
-        timestamp: '22:00'
-      }]
+      activities: []
     }
   },
   methods: {
     clickDay(data) {
       console.log(data); //选中某天
+      showHistoryByUserIdAndTime(this.$user.userId, this.$moment(data).format('YYYY-MM-DD')).then(res => {
+        this.activities = res || []
+      })
     },
     changeDate(data) {
       console.log(data); //左右点击切换月份
@@ -54,6 +48,11 @@ export default {
     clickToday(data) {
       console.log(data); //跳到了本月
     }
+  },
+  created () {
+    showHistoryByUserIdAndTime(this.$user.userId, this.$moment(new Date()).format('YYYY-MM-DD')).then(res => {
+      this.activities = res || []
+    })
   }
 }
 </script>

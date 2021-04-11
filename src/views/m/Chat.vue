@@ -5,7 +5,7 @@
       <div class="title">小疯子</div>
       <div class="chat-content">
         <div v-for="(item, index) in messages" :key="index">
-          <message-item :message="item"></message-item>
+          <message-item :message="item" :acceptUser="acceptUser"></message-item>
         </div>
       </div>
       <div class="edit">
@@ -16,27 +16,16 @@
         <div class="input-content">
             <el-input type="textarea" v-model="chatInput" placeholder="回复一下吧"></el-input>
         </div>
-        <el-button >发送</el-button>
-        <!-- <div class="send"> -->
-          <!-- <div class="sendEmjoy">
-            <vue-emoji ref="emoji" @input="onInput" :value="emojiInput" />
-          </div> -->
-          <!-- <div class="button">
-            <el-button v-if="chatInput">发送</el-button>
-            <el-button v-else disabled>发送</el-button>
-          </div> -->
-          <!-- <div class="number">
-            {{chatInput.length}} /100
-          </div> -->
-          
-        <!-- </div> -->
+        <el-button @click="addChat">发送</el-button>
       </div>
     </div>
   </div>
 </template>
 
 <script>
+import {selectChatById, showAllChatByPage, deleteChatById, insertChat, updateChatById, showAllByTowUserId} from '@/network/chat'
 import MessageItem from '@/components/MessageItem'
+import {selectUserById, showAllUserByPage, deleteUserById, insertUser, updateUserById} from '@/network/user'
 // 引入表情库
 // import VueEmoji from 'emoji-vue'
 export default {
@@ -49,19 +38,14 @@ export default {
     return {
       chatInput: '',
       emojiInput: '',
-      messages: [{
-        myself: 0,
-        text: '红红火火恍恍惚惚',
-        userAvatar: 'avatar.png'
-      },{
-        myself: 1,
-        text: '红红火火恍恍惚惚asdfasf拉肯德基发撒旦法拉开始的疯狂垃圾地方了家代理费加水砥砺奋进沙路口的附近受得了科技分散了京东方就撒老地方as',
-        userAvatar: 'avatar.png'
-      },{
-        myself: 1,
-        text: '红红火火恍恍惚惚',
-        userAvatar: 'avatar.png'
-      }]
+      page: 1,
+      rows: 10,
+      messages: [],
+      acceptUser: {
+        userId: 0,
+        username: '暂无选中用户',
+        portrait: 'user/114.jpg'
+      }
     }
   },
   methods: {
@@ -74,7 +58,42 @@ export default {
       },
       clearTextarea(){
         this.$refs.emoji.clear()
+      },
+        // 刷新聊天记录
+    refresh () {
+      showAllByTowUserId(this.$user.userId, this.acceptUser.userId, this.page, this.rows).then(res => {
+        console.log('获取聊天记录', res)
+        this.messages = res.data
+      })
+    },
+    // 发送消息
+    addChat() {
+      let chat = {
+        userId: this.$user.userId,
+        acceptId: this.acceptUser.userId,
+        content: this.chatInput,
+        createTime: new Date(),
+        type: 1
       }
+      insertChat(chat).then(res => {
+        if (res) {
+          console.log('发送成功', res)
+          this.chatInput = ''
+          chat.chatId = res
+          this.messages.push(chat)
+        } else {
+          this.$message.error('发送失败!')
+        }
+      })
+    }
+  },
+  created () {
+    this.acceptUser.userId = this.$route.query.userId ? this.$route.query.userId - 0 :this.$user.userId
+    console.log('this.acceptUser.userId', this.acceptUser.userId)
+    selectUserById(this.acceptUser.userId).then(res => {
+      this.acceptUser = res
+      this.refresh()
+    })
   }
 }
 </script>

@@ -590,3 +590,39 @@
 #secret .el-input-group__append {
     /* background: #409EFF; */
 }
+
+/* 图片加载中 */
+#mIndex .vue-waterfall-easy-container > .loading,#album .vue-waterfall-easy-container > .loading {
+    display: none;
+}
+/* 弹出框移动端 */
+.el-message-box {
+    max-width: 70%;
+}
+.el-message {
+    min-width: 250px;
+    max-width: 70%;
+}
+/* pc端用户主页 */
+#index #user{
+
+}
+#index #user .el-tabs__nav{
+    /* height: 100%;
+    padding: 0;
+    min-height: 0;
+    padding: 0;
+    min-height: 0;
+    top: 0;
+    margin: 0; */
+    /* position: absolute; */
+    left: 50%;
+    transform: translateX(-50%) !important;
+}
+
+#index #user .el-tabs__header {
+    box-shadow: 0 0 0 red;
+}
+#index #user .el-tabs--top {
+    background: #fff;
+}

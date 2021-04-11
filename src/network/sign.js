@@ -123,7 +123,20 @@ export function deleteByPlanIdAndTime (planId, createTime) {
   return request({
     url: baseTable + 'deleteByPlanIdAndTime',
     params: {
-      planId
+      planId,
+      createTime
+    }
+  })
+}
+
+// 查找打卡历史
+// 根据计划id和当前时间删除
+export function showHistoryByUserIdAndTime (userId, createTime) {
+  return request({
+    url: baseTable + 'showHistoryByUserIdAndTime',
+    params: {
+      userId,
+      createTime
     }
   })
 }

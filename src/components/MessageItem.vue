@@ -1,11 +1,11 @@
 <template>
-  <div id="messageItem" :class="{myself: message.myself}">
+  <div id="messageItem" :class="{myself: message.userId === $user.userId}">
     <div class="avatar">
-      <img src="../assets/img/avatar.png" alt="">
+      <img :src="message.userId === $user.userId ? $baseImgUrl + $user.portrait : $baseImgUrl + acceptUser.portrait" alt="">
     </div>
     <div class="icon"></div>
     <div class="text">
-      {{message && message.text}}
+      {{message && message.content}}
     </div>
   </div>
 </template>
@@ -16,7 +16,8 @@ export default {
   components: {
   },
   props: {
-    message: {}
+    message: {},
+    acceptUser: {}
   },
   data () {
     return {

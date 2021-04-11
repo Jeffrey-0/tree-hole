@@ -1,7 +1,7 @@
 <template>
   <div id="secret">
     <div class="user">
-      <img class="portrait" :src="$baseImgUrl + secret.portrait">
+      <img class="portrait" :src=" $baseImgUrl + secret.portrait" @click="toUserHome(secret)">
       <div class="username">{{ secret.username }}</div>
       <div class="create_time">{{ isOverOneDay(secret.createTime) ? $moment(secret.createTime).format('YYYY-MM-DD h:mm') : $moment(secret.createTime).fromNow()}}</div>
     </div>
@@ -241,6 +241,7 @@ export default {
       console.log('发送评论', comment)
       insertComment(comment).then(res => {
         if (res) {
+          console.log('评论成功，返回id' + res)
           comment.commentId = res
           this.$message.success('评论成功!')
           this.secret.comments.push(comment)
@@ -249,6 +250,10 @@ export default {
           this.$message.error('评论失败!')
         }
       })
+    },
+    // 查看某人主页
+    toUserHome (item) {
+      this.$router.push('m-user?userId=' + item.userId)
     }
   }
 }

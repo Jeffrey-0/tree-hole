@@ -5,13 +5,17 @@
         <div class="secret">
           <el-form>
             <el-form-item>
-              <el-input type="textarea" v-model="form.name" placeholder="说点什么吧"></el-input>
+              <el-input type="textarea" v-model="formSecret.content" placeholder="说点什么吧"></el-input>
             </el-form-item>
             <el-form-item>
               <div class="photos">
                 <el-upload
-                  action="#"
                   list-type="picture-card"
+                  :action="$baseUrl + 'picture/upload'"
+                  :data="currentSecret"
+                  :file-list="fileListSecret"
+                  :on-success="uploadSecretSuccess"
+                  ref="uploadSecret"
                   :auto-upload="false">
                     <i slot="default" class="el-icon-plus"></i>
                     <div slot="file" slot-scope="{file}">
@@ -29,13 +33,6 @@
                         <span
                           v-if="!disabled"
                           class="el-upload-list__item-delete"
-                          @click="handleDownload(file)"
-                        >
-                          <i class="el-icon-download"></i>
-                        </span>
-                        <span
-                          v-if="!disabled"
-                          class="el-upload-list__item-delete"
                           @click="handleRemove(file)"
                         >
                           <i class="el-icon-delete"></i>
@@ -46,12 +43,12 @@
               </div>
             </el-form-item>
             <el-form-item>
-              <el-select v-model="form.access">
-                <el-option label="公开" value=1>公开</el-option>
-                <el-option label="私有" value=0>私有</el-option>
+              <el-select v-model="formSecret.power">
+                <el-option label="公开" :value="1"></el-option>
+                <el-option label="私有" :value="0"></el-option>
               </el-select>
             </el-form-item>
-            <el-button>上传</el-button>
+            <el-button @click="addSecret">上传</el-button>
           </el-form>          
         </div>
       </el-tab-pane>
@@ -61,9 +58,10 @@
           <el-form :model="form">
             <el-form-item label="名称">
               <el-input v-model="form.name" autocomplete="off">
-                <template slot="append">
+    `            <template slot="append">
                   <el-popover
                     placement="left"
+                    width="400"
                     trigger="click"
                     v-model="iconsVisible"
                     >
@@ -72,54 +70,39 @@
                         <i :class="item"></i>
                       </el-button>
                     </div>
-                    <el-button slot="reference"><i class="icon" :class="form.icon"></i></el-button>
+                    <el-button slot="reference"><i class="icon" :class="form.content"></i></el-button>
                   </el-popover>
                 </template>
               </el-input>
             </el-form-item>
-            <!-- <el-form-item label="起止时间">
-              <el-date-picker
-                width="300"
-                v-model="form.times"
-                type="daterange"
-                range-separator="至"
-                start-placeholder="开始日期"
-                end-placeholder="结束日期">
-              </el-date-picker>
-            </el-form-item> -->
             <el-form-item label="开始时间">
-              <!-- <el-date-picker
-                v-model="form.times"
-                type="daterange"
-                range-separator="至"
-                start-placeholder="开始日期"
-                end-placeholder="结束日期">
-              </el-date-picker> -->
                 <el-date-picker
-                  v-model="form.times"
+                  v-model="form.startTime"
                   type="date"
+                  value-format="yyyy-MM-dd"
                   placeholder="开始时间">
                 </el-date-picker>
             </el-form-item>
             <el-form-item label="结束时间">
                 <el-date-picker
-                  v-model="form.times"
+                  v-model="form.endTime"
+                  value-format="yyyy-MM-dd"
                   type="date"
                   placeholder="结束时间">
                 </el-date-picker>
-            </el-form-item>            
+            </el-form-item>
             <el-form-item label="重复方式">
-              <el-checkbox-group v-model="form.days">
-                <el-checkbox label="周一"></el-checkbox>
-                <el-checkbox label="周二"></el-checkbox>
-                <el-checkbox label="周三"></el-checkbox>
-                <el-checkbox label="周四"></el-checkbox>
-                <el-checkbox label="周五"></el-checkbox>
-                <el-checkbox label="周六"></el-checkbox>
-                <el-checkbox label="周日"></el-checkbox>
+              <el-checkbox-group v-model="form.repeats">
+                <el-checkbox :label="1">周一</el-checkbox>
+                <el-checkbox :label="2">周二</el-checkbox>
+                <el-checkbox :label="3">周三</el-checkbox>
+                <el-checkbox :label="4">周四</el-checkbox>
+                <el-checkbox :label="5">周五</el-checkbox>
+                <el-checkbox :label="6">周六</el-checkbox>
+                <el-checkbox :label="7">周日</el-checkbox>
               </el-checkbox-group>
             </el-form-item>
-            <el-button>上传</el-button>
+            <el-button @click="addPlan">上传</el-button>
           </el-form>
         </div>
       </el-tab-pane>
@@ -128,9 +111,14 @@
         <div class="album">
           <el-form :model="form">
             <div class="photos">
+              <!-- :file-list="fileList" -->
               <el-upload
-                action="#"
                 list-type="picture-card"
+                :action="$baseUrl + 'album/upload'"
+                ref="upload"
+                :data="$user"
+                :on-success="uploadSuccess"
+                :file-list="fileList"
                 :auto-upload="false">
                   <i slot="default" class="el-icon-plus"></i>
                   <div slot="file" slot-scope="{file}">
@@ -145,13 +133,13 @@
                       >
                         <i class="el-icon-zoom-in"></i>
                       </span>
-                      <span
+                      <!-- <span
                         v-if="!disabled"
                         class="el-upload-list__item-delete"
                         @click="handleDownload(file)"
                       >
                         <i class="el-icon-download"></i>
-                      </span>
+                      </span> -->
                       <span
                         v-if="!disabled"
                         class="el-upload-list__item-delete"
@@ -167,7 +155,7 @@
             <el-dialog :visible.sync="dialogVisible">
               <img width="100%" :src="dialogImageUrl" alt="">
             </el-dialog>
-            <el-button>上传</el-button>
+            <el-button @click="submitUpload">上传</el-button>
           </el-form>
         </div>
       </el-tab-pane>
@@ -177,6 +165,10 @@
 </template>
 
 <script>
+import {selectPlanById, showAllPlanByPage, deletePlanById, insertPlan, updatePlanById, showAllPlanByUserId, showAllByCurrentDate, updatePlanByIdSelective} from '@/network/plan'
+import {selectSecretById, showAllSecretByPage, deleteSecretById, insertSecret, updateSecretById, showAllSecretByUserId} from '@/network/secret'
+
+
 import Chat from '@/components/Chat'
 import CommentList from '@/components/CommentList'
 // import Calendar from '@/components/Calendar'
@@ -198,19 +190,19 @@ export default {
       // 计划模态框
       dialogFormVisible: false,
       access: 1,
+      // 秘密表单
+      formSecret: {
+        content: '',
+        power: 1,
+        userId: this.$user.userId
+      },
+      // 目标表单
       form: {
-        access: "公开",
         name: '',
-        icon: 'el-icon-edit',
-        region: '',
-        date1: '',
-        date2: '',
-        delivery: false,
-        type: [],
-        resource: '',
-        desc: '',
-        times:'',
-        days: ['周一', '周二', '周三', '周四', '周五']
+        content: 'el-icon-edit', // 图标
+        startTime: '',
+        endTime: '',
+        repeats: []
       },
       formLabelWidth: '0',
       activeName: 'first',
@@ -232,7 +224,12 @@ export default {
         'el-icon-goods',
         'el-icon-warning',
         'el-icon-warning-outline',
-      ]
+      ],
+      fileList: [], //相册上传图片
+      fileListSecret: [], // 秘密上传图片
+      currentSecret: {
+        secretId: 0
+      }
     };
   },
   methods: {
@@ -261,12 +258,15 @@ export default {
     },
     // 改变图标
     chanceIcon (item) {
-      this.form.icon = item
+      this.form.content = item
       this.iconsVisible = false
     },
     // 图片上传
     handleRemove(file) {
-      console.log(file);
+      console.log(file, this.fileList);
+      // this.fileList = this.fileList.filter(item => {
+      //   return item.uid !== file.uid
+      // });
     },
     handlePictureCardPreview(file) {
       this.dialogImageUrl = file.url;
@@ -274,6 +274,81 @@ export default {
     },
     handleDownload(file) {
       console.log(file);
+    },
+    // 添加目标
+    addPlan () {
+      
+      // 格式数据
+      this.form.repeat = ''
+      this.form.repeats.map(item => {
+        this.form.repeat = this.form.repeat + item + ','
+      })
+      this.form.createTime = new Date()
+      this.form.userId = this.$user.userId
+      insertPlan(this.form).then(res => {
+        console.log(res)
+        if (res) {
+          this.$message.success('添加目标成功')
+          this.dialogFormVisible = false
+          this.form =  {
+            name: '',
+            content: 'el-icon-edit', // 图标
+            startTime: '',
+            endTime: '',
+            repeats: []
+          }
+        } else {
+          this.$message.error('添加目标失败')
+        }
+      })
+    },
+
+    // 添加秘密
+    addSecret () {
+      console.log('添加秘密')
+      this.formSecret.createTime = new Date()
+      insertSecret(this.formSecret).then(res => {
+        console.log(res)
+        if (res) {
+          console.log('添加秘密成功，返回id' + res)
+          this.$message.success('添加秘密成功')
+          this.currentSecret.secretId = res
+          // 上传图片
+          this.$refs.uploadSecret.submit()
+          // this.fileListSecret = []
+          this.formSecret =  {
+            content: '',
+            power: 1,
+            userId: this.$user.userId
+          }
+        } else {
+          this.$message.error('添加秘密失败')
+        }
+      })
+    },
+    // 上传相册
+    submitUpload () {
+      console.log('this.fileList', this.fileList)
+      this.$refs.upload.submit()
+      this.$refs.upload.clearFiles()
+      this.$message.success('上传成功')
+      this.fileList = []
+    },
+    // // 上传成功
+    uploadSuccess () {
+      // :on-success="uploadSuccess"  应该添加在upload元素上
+      // this.$message.success('上传成功')
+      let that = this
+      setTimeout(() => {
+        that.$refs.upload.clearFiles()
+      }, 1000)
+    },
+    uploadSecretSuccess () {
+      console.log('上传成功')
+      let that = this
+      setTimeout(() => {
+        that.$refs.uploadSecret.clearFiles()
+      }, 1000)
     }
   },
   mounted () {

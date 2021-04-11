@@ -1,19 +1,19 @@
 <template>
   <div id="container">
   <el-upload
-  class="avatar-uploader"
-  action="https://jsonplaceholder.typicode.com/posts/"
-  :show-file-list="false"
-  :on-success="handleAvatarSuccess"
-  :before-upload="beforeAvatarUpload"
->
-<!-- <img class="portrait" title="点击切换头像" :src='avatarUrl'>  -->
- <img v-if="imageUrl" :src="imageUrl" class="portrait">
- <img v-else class="portrait" title="点击切换头像" src="../assets/img/avatar.png">
+    class="avatar-uploader"
+    :action="$baseUrl + 'user/uploadPortrait'"
+    :show-file-list="false"
+    :data="$user"
+    :on-success="handleAvatarSuccess"
+    :before-upload="beforeAvatarUpload"
+  >
+    <img v-if="imageUrl" :src="imageUrl" class="portrait">
+    <img v-else class="portrait" title="点击切换头像" :src="$baseImgUrl + $user.portrait">
 </el-upload>
-    <el-input v-model="user.userName" placeholder="无名氏" maxlength="10"></el-input>
+    <el-input v-model="user.username" placeholder="无名氏" maxlength="10"></el-input>
     <div class="username motto">
-      <el-input v-model="motto" placeholder="个性签名" type="textarea" maxlength="20">
+      <el-input v-model="user.motto" placeholder="个性签名" type="textarea" maxlength="20">
       </el-input>
     </div>
     
@@ -48,7 +48,10 @@ export default {
   data () {
     return {
       user: {
-
+        userId: 0,
+        username: '',
+        motto: '',
+        portrait: ''
       },
       notice: {
 
@@ -91,6 +94,7 @@ export default {
       console.log('上传头像成功2', this.imageUrl)
     },
     beforeAvatarUpload(file) {
+      console.log('上传之前', file)
       const isJPG = file.type === 'image/jpeg';
       const isLt2M = file.size / 1024 / 1024 < 2;
 
@@ -136,6 +140,7 @@ export default {
   cursor: pointer;
   margin: 20px auto;
   border-radius: 50%;
+  object-fit: cover;
   width: 100px;
   height: 100px;
   /* background-image: url(../assets/img/avatar.jpg); */

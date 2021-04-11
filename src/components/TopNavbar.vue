@@ -13,12 +13,11 @@
           v-model="value">
         </el-switch>
       </el-menu-item> -->
-      <el-menu-item class="search">
+      <!-- <el-menu-item class="search">
         <el-input v-model="input" placeholder="搜索">
-          <!-- <el-button slot="append" icon="el-icon-search"></el-button> -->
           <i slot="prefix" class="el-input__icon el-icon-search"></i>
         </el-input>
-      </el-menu-item>
+      </el-menu-item> -->
     </el-menu>
   <!-- </div> -->
   <!-- <div class="right">

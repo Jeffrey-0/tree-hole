@@ -23,6 +23,7 @@ Vue.prototype.$user = Object.assign({
   id: 3,
   userId: 3,
   username: '小疯子',
+  portrait: 'user/112.jpg',
   userAge: '',
   userPassword: '',
   userEmail: '',
@@ -31,7 +32,9 @@ Vue.prototype.$user = Object.assign({
   userCategory: ''
 }, JSON.parse(window.sessionStorage.getItem('user')))
 
-Vue.prototype.$baseImgUrl = 'http://localhost:8080/tree-hole/img/' // 服务器图片接口地址
+// Vue.prototype.$baseImgUrl = 'http://localhost:8080/tree-hole/img/' // 公司服务器图片接口地址
+Vue.prototype.$baseImgUrl = 'http://localhost:8085/tree-hole/img/' // 宿舍服务器图片接口地址
+Vue.prototype.$baseUrl = 'http://localhost:8082/' // 后端接口地址
 
 // 记录是手机端还是PC端
 Vue.prototype.$ifMobile = {}

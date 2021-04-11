@@ -1,27 +1,27 @@
 import { request } from './request'
 
 // 秘密
-const baseTable = 'plan/'
+const baseTable = 'user/'
 
 // 根据id查询
-export function selectPlanById (planId) {
+export function selectUserById (userId) {
   return request({
     url: baseTable + 'selectById',
     params: {
-      planId
+      userId
     }
   })
 }
 
 // 查询全部
-export function showAllPlan () {
+export function showAllUser () {
   return request({
     url: baseTable + 'showAll'
   })
 }
 
 // 普通分页查询
-export function showAllPlanByPage (page, rows) {
+export function showAllUserByPage (page, rows) {
   return request({
     url: baseTable + 'showAllByPage',
     params: {
@@ -32,21 +32,21 @@ export function showAllPlanByPage (page, rows) {
 }
 
 // 根据id删除
-export function deletePlanById (planId) {
+export function deleteUserById (userId) {
   return request({
     url: baseTable + 'deleteById',
     params: {
-      planId
+      userId
     }
   })
 }
 
 // 添加一个
-export function insertPlan (plan) {
+export function insertUser (user) {
   return request({
     url: baseTable + 'insert',
     method: 'post',
-    data: plan,
+    data: user,
     headers: {
       'Content-Type': 'application/x-www-form-urlencoded'
     },
@@ -61,11 +61,11 @@ export function insertPlan (plan) {
 }
 
 // 选择添加（只添加值不为空的属性)
-export function insertPlanSelective (plan) {
+export function insertUserSelective (user) {
   return request({
     url: baseTable + 'insertSelective',
     method: 'post',
-    data: plan,
+    data: user,
     headers: {
       'Content-Type': 'application/x-www-form-urlencoded'
     },
@@ -80,11 +80,11 @@ export function insertPlanSelective (plan) {
 }
 
 // 修改一个
-export function updatePlanById (plan) {
+export function updateUserById (user) {
   return request({
     url: baseTable + 'updateById',
     method: 'post',
-    data: plan,
+    data: user,
     headers: {
       'Content-Type': 'application/x-www-form-urlencoded'
     },
@@ -99,11 +99,11 @@ export function updatePlanById (plan) {
 }
 
 // 选择修改（只修改值不为空的属性)
-export function updatePlanByIdSelective (plan) {
+export function updateUserByIdSelective (user) {
   return request({
     url: baseTable + 'updateByPrimaryKeySelective',
     method: 'post',
-    data: plan,
+    data: user,
     headers: {
       'Content-Type': 'application/x-www-form-urlencoded'
     },
@@ -114,25 +114,5 @@ export function updatePlanByIdSelective (plan) {
       }
       return ret
     }]
-  })
-}
-
-// 根据用户id查询全部
-export function showAllPlanByUserId (userId) {
-  return request({
-    url: baseTable + 'showAllByUserId',
-    params: {
-      userId
-    }
-  })
-}
-
-// 查询今日需要打卡的目标
-export function showAllByCurrentDate (userId) {
-  return request({
-    url: baseTable + 'showAllByCurrentDate',
-    params: {
-      userId
-    }
   })
 }

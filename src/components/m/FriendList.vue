@@ -1,8 +1,8 @@
 <template>
   <div id="friend-list">
-      <div class="friend-item" v-for="item in friends" :key="item.id">
-        <img class="portrait" :src="require('../../assets/img/avatar.png')">
-        <div class="username">小疯子</div>
+      <div class="friend-item" v-for="item in users" :key="item.id">
+        <img class="portrait" :src=" $baseImgUrl + item.portrait" @click="toUserHome(item)">
+        <div class="username"  @click="toChatUser(item)">{{ item.username }}</div>
       </div>
   </div>
 </template>
@@ -14,51 +14,25 @@ export default {
   },
   data () {
     return {
-      friends: [
-        {
-          userId: 1,
-          userName: '小疯子',
-          avatar: 'avatar.png'
-        },
-        {
-          userId: 2,
-          userName: '小疯子',
-          avatar: 'avatar.png'
-        },
-        {
-          userId: 3,
-          userName: '小疯子',
-          avatar: 'avatar.png'
-        },
-        {
-          userId: 4,
-          userName: '小疯子',
-          avatar: 'avatar.png'
-        },
-        {
-          userId: 5,
-          userName: '小疯子',
-          avatar: 'avatar.png'
-        },
-        {
-          userId: 6,
-          userName: '小疯子',
-          avatar: 'avatar.png'
-        },
-        {
-          userId: 7,
-          userName: '小疯子',
-          avatar: 'avatar.png'
-        },
-        {
-          userId: 8,
-          userName: '小疯子',
-          avatar: 'avatar.png'
-        }
-      ]
+      currentUser: {
+        userId: 0,
+        username: '小疯子'
+      }
     }
   },
+  props : {
+    users: {}
+  },
   methods: {
+    toUserHome (item) {
+      this.$router.push('m-user?userId=' + item.userId)
+    },
+    toChatUser (item) {
+      this.$router.push('m-chat?userId=' + item.userId)
+    }
+  },
+  created () {
+
   }
 }
 </script>
