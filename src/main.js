@@ -45,6 +45,10 @@ Vue.prototype.$moment = moment
 
 Vue.prototype.$common = common
 
+Vue.prototype.$eventBus = new Vue()
+Vue.prototype.$eventBusTag = new Vue()
+Vue.prototype.$eventBusiIcon = new Vue()
+
 new Vue({
   router,
   render: h => h(App)

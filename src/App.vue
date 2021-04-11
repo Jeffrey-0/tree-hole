@@ -5,7 +5,8 @@
       <router-link to="/about">About</router-link>
     </div> -->
     <!-- <router-view/> -->
-    <m-index v-if="mobile"></m-index>
+    <admin v-if="path === '/admin'"></admin>
+    <m-index v-else-if="mobile"></m-index>
     <login v-else-if="login"></login>
     <album v-else-if="path === '/album'"></album>
     <index v-else></index>
@@ -17,6 +18,7 @@ import Index from '@/views/Index.vue'
 import Album from '@/views/Album.vue'
 import Login from '@/views/Login.vue'
 import mIndex from '@/views/m/Index.vue'
+import Admin from '@/views/admin/Admin.vue'
 
 export default {
   name: '',
@@ -24,7 +26,8 @@ export default {
     Index: Index,
     Login: Login,
     Album,
-    mIndex
+    mIndex,
+    Admin
   },
   data () {
     return {

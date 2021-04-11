@@ -11,6 +11,7 @@ import Upload from '../views/Upload.vue'
 import Secret from '../views/m/Secret.vue'
 import Chat from '../views/m/Chat.vue'
 import User from '../views/m/User.vue'
+import Admin from '../views/admin/Admin.vue'
 
 Vue.use(VueRouter)
 
@@ -114,6 +115,11 @@ const routes = [
     path: '/m-user',
     name: 'User',
     component: User
+  },
+  {
+    path: '/admin',
+    name: '后台管理系统',
+    component: Admin
   }
 
 ]
