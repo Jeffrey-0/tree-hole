@@ -1,13 +1,13 @@
 <template>
   <div class="wrapper">
     <div class="header">
-      <div class="collapse-btn" @click="isCollapse">
-        <li
+      <div class="collapse-btn">
+        <!-- <li
           :class="{
             'el-icon-s-unfold': collapse,
             'el-icon-s-fold': !collapse,
           }"
-        ></li>
+        ></li> -->
       </div>
       <div class="logo">树洞网后台管理</div>
       <div class="header-right">
@@ -59,6 +59,9 @@ export default {
       this.$eventBus.$emit("eventBusName", this.collapse);
     },
   },
+  created () {
+    // this.isCollapse()
+  }
 };
 </script>
 
@@ -75,12 +78,18 @@ export default {
 }
 .header .collapse-btn {
   float: left;
-  padding: 0 21px;
-  cursor: pointer;
-  line-height: 70px;
+  /* padding: 10px; */
+  margin:  5px  10px;
+  /* cursor: pointer; */
+  line-height: 50px;
+  width: 40px;
+  height: 60px;
+  box-sizing: border-box;
+  background: url('../../assets/img/logo.png') no-repeat center;
+  background-size: 100%;
 }
 .header .collapse-btn:hover {
-  background-color: #2c3a50;
+  /* background-color: #2c3a50; */
 }
 .header .logo {
   float: left;

@@ -11,7 +11,7 @@
           >
             <el-form-item>
               <el-input
-                v-model="form.userName"
+                v-model="form.username"
                 placeholder="查找用户"
               ></el-input>
             </el-form-item>
@@ -25,22 +25,22 @@
           border
           style="width: 100%; min-height: 330px; margin-bottom: 15px"
         >
-          <el-table-column prop="userName" label="姓名"> </el-table-column>
+          <el-table-column prop="username" label="用户名"> </el-table-column>
           <el-table-column
             :formatter="forUserCategory"
-            prop="userCategory"
-            width="80"
-            label="级别"
+            prop="type"
+            min-width="80"
+            label="权限"
           >
           </el-table-column>
-          <el-table-column prop="userSex" label="性别" width="60">
+          <!-- <el-table-column prop="type" label="类型" width="60">
+          </el-table-column> -->
+          <el-table-column prop="phone" label="手机" min-width="150"> </el-table-column>
+          <!-- <el-table-column prop="userAge" label="年龄" width="60">
+          </el-table-column> -->
+          <el-table-column prop="motto" label="座右铭" min-width="200">
           </el-table-column>
-          <el-table-column prop="userPhone" label="手机"> </el-table-column>
-          <el-table-column prop="userAge" label="年龄" width="60">
-          </el-table-column>
-          <el-table-column prop="userEmail" label="邮箱" width="200">
-          </el-table-column>
-          <el-table-column fixed="right" label="操作" width="170">
+          <el-table-column fixed="right" label="操作" min-width="170">
             <template slot-scope="scope">
               <el-tag
                 @click="handleClick(scope.row)"
@@ -50,19 +50,19 @@
               >
               <el-tag
                 @click="cancel(scope.row)"
-                v-if="scope.row.userCategory == 0 || scope.row.userCategory == '-2'"
+                v-if="scope.row.type == 1 || scope.row.type == '-2'"
                 :type="
-                  scope.row.userCategory == '-1'
+                  scope.row.type == '-1'
                     ? 'success'
-                    : scope.row.userCategory == '-2'
+                    : scope.row.type == '-2'
                     ? 'success'
                     : 'info'
                 "
                 class="tag-btn"
                 >{{
-                  scope.row.userCategory == "-1"
+                  scope.row.type == "-1"
                     ? "解除禁用"
-                    : scope.row.userCategory == "-2"
+                    : scope.row.type == "-2"
                     ? "解除禁用"
                     : "禁用"
                 }}</el-tag
@@ -80,54 +80,16 @@
               style="text-align: center"
             >
               <el-form-item label="用户姓名" :label-width="formLabelWidth">
-                <el-input v-model="user.userName" disabled></el-input>
+                <el-input v-model="user.username" disabled></el-input>
               </el-form-item>
-              <el-form-item label="性别" :label-width="formLabelWidth">
-                <el-input v-model="user.userSex" disabled></el-input>
+              <el-form-item label="权限" :label-width="formLabelWidth">
+                <el-input v-model="user.type" disabled></el-input>
               </el-form-item>
               <el-form-item label="手机" :label-width="formLabelWidth">
-                <el-input v-model="user.userPhone" disabled></el-input>
+                <el-input v-model="user.phone" disabled></el-input>
               </el-form-item>
-              <el-form-item label="邮箱" :label-width="formLabelWidth">
-                <el-input v-model="user.userEmail" disabled></el-input>
-              </el-form-item>
-              <el-form-item label="借阅历史" :label-width="formLabelWidth">
-                <el-table
-                  :data="tableHistory"
-                  max-height="200"
-                  style="
-                    width: 100%;
-                    border: 1px solid #ddd;
-                    border-radius: 5px;
-                  "
-                >
-                  <el-table-column
-                    prop="bookName"
-                    :show-overflow-tooltip="true"
-                    label="书名"
-                  >
-                  </el-table-column>
-                  <el-table-column
-                    prop="borrowDate"
-                    :show-overflow-tooltip="true"
-                    label="借阅"
-                  >
-                  </el-table-column>
-                  <el-table-column
-                    prop="returnDate"
-                    label="归还"
-                    :formatter="forReturnDate"
-                    :show-overflow-tooltip="true"
-                  >
-                  </el-table-column>
-                  <el-table-column
-                    :formatter="forIsReturn"
-                    :show-overflow-tooltip="true"
-                    prop="isreturn"
-                    label="状态"
-                  >
-                  </el-table-column>
-                </el-table>
+              <el-form-item label="座右铭" :label-width="formLabelWidth">
+                <el-input v-model="user.motto" disabled></el-input>
               </el-form-item>
             </el-form>
           </el-form>
@@ -169,17 +131,17 @@ export default {
         region: "",
       },
       tableData: [],
-      tableHistory: [], //借阅历史
+      tableHistory: [], //
       user: {
         id: "",
         userId: "",
-        userName: "",
+        username: "",
         userAge: "",
         userPassword: "",
-        userEmail: "",
-        userSex: "",
-        userPhone: "",
-        userCategory: "",
+        motto: "",
+        type: "",
+        phone: "",
+        type: "",
       },
       borrowHistory: {
         bookName: "",
@@ -194,7 +156,7 @@ export default {
       queryModel: 0,
       dialogFormVisible: false,
       form: {
-        userName: "",
+        username: "",
       },
       formLabelWidth: "70px",
     };
@@ -233,7 +195,7 @@ export default {
       this.currentPage = val;
       if (this.queryModel === 2) {
         //模糊查询
-        SelectFuzzy(this.form.userName, this.currentPage, this.pageSize).then(
+        SelectFuzzy(this.form.username, this.currentPage, this.pageSize).then(
           (res) => {
             // TODO
             console.log(res, "+++");
@@ -254,7 +216,7 @@ export default {
     },
 
     cancel(row) {
-      if (row.userCategory != "-1" && row.userCategory != "-2") {
+      if (row.type != "-1" && row.type != "-2") {
         this.$confirm("此操作将禁用这个用户, 是否继续?", "提示", {
           confirmButtonText: "确定",
           cancelButtonText: "取消",
@@ -262,12 +224,12 @@ export default {
         })
           .then(() => {
             this.user = row;
-            if (row.userCategory == "1") {
-              this.user.userCategory = "-1";
+            if (row.type == "1") {
+              this.user.type = "-1";
             } else {
-              this.user.userCategory = "-2";
+              this.user.type = "-2";
             }
-            forbiddenUser(this.user.userId, this.user.userCategory);
+            forbiddenUser(this.user.userId, this.user.type);
             this.$message({
               type: "success",
               message: "禁用成功!",
@@ -281,12 +243,12 @@ export default {
           });
       } else {
         this.user = row;
-        if (row.userCategory == "-1") {
-          this.user.userCategory = "1";
+        if (row.type == "-1") {
+          this.user.type = "1";
         } else {
-          this.user.userCategory = "0";
+          this.user.type = "0";
         }
-        forbiddenUser(this.user.userId, this.user.userCategory);
+        forbiddenUser(this.user.userId, this.user.type);
         this.$message({
           type: "success",
           message: "已解除禁用",
@@ -296,9 +258,9 @@ export default {
     onSubmitFuzzy() {
       //模糊查询
       this.currentPage = 1;
-      console.log(this.form.userName, "++++");
-      if (this.form.userName) {
-        SelectFuzzy(this.form.userName).then((res) => {
+      console.log(this.form.username, "++++");
+      if (this.form.username) {
+        SelectFuzzy(this.form.username).then((res) => {
           // TODO
           if (res) {
             this.tableData = res.data;
@@ -327,9 +289,9 @@ export default {
       return row.returnDate ? "已还" : "未还";
     },
     forUserCategory(row) {
-      return row.userCategory == "1"
+      return row.type == "1"
         ? "管理员"
-        : row.userCategory == "-1"
+        : row.type == "-1"
         ? "管理员"
         : "普通用户";
     },

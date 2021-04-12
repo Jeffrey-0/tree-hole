@@ -82,7 +82,7 @@ export default {
   name: "NavRight",
   data() {
     return {
-      collapse: true,
+      collapse: false,
     };
   },
   methods: {

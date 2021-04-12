@@ -49,7 +49,7 @@ export default {
         },
       ],
       tabIndex: 1,
-      collapse: true,
+      collapse: false,
       icon: "",
     };
   },

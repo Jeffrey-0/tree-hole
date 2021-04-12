@@ -116,3 +116,16 @@ export function updateUserByIdSelective (user) {
     }]
   })
 }
+
+
+// 后台
+// 分页查询 SelectUser
+export function SelectUser (page, rows) {
+  return request({
+    url: baseTable + 'showAllByPage',
+    params: {
+      page,
+      rows
+    }
+  })
+}
