@@ -117,7 +117,6 @@ export function updateUserByIdSelective (user) {
   })
 }
 
-
 // 后台
 // 分页查询 SelectUser
 export function SelectUser (page, rows) {
@@ -127,5 +126,34 @@ export function SelectUser (page, rows) {
       page,
       rows
     }
+  })
+}
+
+// 禁用，解禁 forbiddenUser
+export function forbiddenUser (user) {
+  return request({
+    url: baseTable + 'updateByPrimaryKeySelective',
+    method: 'post',
+    data: user,
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded'
+    },
+    transformRequest: [function (data) {
+      let ret = ''
+      for (const it in data) {
+        ret += encodeURIComponent(it) + '=' + encodeURIComponent(data[it]) + '&'
+      }
+      return ret
+    }]
+  })
+}
+
+// 筛选查询
+export function SelectFuzzy (user, page, rows) {
+  user.page = page
+  user.rows = rows
+  return request({
+    url: baseTable + 'selectByConditions',
+    params: user
   })
 }

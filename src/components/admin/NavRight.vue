@@ -25,40 +25,40 @@
           </el-menu-item>
           <el-menu-item
             index="3"
-            @click="addTag('借阅详情', 'el-icon-reading', 'borrow')"
+            @click="addTag('秘密管理', 'el-icon-reading', 'secret')"
           >
             <i class="el-icon-reading"></i>
             <span slot="title">秘密管理</span>
           </el-menu-item>
           <el-menu-item
             index="4"
-            @click="addTag('图书列表', 'el-icon-reading', 'books')"
+            @click="addTag('计划管理', 'el-icon-reading', 'plan')"
           >
             <i class="el-icon-notebook-1"></i>
             <span slot="title">计划管理</span>
           </el-menu-item>
           <el-menu-item
             index="5"
-            @click="addTag('公告管理', 'el-icon-reading', 'notice')"
+            @click="addTag('相册管理', 'el-icon-reading', 'album')"
           >
             <i class="el-icon-bell"></i>
             <span slot="title">相册管理</span>
           </el-menu-item>
           <el-menu-item
             index="6"
-            @click="addTag('公告管理', 'el-icon-reading', 'notice')"
+            @click="addTag('好友管理', 'el-icon-reading', 'relation')"
           >
             <i class="el-icon-bell"></i>
             <span slot="title">好友管理</span>
           </el-menu-item>
-          <!-- <el-menu-item
+          <el-menu-item
             index="7"
-            @click="addTag('公告管理', 'el-icon-reading', 'notice')"
+            @click="addTag('聊天管理', 'el-icon-reading', 'chat')"
           >
             <i class="el-icon-bell"></i>
             <span slot="title">聊天管理</span>
           </el-menu-item>
-          <el-menu-item
+          <!-- <el-menu-item
             index="8"
             @click="addTag('公告管理', 'el-icon-reading', 'notice')"
           >
@@ -67,7 +67,7 @@
           </el-menu-item> -->
           <el-menu-item
             index="8"
-            @click="addTag('公告管理', 'el-icon-reading', 'notice')"
+            @click="addTag('举报管理', 'el-icon-reading', 'report')"
           >
             <i class="el-icon-bell"></i>
             <span slot="title">举报管理</span>

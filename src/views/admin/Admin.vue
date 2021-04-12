@@ -2,7 +2,7 @@
   <div class="container" id="admin">
     <nav-header></nav-header>
     <nav-right></nav-right>
-    <tag />
+    <tag></tag>
   </div>
 </template>
 <script>

@@ -5,14 +5,22 @@
         <div class="search">
           <el-form
             :inline="true"
-            :model="formInline"
+            :model="form"
             class="demo-form-inline"
             size="small"
           >
+          <el-form-item>
+            <el-select v-model="form.type" placeholder="权限">
+              <el-option label="全部用户" value=""></el-option>
+              <el-option label="管理员" :value="0"></el-option>
+              <el-option label="普通用户" :value="1"></el-option>
+              <el-option label="被禁用户" :value="2"></el-option>
+            </el-select>
+          </el-form-item>
             <el-form-item>
               <el-input
                 v-model="form.username"
-                placeholder="查找用户"
+                placeholder="用户名"
               ></el-input>
             </el-form-item>
             <el-form-item>
@@ -50,21 +58,17 @@
               >
               <el-tag
                 @click="cancel(scope.row)"
-                v-if="scope.row.type == 1 || scope.row.type == '-2'"
+                v-if="scope.row.type == 1 || scope.row.type == 2"
                 :type="
-                  scope.row.type == '-1'
-                    ? 'success'
-                    : scope.row.type == '-2'
-                    ? 'success'
-                    : 'info'
+                  scope.row.type == 1
+                    ? 'danger'
+                    : 'success'
                 "
                 class="tag-btn"
                 >{{
-                  scope.row.type == "-1"
-                    ? "解除禁用"
-                    : scope.row.type == "-2"
-                    ? "解除禁用"
-                    : "禁用"
+                  scope.row.type == 1
+                    ? "禁用"
+                    : "解禁"
                 }}</el-tag
               >
             </template>
@@ -114,22 +118,17 @@
 </template>
 
 <script>
-import {
-  SelectUser,
-  SelectFuzzy,
-  searchBorrowHistory,
-  forbiddenUser,
-} from "../../network/user";
+import {showAllUserByPage, SelectFuzzy, forbiddenUser } from "../../network/user";
 export default {
   name: "User",
   data() {
     return {
       collapse: true,
       tagName: "",
-      formInline: {
-        user: "",
-        region: "",
-      },
+      // formInline: {
+      //   user: "",
+      //   region: "",
+      // },
       tableData: [],
       tableHistory: [], //
       user: {
@@ -143,13 +142,6 @@ export default {
         phone: "",
         type: "",
       },
-      borrowHistory: {
-        bookName: "",
-        borrowDate: "",
-        returnDate: "",
-        isreturn: 0,
-        validityDate: 0,
-      },
       currentPage: 1,
       pageSize: 5,
       total: 0,
@@ -157,14 +149,16 @@ export default {
       dialogFormVisible: false,
       form: {
         username: "",
+        type: ''
       },
       formLabelWidth: "70px",
     };
   },
   created() {
-    SelectUser(this.currentPage, this.pageSize).then((res) => {
+    showAllUserByPage(this.currentPage, this.pageSize).then((res) => {
       console.log(this.currentPage);
       // TODO
+      console.log(res)
       this.tableData = res.data;
       this.total = res.total;
     });
@@ -180,14 +174,6 @@ export default {
     handleClick(row) {
       this.dialogFormVisible = true;
       this.user = row;
-      searchBorrowHistory(this.user.userId, 1, 100).then((res) => {
-        if (res) {
-          console.log(res);
-          this.tableHistory = res.data;
-        } else {
-          this.tableHistory = [];
-        }
-      });
     },
 
     handleCurrentChange(val) {
@@ -195,7 +181,7 @@ export default {
       this.currentPage = val;
       if (this.queryModel === 2) {
         //模糊查询
-        SelectFuzzy(this.form.username, this.currentPage, this.pageSize).then(
+        SelectFuzzy(this.form, this.currentPage, this.pageSize).then(
           (res) => {
             // TODO
             console.log(res, "+++");
@@ -205,7 +191,7 @@ export default {
         );
       } else {
         // 普通查询
-        SelectUser(this.currentPage, this.pageSize).then((res) => {
+        showAllUserByPage(this.currentPage, this.pageSize).then((res) => {
           console.log("普通查询");
           // TODO
           this.tableData = res.data;
@@ -216,30 +202,30 @@ export default {
     },
 
     cancel(row) {
-      if (row.type != "-1" && row.type != "-2") {
-        this.$confirm("此操作将禁用这个用户, 是否继续?", "提示", {
+      if (row.type != 0) {
+        let text = row.type === 1 ? '禁用' : '解禁'
+        this.$confirm("此操作将"+ text +"这个用户, 是否继续?", "提示", {
           confirmButtonText: "确定",
           cancelButtonText: "取消",
           type: "warning",
         })
           .then(() => {
             this.user = row;
-            if (row.type == "1") {
-              this.user.type = "-1";
+            if (row.type == 1) {
+              this.user.type = 2;
             } else {
-              this.user.type = "-2";
+              this.user.type = 1;
             }
-            forbiddenUser(this.user.userId, this.user.type);
+            forbiddenUser({
+              userId: this.user.userId,
+              type: this.user.type
+            });
             this.$message({
               type: "success",
-              message: "禁用成功!",
+              message: text +"成功!",
             });
           })
           .catch(() => {
-            this.$message({
-              type: "info",
-              message: "已取消禁用",
-            });
           });
       } else {
         this.user = row;
@@ -259,8 +245,8 @@ export default {
       //模糊查询
       this.currentPage = 1;
       console.log(this.form.username, "++++");
-      if (this.form.username) {
-        SelectFuzzy(this.form.username).then((res) => {
+      if (this.form.username || this.form.type !== '') {
+        SelectFuzzy(this.form, this.currentPage, this.pageSize).then((res) => {
           // TODO
           if (res) {
             this.tableData = res.data;
@@ -273,7 +259,7 @@ export default {
         this.queryModel = 2;
       } else {
         //为空时切换普通查询
-        SelectUser(this.currentPage, this.pageSize).then((res) => {
+        showAllUserByPage(this.currentPage, this.pageSize).then((res) => {
           console.log(res);
           // TODO
           this.tableData = res.data;
@@ -289,9 +275,7 @@ export default {
       return row.returnDate ? "已还" : "未还";
     },
     forUserCategory(row) {
-      return row.type == "1"
-        ? "管理员"
-        : row.type == "-1"
+      return row.type === 0
         ? "管理员"
         : "普通用户";
     },

@@ -128,3 +128,12 @@ export function showAllByUserId (userId, page, rows) {
     }
   })
 }
+
+export function SelectFuzzy (album, page, rows) {
+  album.page = page
+  album.rows = rows
+  return request({
+    url: baseTable + 'selectByConditions',
+    params: album
+  })
+}

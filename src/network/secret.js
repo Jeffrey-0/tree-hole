@@ -163,3 +163,13 @@ export function showAllSecretByMyself (userId, page, rows) {
     }
   })
 }
+
+// 筛选查询
+export function SelectFuzzy (secret, page, rows) {
+  secret.page = page
+  secret.rows = rows
+  return request({
+    url: baseTable + 'selectByConditions',
+    params: secret
+  })
+}

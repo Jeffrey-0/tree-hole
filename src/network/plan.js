@@ -136,3 +136,13 @@ export function showAllByCurrentDate (userId) {
     }
   })
 }
+
+// 筛选查询
+export function SelectFuzzy (plan, page, rows) {
+  plan.page = page
+  plan.rows = rows
+  return request({
+    url: baseTable + 'selectByConditions',
+    params: plan
+  })
+}

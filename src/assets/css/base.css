@@ -626,3 +626,13 @@
 #index #user .el-tabs--top {
     background: #fff;
 }
+
+/* 搜索框 */
+#admin .tags .el-form--inline {
+    display: flex !important;
+    justify-content: space-between;
+}
+
+.container .content-box .content .search {
+    padding-left: 0 !important;
+}

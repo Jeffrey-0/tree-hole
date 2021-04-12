@@ -15,25 +15,40 @@
         effect="dark"
       >
         <div class="iframe" v-if="item.path == 'user'"><user-list /></div>
-        <div class="iframe" v-if="item.path == 'borrow'"><borrow /></div>
-        <div class="iframe" v-if="item.path == 'books'"><books /></div>
+        <div class="iframe" v-if="item.path == 'secret'"><secret-list /></div>
+        <div class="iframe" v-if="item.path == 'plan'"><plan-list /></div>
+        <div class="iframe" v-if="item.path == 'album'"><album-list /></div>
+        <div class="iframe" v-if="item.path == 'relation'"><relation-list /></div>
+        <div class="iframe" v-if="item.path == 'chat'"><chat-list /></div>
+        <div class="iframe" v-if="item.path == 'report'"><report-list /></div>
+        <!-- <div class="iframe" v-if="item.path == 'books'"><books /></div>
         <div class="iframe" v-if="item.path == 'notice'"><notice /></div>
-        <div class="iframe" v-if="item.path == 'home'"><home /></div>
+        <div class="iframe" v-if="item.path == 'home'"><home /></div> -->
       </el-tab-pane>
     </el-tabs>
   </div>
 </template>
 <script>
-import UserList from "@/views/admin/UserList.vue";
-import Borrow from "@/views/admin/Borrow.vue";
-import Books from "@/views/admin/Books.vue";
-import Notice from "@/views/admin/Notice.vue";
-import Home from "@/views/admin/Home.vue";
+import UserList from "@/views/admin/UserList.vue"
+import SecretList from "@/views/admin/SecretList.vue"
+import PlanList from "@/views/admin/PlanList.vue"
+import AlbumList from "@/views/admin/AlbumList.vue"
+import RelationList from "@/views/admin/RelationList.vue"
+import ReportList from "@/views/admin/ReportList.vue"
+import ChatList from "@/views/admin/ChatList.vue"
+import Books from "@/views/admin/Books.vue"
+import Notice from "@/views/admin/Notice.vue"
+import Home from "@/views/admin/Home.vue"
 export default {
   namne: "Tag",
   components: {
     UserList,
-    Borrow,
+    SecretList,
+    PlanList,
+    AlbumList,
+    RelationList,
+    ReportList,
+    ChatList,
     Books,
     Notice,
     Home,
