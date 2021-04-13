@@ -15,19 +15,44 @@
                   placeholder="ID"
                 ></el-input>
               </el-form-item>
+              <el-form-item>
+                <el-input
+                  v-model="formInline.userId"
+                  placeholder="用户ID"
+                ></el-input>
+              </el-form-item>
+              <el-form-item>
+                <el-input
+                  v-model="formInline.followId"
+                  placeholder="被关注ID"
+                ></el-input>
+              </el-form-item>
+
+              <el-form-item>
+                <el-input
+                  v-model="formInline.username"
+                  placeholder="用户名"
+                ></el-input>
+              </el-form-item>
             <el-form-item>
+                <el-input
+                  v-model="formInline.followName"
+                  placeholder="被关注者"
+                ></el-input>
+              </el-form-item>
+            <!-- <el-form-item>
               <el-select v-model="formInline.power" placeholder="权限">
                 <el-option label="权限" value=""></el-option>
                 <el-option label="公开" :value="0"></el-option>
                 <el-option label="私人" :value="1"></el-option>
               </el-select>
-            </el-form-item>
-            <el-form-item>
+            </el-form-item> -->
+            <!-- <el-form-item>
               <el-input
                 v-model="formInline.content"
                 placeholder="内容"
               ></el-input>
-            </el-form-item>
+            </el-form-item> -->
             <el-form-item>
               <el-button power="primary" @click="onSubmitFuzzy">查询</el-button>
             </el-form-item>
@@ -35,7 +60,7 @@
         </div>
         <el-table
           :data="tableData"
-          border
+          stripe
           style="width: 100%; min-height: 330px; margin-bottom: 15px"
         >
           <el-table-column prop="relationId" label="ID" width="80"> </el-table-column>
@@ -43,8 +68,9 @@
           <el-table-column prop="power" label="权限">
           </el-table-column> -->
           <el-table-column prop="userId" label="用户ID"> </el-table-column>
-          <el-table-column prop="followId" label="关注ID">
-          </el-table-column>
+          <el-table-column prop="username" label="用户名"> </el-table-column>
+          <el-table-column prop="followId" label="被关注ID"></el-table-column>
+          <el-table-column prop="followName" label="被关注者"></el-table-column>
           <el-table-column  label="操作"  align="center">
             <template slot-scope="scope">
               <el-tag
@@ -61,7 +87,7 @@
           </el-table-column>
         </el-table>
         <!-- 查看资料对话框 -->
-        <el-dialog title="秘密详情" :visible.sync="dialogFormVisible">
+        <el-dialog title="关系详情" :visible.sync="dialogFormVisible" center>
           <!-- <el-form :model="form"> -->
             <el-form
               :model="relation"
@@ -81,8 +107,15 @@
               <el-form-item label="用户ID" :label-width="formLabelWidth">
                 <el-input v-model="relation.userId" disabled></el-input>
               </el-form-item>
-              <el-form-item label="关注ID" :label-width="formLabelWidth">
+              
+              <el-form-item label="用户名" :label-width="formLabelWidth">
+                <el-input v-model="relation.username" disabled></el-input>
+              </el-form-item>
+              <el-form-item label="被关注ID" :label-width="formLabelWidth">
                 <el-input v-model="relation.followId" disabled></el-input>
+              </el-form-item>
+              <el-form-item label="被关注者" :label-width="formLabelWidth">
+                <el-input v-model="relation.followName" disabled></el-input>
               </el-form-item>
             </el-form>
           <!-- </el-form> -->
@@ -120,7 +153,8 @@ export default {
         followId: "",
         power: "",
         userId: "",
-        userId: ""
+        username: "",
+        followName: ""
       },
       tableData: [],
       tableHistory: [], //
@@ -129,7 +163,9 @@ export default {
         content: "",
         followId: "",
         power: "",
-        userId: ""
+        userId: "",
+        username: "",
+        followName: ""
       },
       currentPage: 1,
       pageSize: 5,
@@ -142,7 +178,8 @@ export default {
         followId: "",
         power: "",
         userId: "",
-        userId: ""
+        username: "",
+        followName: ""
       },
       formLabelWidth: "70px",
     }
@@ -197,7 +234,7 @@ export default {
     onSubmitFuzzy() {
       //模糊查询
       this.currentPage = 1
-      if (this.formInline.content !== '' || this.formInline.power !== '' || this.formInline.relationId !== '') {
+      if ( this.formInline.username !== ''|| this.formInline.userId !== '' || this.formInline.followName !== ''|| this.formInline.followId !== '') {
         this.queryModel = 2
         this.refresh()
       } else {

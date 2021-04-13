@@ -14,7 +14,19 @@
                   v-model="formInline.secretId"
                   placeholder="ID"
                 ></el-input>
-              </el-form-item>
+            </el-form-item>
+             <el-form-item>
+                <el-input
+                  v-model="formInline.userId"
+                  placeholder="用户ID"
+                ></el-input>
+            </el-form-item>
+            <el-form-item>
+              <el-input
+                v-model="formInline.username"
+                placeholder="用户名"
+              ></el-input>
+            </el-form-item>
             <el-form-item>
               <el-select v-model="formInline.power" placeholder="权限">
                 <el-option label="权限" value=""></el-option>
@@ -35,15 +47,15 @@
         </div>
         <el-table
           :data="tableData"
-          border
+          stripe
           style="width: 100%; min-height: 330px; margin-bottom: 15px"
         >
           <el-table-column prop="secretId" label="ID" width="80"> </el-table-column>
-          <el-table-column prop="content" label="内容"> </el-table-column>
-          <el-table-column prop="power" label="权限">
-          </el-table-column>
+          <el-table-column prop="userId" label="用户ID"> </el-table-column>
           <el-table-column prop="username" label="用户名"> </el-table-column>
-          <el-table-column prop="createTime" label="创建时间">
+          <el-table-column prop="content" label="内容"> </el-table-column>
+          <el-table-column prop="power" label="权限" :formatter="forType"> </el-table-column>
+          <el-table-column prop="createTime" label="创建时间" :formatter="forDate">
           </el-table-column>
           <el-table-column  label="操作"  align="center">
             <template slot-scope="scope">
@@ -61,7 +73,7 @@
           </el-table-column>
         </el-table>
         <!-- 查看资料对话框 -->
-        <el-dialog title="秘密详情" :visible.sync="dialogFormVisible">
+        <el-dialog title="秘密详情" :visible.sync="dialogFormVisible" center>
           <!-- <el-form :model="form"> -->
             <el-form
               :model="secret"
@@ -69,20 +81,33 @@
               label-width="60px"
               style="text-align: center"
             >
-              <el-form-item label="ID" :label-width="formLabelWidth">
+              <el-form-item label="秘密ID" :label-width="formLabelWidth">
                 <el-input v-model="secret.secretId" disabled></el-input>
+              </el-form-item>
+              <el-form-item label="用户ID" :label-width="formLabelWidth">
+                <el-input v-model="secret.userId" disabled></el-input>
+              </el-form-item>
+              <el-form-item label="用户名" :label-width="formLabelWidth">
+                <el-input v-model="secret.username" disabled></el-input>
               </el-form-item>
               <el-form-item label="内容" :label-width="formLabelWidth">
                 <el-input v-model="secret.content" disabled></el-input>
               </el-form-item>
               <el-form-item label="权限" :label-width="formLabelWidth">
-                <el-input v-model="secret.power" disabled></el-input>
-              </el-form-item>
-              <el-form-item label="用户名" :label-width="formLabelWidth">
-                <el-input v-model="secret.username" disabled></el-input>
+                <!-- <el-input v-model="secret.power" disabled>{{secret.power? '私有' : '公开' }}</el-input> -->
+                <el-select v-model="secret.power" placeholder="权限" disabled>
+                  <el-option label="公开" :value="0"></el-option>
+                  <el-option label="私有" :value="1"></el-option>
+                </el-select>
               </el-form-item>
               <el-form-item label="创建时间" :label-width="formLabelWidth">
-                <el-input v-model="secret.createTime" disabled></el-input>
+                <!-- <el-input v-model="secret.createTime" disabled>{{ this.$moment(secret.createTime).format('YYYY-MM-DD HH:mm')}}</el-input> -->
+                <el-date-picker
+                  v-model="secret.createTime"
+                  type="datetime"
+                  placeholder="创建时间"
+                  disabled>
+                </el-date-picker>
               </el-form-item>
             </el-form>
           <!-- </el-form> -->
@@ -101,7 +126,6 @@
           </div>
         </div>
       </div>
-      <div class="content"></div>
     </div>
   </div>
 </template>
@@ -132,7 +156,7 @@ export default {
         username: ""
       },
       currentPage: 1,
-      pageSize: 5,
+      pageSize: 10,
       total: 0,
       queryModel: 0,
       dialogFormVisible: false,
@@ -197,7 +221,7 @@ export default {
     onSubmitFuzzy() {
       //模糊查询
       this.currentPage = 1
-      if (this.formInline.content !== '' || this.formInline.power !== '' || this.formInline.secretId !== '') {
+      if (this.formInline.content !== '' || this.formInline.power !== '' || this.formInline.secretId !== '' || this.formInline.username !== ''|| this.formInline.userId !== '') {
         this.queryModel = 2
         this.refresh()
       } else {
@@ -226,6 +250,12 @@ export default {
           this.total = res.total
         })
       }
+    },
+    forType(row) {
+      return row.power  ? "私有" : "公开"  
+    },
+    forDate(row) {
+      return this.$moment(row.createTime).format('YYYY-MM-DD HH:mm')
     }
   },
   mounted() {

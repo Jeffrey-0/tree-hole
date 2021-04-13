@@ -116,3 +116,13 @@ export function updateReportByIdSelective (report) {
     }]
   })
 }
+
+// 筛选查询
+export function SelectFuzzy (report, page, rows) {
+  report.page = page
+  report.rows = rows
+  return request({
+    url: baseTable + 'selectByConditions',
+    params: report
+  })
+}

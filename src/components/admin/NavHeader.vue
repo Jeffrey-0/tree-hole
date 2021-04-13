@@ -71,19 +71,20 @@ export default {
   -webkit-box-sizing: border-box;
   box-sizing: border-box;
   width: 100%;
-  height: 70px;
+  height: 50px;
   font-size: 22px;
-  color: #fff;
-  background: #242f42;
+  color: #000;
+  /* background: #242f42; */
+  background: #fff;
 }
 .header .collapse-btn {
   float: left;
   /* padding: 10px; */
-  margin:  5px  10px;
+  margin:  0px  10px;
   /* cursor: pointer; */
   line-height: 50px;
   width: 40px;
-  height: 60px;
+  height: 50px;
   box-sizing: border-box;
   background: url('../../assets/img/logo.png') no-repeat center;
   background-size: 100%;
@@ -94,8 +95,9 @@ export default {
 .header .logo {
   float: left;
   width: 250px;
-  line-height: 70px;
+  line-height: 50px;
   text-align: left;
+  font-size: 16px;
 }
 .header .header-right {
   float: right;
@@ -105,7 +107,7 @@ export default {
   display: -webkit-box;
   display: -ms-flexbox;
   display: flex;
-  height: 70px;
+  height: 50px;
   -webkit-box-align: center;
   -ms-flex-align: center;
   align-items: center;

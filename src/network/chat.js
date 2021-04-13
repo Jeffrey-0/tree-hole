@@ -131,3 +131,13 @@ export function showAllByTowUserId (userId1, userId2, page, rows) {
     }
   })
 }
+
+// 筛选查询
+export function SelectFuzzy (chat, page, rows) {
+  chat.page = page
+  chat.rows = rows
+  return request({
+    url: baseTable + 'selectByConditions',
+    params: chat
+  })
+}

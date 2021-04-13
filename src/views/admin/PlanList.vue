@@ -15,12 +15,24 @@
                   placeholder="ID"
                 ></el-input>
               </el-form-item>
-            <el-form-item>
+              <el-form-item>
+                <el-input
+                  v-model="formInline.userId"
+                  placeholder="用户ID"
+                ></el-input>
+              </el-form-item>
+            <!-- <el-form-item>
               <el-select v-model="formInline.repeat" placeholder="重复天数">
                 <el-option label="重复天数" value=""></el-option>
                 <el-option label="公开" :value="0"></el-option>
                 <el-option label="私人" :value="1"></el-option>
               </el-select>
+            </el-form-item> -->
+            <el-form-item>
+              <el-input
+                v-model="formInline.username"
+                placeholder="用户名"
+              ></el-input>
             </el-form-item>
             <el-form-item>
               <el-input
@@ -35,16 +47,17 @@
         </div>
         <el-table
           :data="tableData"
-          border
+          stripe
           style="width: 100%; min-height: 330px; margin-bottom: 15px"
         >
           <el-table-column prop="planId" label="ID" width="80"> </el-table-column>
+          
+          <el-table-column prop="userId" label="用户ID"> </el-table-column>
+
+          <el-table-column prop="username" label="用户名"> </el-table-column>
           <el-table-column prop="name" label="内容"> </el-table-column>
-          <el-table-column prop="repeat" label="重复天数">
-          </el-table-column>
-          <el-table-column prop="userId" label="用户名"> </el-table-column>
-          <el-table-column prop="createTime" label="创建时间">
-          </el-table-column>
+          <!-- <el-table-column prop="repeat" label="重复天数"></el-table-column> -->
+          <el-table-column prop="createTime" label="创建时间" :formatter="forDate"></el-table-column>
           <el-table-column  label="操作"  align="center">
             <template slot-scope="scope">
               <el-tag
@@ -72,17 +85,27 @@
               <el-form-item label="ID" :label-width="formLabelWidth">
                 <el-input v-model="plan.planId" disabled></el-input>
               </el-form-item>
+              <el-form-item label="用户名" :label-width="formLabelWidth">
+                <el-input v-model="plan.userId" disabled></el-input>
+              </el-form-item>
+              <el-form-item label="用户名" :label-width="formLabelWidth">
+                <el-input v-model="plan.username" disabled></el-input>
+              </el-form-item>
               <el-form-item label="内容" :label-width="formLabelWidth">
                 <el-input v-model="plan.name" disabled></el-input>
               </el-form-item>
               <el-form-item label="重复天数" :label-width="formLabelWidth">
                 <el-input v-model="plan.repeat" disabled></el-input>
               </el-form-item>
-              <el-form-item label="用户名" :label-width="formLabelWidth">
-                <el-input v-model="plan.userId" disabled></el-input>
-              </el-form-item>
+              
               <el-form-item label="创建时间" :label-width="formLabelWidth">
-                <el-input v-model="plan.createTime" disabled></el-input>
+                <!-- <el-input v-model="plan.createTime" disabled></el-input> -->
+                <el-date-picker
+                  v-model="plan.createTime"
+                  type="datetime"
+                  placeholder="创建时间"
+                  disabled>
+                </el-date-picker>
               </el-form-item>
             </el-form>
           <!-- </el-form> -->
@@ -120,7 +143,7 @@ export default {
         createTime: "",
         repeat: "",
         userId: "",
-        userId: ""
+        username: ""
       },
       tableData: [],
       tableHistory: [], //
@@ -168,7 +191,9 @@ export default {
       this.dialogFormVisible = true
       this.plan = row
     },
-
+    forDate(row) {
+      return this.$moment(row.createTime).format('YYYY-MM-DD HH:mm')
+    },
     handleCurrentChange(val) {
       console.log(`当前页: ${val}`)
       this.currentPage = val
@@ -197,7 +222,7 @@ export default {
     onSubmitFuzzy() {
       //模糊查询
       this.currentPage = 1
-      if (this.formInline.name !== '' || this.formInline.repeat !== '' || this.formInline.planId !== '') {
+      if (this.formInline.userId !== '' ||this.formInline.name !== '' || this.formInline.repeat !== '' || this.formInline.planId !== '') {
         this.queryModel = 2
         this.refresh()
       } else {

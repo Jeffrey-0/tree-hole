@@ -136,3 +136,13 @@ export function showAllFollowsByUserId (userId) {
     }
   })
 }
+
+// 筛选查询
+export function SelectFuzzy (relation, page, rows) {
+  relation.page = page
+  relation.rows = rows
+  return request({
+    url: baseTable + 'selectByConditions',
+    params: relation
+  })
+}

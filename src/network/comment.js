@@ -116,3 +116,13 @@ export function updateCommentByIdSelective (comment) {
     }]
   })
 }
+
+// 筛选查询
+export function SelectFuzzy (comment, page, rows) {
+  comment.page = page
+  comment.rows = rows
+  return request({
+    url: baseTable + 'selectByConditions',
+    params: comment
+  })
+}

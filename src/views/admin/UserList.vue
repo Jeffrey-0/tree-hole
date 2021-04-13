@@ -10,6 +10,12 @@
             size="small"
           >
           <el-form-item>
+              <el-input
+                v-model="form.userId"
+                placeholder="用户ID"
+              ></el-input>
+            </el-form-item>
+          <el-form-item>
             <el-select v-model="form.type" placeholder="权限">
               <el-option label="全部用户" value=""></el-option>
               <el-option label="管理员" :value="0"></el-option>
@@ -30,9 +36,10 @@
         </div>
         <el-table
           :data="tableData"
-          border
+          stripe
           style="width: 100%; min-height: 330px; margin-bottom: 15px"
         >
+          <el-table-column prop="userId" label="ID"> </el-table-column>
           <el-table-column prop="username" label="用户名"> </el-table-column>
           <el-table-column
             :formatter="forUserCategory"
@@ -75,7 +82,7 @@
           </el-table-column>
         </el-table>
         <!-- 查看资料对话框 -->
-        <el-dialog title="用户资料" :visible.sync="dialogFormVisible">
+        <el-dialog title="用户资料" :visible.sync="dialogFormVisible" center>
           <el-form :model="form">
             <el-form
               :model="user"
@@ -83,6 +90,9 @@
               label-width="60px"
               style="text-align: center"
             >
+              <el-form-item label="用户ID" :label-width="formLabelWidth">
+                <el-input v-model="user.userId" disabled></el-input>
+              </el-form-item>
               <el-form-item label="用户姓名" :label-width="formLabelWidth">
                 <el-input v-model="user.username" disabled></el-input>
               </el-form-item>
@@ -245,7 +255,7 @@ export default {
       //模糊查询
       this.currentPage = 1;
       console.log(this.form.username, "++++");
-      if (this.form.username || this.form.type !== '') {
+      if (this.form.username || this.form.type !== '' || this.form.userId !== '') {
         SelectFuzzy(this.form, this.currentPage, this.pageSize).then((res) => {
           // TODO
           if (res) {
@@ -277,7 +287,7 @@ export default {
     forUserCategory(row) {
       return row.type === 0
         ? "管理员"
-        : "普通用户";
+        :  row.type === 1 ?  "普通用户"  : "被禁用户"
     },
   },
   mounted() {

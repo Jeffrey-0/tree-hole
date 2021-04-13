@@ -15,11 +15,23 @@
                   placeholder="ID"
                 ></el-input>
               </el-form-item>
+              <el-form-item>
+                <el-input
+                  v-model="formInline.userId"
+                  placeholder="发送者ID"
+                ></el-input>
+            </el-form-item>
+            <el-form-item>
+              <el-input
+                v-model="formInline.username"
+                placeholder="发送者"
+              ></el-input>
+            </el-form-item>
             <el-form-item>
               <el-select v-model="formInline.type" placeholder="类型">
                 <el-option label="类型" value=""></el-option>
-                <el-option label="公开" :value="0"></el-option>
-                <el-option label="私人" :value="1"></el-option>
+                <el-option label="文本" :value="false"></el-option>
+                <el-option label="图片" :value="true"></el-option>
               </el-select>
             </el-form-item>
             <el-form-item>
@@ -35,16 +47,17 @@
         </div>
         <el-table
           :data="tableData"
-          border
+          stripe
           style="width: 100%; min-height: 330px; margin-bottom: 15px"
         >
           <el-table-column prop="chatId" label="ID" width="80"> </el-table-column>
-          <el-table-column prop="content" label="内容"> </el-table-column>
-          <el-table-column prop="type" label="类型">
-          </el-table-column>
           <el-table-column prop="userId" label="发送者ID"> </el-table-column>
+          <el-table-column prop="username" label="发送者"> </el-table-column>
           <el-table-column prop="acceptId" label="接收者ID"> </el-table-column>
-          <el-table-column prop="createTime" label="创建时间">
+          <el-table-column prop="type" label="类型" :formatter="forType">
+          </el-table-column>
+          <el-table-column prop="content" label="内容"> </el-table-column>
+          <el-table-column prop="createTime" label="创建时间" :formatter="forDate">
           </el-table-column>
           <el-table-column  label="操作"  align="center">
             <template slot-scope="scope">
@@ -62,7 +75,7 @@
           </el-table-column>
         </el-table>
         <!-- 查看资料对话框 -->
-        <el-dialog title="秘密详情" :visible.sync="dialogFormVisible">
+        <el-dialog title="消息详情" :visible.sync="dialogFormVisible" center>
           <!-- <el-form :model="form"> -->
             <el-form
               :model="chat"
@@ -73,20 +86,34 @@
               <el-form-item label="ID" :label-width="formLabelWidth">
                 <el-input v-model="chat.chatId" disabled></el-input>
               </el-form-item>
+              <el-form-item label="发送者ID" :label-width="formLabelWidth">
+                <el-input v-model="chat.userId" disabled></el-input>
+              </el-form-item>
+              <el-form-item label="发送者" :label-width="formLabelWidth">
+                <el-input v-model="chat.username" disabled></el-input>
+              </el-form-item>
+              <el-form-item label="接收者ID" :label-width="formLabelWidth">
+                <el-input v-model="chat.acceptId" disabled></el-input>
+              </el-form-item>
               <el-form-item label="内容" :label-width="formLabelWidth">
                 <el-input v-model="chat.content" disabled></el-input>
               </el-form-item>
               <el-form-item label="类型" :label-width="formLabelWidth">
-                <el-input v-model="chat.type" disabled></el-input>
+                <!-- <el-input v-model="chat.type" disabled></el-input> -->
+                <el-select v-model="chat.type" placeholder="权限" disabled>
+                  <el-option label="文本" :value="false"></el-option>
+                  <el-option label="图片" :value="true"></el-option>
+                </el-select>
               </el-form-item>
-              <el-form-item label="发送者ID" :label-width="formLabelWidth">
-                <el-input v-model="chat.userId" disabled></el-input>
-              </el-form-item>
-              <el-form-item label="发送者ID" :label-width="formLabelWidth">
-                <el-input v-model="chat.acceptId" disabled></el-input>
-              </el-form-item>
+              
               <el-form-item label="创建时间" :label-width="formLabelWidth">
-                <el-input v-model="chat.createTime" disabled></el-input>
+                <!-- <el-input v-model="chat.createTime" disabled></el-input> -->
+                <el-date-picker
+                  v-model="chat.createTime"
+                  type="datetime"
+                  placeholder="创建时间"
+                  disabled>
+                </el-date-picker>
               </el-form-item>
             </el-form>
           <!-- </el-form> -->
@@ -124,7 +151,8 @@ export default {
         createTime: "",
         type: "",
         userId: "",
-        acceptId: ""
+        acceptId: "",
+        username: ""
       },
       tableData: [],
       tableHistory: [], //
@@ -134,7 +162,8 @@ export default {
         createTime: "",
         type: "",
         userId: "",
-        acceptId: ""
+        acceptId: "",
+        username: ""
       },
       currentPage: 1,
       pageSize: 5,
@@ -148,7 +177,8 @@ export default {
         type: "",
         userId: "",
         userId: "",
-        acceptId: ""
+        acceptId: "",
+        username: ""
       },
       formLabelWidth: "70px",
     }
@@ -203,7 +233,7 @@ export default {
     onSubmitFuzzy() {
       //模糊查询
       this.currentPage = 1
-      if (this.formInline.content !== '' || this.formInline.type !== '' || this.formInline.chatId !== '') {
+      if (this.formInline.content !== '' || this.formInline.type !== '' || this.formInline.chatId !== '' || this.formInline.username !== ''|| this.formInline.userId !== '') {
         this.queryModel = 2
         this.refresh()
       } else {
@@ -232,6 +262,12 @@ export default {
           this.total = res.total
         })
       }
+    },
+    forType(row) {
+      return row.type  ? "图片" : "文本"  
+    },
+    forDate(row) {
+      return this.$moment(row.createTime).format('YYYY-MM-DD HH:mm')
     }
   },
   mounted() {

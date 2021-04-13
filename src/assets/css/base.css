@@ -636,3 +636,57 @@
 .container .content-box .content .search {
     padding-left: 0 !important;
 }
+#admin .el-tabs__item {
+    border-radius: 0;
+}
+#admin .el-tabs__header {
+    height: 32px;
+    display: none;
+    /* border-radius: 5px; */
+    /* box-shadow: 0 0 0 #ddd; */
+}
+#admin .el-tabs--card>.el-tabs__header .el-tabs__nav {
+    border: 0;
+}
+#admin .el-tabs--card>.el-tabs__header .el-tabs__item.is-active {
+    border-bottom: 0;
+}
+#admin .content-box {
+    padding: 0;
+}
+#admin .content-box .content {
+    border-radius: 0;
+}
+
+#admin .content-box .content {
+    box-sizing: border-box;
+    border-radius: 5px;
+}
+#admin .content-box .content .el-table {
+    height: calc(100% - 100px);
+}
+#admin .el-table {
+    overflow-y: scroll;
+}
+
+::-webkit-scrollbar {
+    width: 5px;
+    height: 2px;
+    background-color: rgba(0,0,0,0);
+  }
+  
+  /*定义滚动条轨道 内阴影+圆角*/
+  ::-webkit-scrollbar-track
+  {
+      -webkit-box-shadow: inset 0 0 0px rgba(0,0,0,0.3);
+      border-radius: 3px;
+      background-color: rgba(0,0,0,0);
+    color: transparent;
+  }
+  
+  /*定义滑块 内阴影+圆角*/
+  ::-webkit-scrollbar-thumb {
+    border-radius: 3px;
+    -webkit-box-shadow: inset 0 0 1px rgba(0, 0, 0, 0.3);
+    background-color: rgba(0,0,0,0.5);
+  }

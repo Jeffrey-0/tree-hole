@@ -306,7 +306,7 @@ export default {
     // 添加秘密
     addSecret () {
       console.log('添加秘密')
-      this.formSecret.createTime = new Date()
+      this.formSecret.createTime = this.$moment(new Date()).format('YYYY-MM-DD HH:mm:ss')
       insertSecret(this.formSecret).then(res => {
         console.log(res)
         if (res) {

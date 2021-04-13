@@ -269,7 +269,7 @@ export default {
 /*定义滚动条轨道 内阴影+圆角*/
 ::-webkit-scrollbar-track
 {
-	-webkit-box-shadow: inset 0 0 2px rgba(0,0,0,0.3);
+	-webkit-box-shadow: inset 0 0 0px rgba(0,0,0,0.3);
 	border-radius: 2px;
 	background-color: rgba(0,0,0,0);
   color: transparent;
@@ -278,7 +278,7 @@ export default {
 /*定义滑块 内阴影+圆角*/
 ::-webkit-scrollbar-thumb {
   border-radius: 7px;
-  -webkit-box-shadow: inset 0 0 1px rgba(0, 0, 0, 0.3);
+  -webkit-box-shadow: inset 0 0 0.5px rgba(0, 0, 0, 0.3);
   background-color: rgba(0,0,0,0.5);
 }
 

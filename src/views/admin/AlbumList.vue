@@ -16,11 +16,16 @@
                 ></el-input>
               </el-form-item>
             <el-form-item>
-              <el-select v-model="formInline.power" placeholder="权限">
-                <el-option label="权限" value=""></el-option>
-                <el-option label="公开" :value="0"></el-option>
-                <el-option label="私人" :value="1"></el-option>
-              </el-select>
+                <el-input
+                  v-model="formInline.userId"
+                  placeholder="用户ID"
+                ></el-input>
+            </el-form-item>
+            <el-form-item>
+              <el-input
+                v-model="formInline.username"
+                placeholder="用户名"
+              ></el-input>
             </el-form-item>
             <el-form-item>
               <el-input
@@ -35,15 +40,17 @@
         </div>
         <el-table
           :data="tableData"
-          border
+          stripe
           style="width: 100%; min-height: 330px; margin-bottom: 15px"
         >
           <el-table-column prop="albumId" label="ID" width="80"> </el-table-column>
-          <el-table-column prop="path" label="内容"> </el-table-column>
+          
           <!-- <el-table-column prop="power" label="权限">
           </el-table-column> -->
           <el-table-column prop="userId" label="用户ID"> </el-table-column>
-          <el-table-column prop="createTime" label="创建时间">
+          <el-table-column prop="username" label="用户名"> </el-table-column>
+          <el-table-column prop="path" label="路径"> </el-table-column>
+          <el-table-column prop="createTime" label="创建时间" :formatter="forDate">
           </el-table-column>
           <el-table-column  label="操作"  align="center">
             <template slot-scope="scope">
@@ -61,7 +68,7 @@
           </el-table-column>
         </el-table>
         <!-- 查看资料对话框 -->
-        <el-dialog title="秘密详情" :visible.sync="dialogFormVisible">
+        <el-dialog title="相册详情" :visible.sync="dialogFormVisible" center>
           <!-- <el-form :model="form"> -->
             <el-form
               :model="album"
@@ -72,17 +79,23 @@
               <el-form-item label="ID" :label-width="formLabelWidth">
                 <el-input v-model="album.albumId" disabled></el-input>
               </el-form-item>
-              <el-form-item label="内容" :label-width="formLabelWidth">
-                <el-input v-model="album.path" disabled></el-input>
-              </el-form-item>
-              <!-- <el-form-item label="权限" :label-width="formLabelWidth">
-                <el-input v-model="album.power" disabled></el-input>
-              </el-form-item> -->
               <el-form-item label="用户ID" :label-width="formLabelWidth">
                 <el-input v-model="album.userId" disabled></el-input>
               </el-form-item>
+              <el-form-item label="用户名" :label-width="formLabelWidth">
+                <el-input v-model="album.username" disabled></el-input>
+              </el-form-item>
+              <el-form-item label="路径" :label-width="formLabelWidth">
+                <el-input v-model="album.path" disabled></el-input>
+              </el-form-item>
               <el-form-item label="创建时间" :label-width="formLabelWidth">
-                <el-input v-model="album.createTime" disabled></el-input>
+                <!-- <el-input v-model="album.createTime" disabled></el-input> -->
+                <el-date-picker
+                  v-model="album.createTime"
+                  type="datetime"
+                  placeholder="创建时间"
+                  disabled>
+                </el-date-picker>
               </el-form-item>
             </el-form>
           <!-- </el-form> -->
@@ -101,7 +114,6 @@
           </div>
         </div>
       </div>
-      <div class="content"></div>
     </div>
   </div>
 </template>
@@ -120,7 +132,7 @@ export default {
         createTime: "",
         power: "",
         userId: "",
-        userId: ""
+        username: ""
       },
       tableData: [],
       tableHistory: [], //
@@ -129,7 +141,8 @@ export default {
         path: "",
         createTime: "",
         power: "",
-        userId: ""
+        userId: "",
+        username: ""
       },
       currentPage: 1,
       pageSize: 5,
@@ -142,7 +155,7 @@ export default {
         createTime: "",
         power: "",
         userId: "",
-        userId: ""
+        username: ""
       },
       formLabelWidth: "70px",
     }
@@ -197,7 +210,7 @@ export default {
     onSubmitFuzzy() {
       //模糊查询
       this.currentPage = 1
-      if (this.formInline.path !== '' || this.formInline.power !== '' || this.formInline.albumId !== '') {
+      if (this.formInline.path !== '' || this.formInline.power !== '' || this.formInline.albumId !== ''|| this.formInline.username !== ''|| this.formInline.userId !== '') {
         this.queryModel = 2
         this.refresh()
       } else {
@@ -226,6 +239,9 @@ export default {
           this.total = res.total
         })
       }
+    },
+    forDate(row) {
+      return this.$moment(row.createTime).format('YYYY-MM-DD HH:mm')
     }
   },
   mounted() {

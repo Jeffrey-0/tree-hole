@@ -135,12 +135,12 @@ export default {
 <style  scoped>
 .tags {
   position: absolute;
-  left: 200px;
-  right: 0;
-  top: 70px;
-  bottom: 0;
-  padding-left: 5px;
-  margin-top: 5px;
+  left: 230px;
+  right: 30px;
+  top: 80px;
+  bottom: 30px;
+  /* padding-left: 5px; */
+  /* margin-top: 5px; */
   text-align: left;
   -webkit-transition: left 0.3s ease-in-out;
   transition: left 0.3s ease-in-out;
