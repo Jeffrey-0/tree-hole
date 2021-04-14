@@ -55,6 +55,22 @@
           </el-table-column> -->
           <el-table-column prop="motto" label="座右铭" min-width="200">
           </el-table-column>
+          <el-table-column label="封禁" min-width="200">
+            <template slot-scope="scope" align="center">
+              <el-switch
+                v-if="scope.row.type !== 0"
+                style="display: block"
+                v-model="scope.row.type"
+                active-color="#13ce66"
+                inactive-color="#ff4949"
+                active-text="正常"
+                inactive-text="禁用"
+                :active-value="1"
+                :inactive-value="2"
+                @change="changeFinish(scope.row)">
+              </el-switch>
+            </template>
+          </el-table-column>
           <el-table-column fixed="right" label="操作" min-width="170">
             <template slot-scope="scope">
               <el-tag
@@ -64,6 +80,12 @@
                 >查 看</el-tag
               >
               <el-tag
+                @click="handleClick(scope.row)"
+                type="danger"
+                class="tag-btn"
+                >删 除</el-tag
+              >
+              <!-- <el-tag
                 @click="cancel(scope.row)"
                 v-if="scope.row.type == 1 || scope.row.type == 2"
                 :type="
@@ -77,7 +99,7 @@
                     ? "禁用"
                     : "解禁"
                 }}</el-tag
-              >
+              > -->
             </template>
           </el-table-column>
         </el-table>
@@ -128,7 +150,7 @@
 </template>
 
 <script>
-import {showAllUserByPage, SelectFuzzy, forbiddenUser } from "../../network/user";
+import {showAllUserByPage, SelectFuzzy, forbiddenUser, updateUserByIdSelective } from "../../network/user";
 export default {
   name: "User",
   data() {
@@ -289,6 +311,18 @@ export default {
         ? "管理员"
         :  row.type === 1 ?  "普通用户"  : "被禁用户"
     },
+    // 改变封禁状态
+    changeFinish (row) {
+      let user = {
+        userId: row.userId,
+        type: row.type
+      }
+      updateUserByIdSelective(user).then(res => {
+        if (!res) {
+          this.$message.error('操作失败!')
+        }
+      })
+    }
   },
   mounted() {
     this.$eventBus.$on("eventBusName", (val) => {

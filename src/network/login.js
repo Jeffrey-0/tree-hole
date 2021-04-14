@@ -13,14 +13,14 @@ export function loginT (id, password) {
 }
 
 // post请求
-export function login (id, password) {
+export function login (username, password) {
   return request({
     // url: 'users',
     url: 'login',
     method: 'post',
     data: {
-      userId: id,
-      userPassword: password
+      username: username,
+      password: password
     },
     headers: {
       'Content-Type': 'application/x-www-form-urlencoded'

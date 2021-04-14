@@ -13,7 +13,8 @@
       <div class="header-right">
         <div class="header-user-con">
           <div class="user-avator">
-            <img :src="$baseImgUrl + $user.portrait" alt="" />
+            <!-- <img :src="$baseImgUrl + $user.portrait" alt="" /> -->
+            {{ this.$user.username }}
           </div>
           <div class="user-name el-dropdown">
             <el-dropdown>
@@ -21,11 +22,16 @@
                 {{ userName }}<i class="el-icon-arrow-down el-icon--right"></i>
               </span>
               <el-dropdown-menu slot="dropdown" class="login-out">
-                <el-dropdown-item
-                  ><router-link to="/login"
-                    >退出登录</router-link
+                 <el-dropdown-item
+                  ><router-link to="/home"
+                    >设置</router-link
                   ></el-dropdown-item
                 >
+                <el-dropdown-item
+                  ><router-link to="/login"
+                    >退出</router-link
+                  ></el-dropdown-item>
+                 
               </el-dropdown-menu>
             </el-dropdown>
           </div>
@@ -97,7 +103,7 @@ export default {
   width: 250px;
   line-height: 50px;
   text-align: left;
-  font-size: 16px;
+  font-size: 20px;
 }
 .header .header-right {
   float: right;
@@ -126,6 +132,7 @@ export default {
 }
 .header .header-right .header-user-con .user-avator {
   margin-left: 20px;
+  font-size: 16px;
 }
 .header .header-right .header-user-con .user-avator img {
   display: block;

@@ -67,11 +67,14 @@
             <template slot-scope="scope" align="center">
               <el-switch
                 style="display: block"
-                v-model="scope.row.type"
+                v-model="scope.row.finish"
                 active-color="#13ce66"
                 inactive-color="#ff4949"
                 active-text="已处理"
-                inactive-text="待解决">
+                inactive-text="待解决"
+                :active-value="1"
+                :inactive-value="0"
+                @change="changeFinish(scope.row)">
               </el-switch>
             </template>
           </el-table-column>
@@ -109,7 +112,6 @@
                 <el-input v-model="report.note" disabled></el-input>
               </el-form-item>
               <el-form-item label="类型" :label-width="formLabelWidth">
-                <!-- <el-input v-model="report.type" disabled></el-input> -->
                 <el-select v-model="report.type" placeholder="权限" disabled>
                   <el-option label="类型" value=""></el-option>
                   <el-option label="秘密" :value="1"></el-option>
@@ -155,7 +157,7 @@
 </template>
 
 <script>
-import {showAllReportByPage, SelectFuzzy, deleteReportById } from "../../network/report"
+import {showAllReportByPage, SelectFuzzy, deleteReportById, updateReportByIdSelective } from "../../network/report"
 export default {
   name: "Report",
   data() {
@@ -201,13 +203,14 @@ export default {
     }
   },
   created() {
-    showAllReportByPage(this.currentPage, this.pageSize).then((res) => {
-      console.log(this.currentPage)
-      // TODO
-      console.log(res)
-      this.tableData = res.data
-      this.total = res.total
-    })
+    // showAllReportByPage(this.currentPage, this.pageSize).then((res) => {
+    //   console.log(this.currentPage)
+    //   // TODO
+    //   console.log(res)
+    //   this.tableData = res.data
+    //   this.total = res.total
+    // })
+    this.refresh()
   },
   methods: {
     isCollapse(val) {
@@ -281,18 +284,36 @@ export default {
       }
     },
     forType(row) {
-      switch (row.type) {
-        case -1 : return '用户'
-        case 1 : return '秘密'
-        case 2 : return '计划'
-        case 3 : return '相册'
-        case 4 : return '消息'
-        case 5 : return '评论'
-        default: return '未知'
+      if (row.type === -1) {
+        return '用户'
+      } else if (row.type === 1) {
+        return '秘密'
+      } else if (row.type === 2) {
+        return '计划'
+      } else if (row.type === 3) {
+        return '相册'
+      } else if (row.type === 4) {
+        return '消息'
+      } else if (row.type === 5) {
+        return '评论'
+      } else {
+        return '未知'
       }
     },
     forDate(row) {
       return this.$moment(row.createTime).format('YYYY-MM-DD HH:mm')
+    },
+    // 改变举报状态
+    changeFinish (row) {
+      let report = {
+        reportId: row.reportId,
+        finish: row.finish
+      }
+      updateReportByIdSelective(report).then(res => {
+        if (!res) {
+          this.$message.error('修改失败!')
+        }
+      })
     }
   },
   mounted() {

@@ -27,35 +27,35 @@
             index="3"
             @click="addTag('秘密管理', 'el-icon-edit', 'secret')"
           >
-            <i class="el-icon-reading"></i>
+            <i class="el-icon-edit"></i>
             <span slot="title">秘密管理</span>
           </el-menu-item>
           <el-menu-item
             index="4"
             @click="addTag('计划管理', 'el-icon-document-checked', 'plan')"
           >
-            <i class="el-icon-notebook-1"></i>
+            <i class="el-icon-document-checked"></i>
             <span slot="title">计划管理</span>
           </el-menu-item>
           <el-menu-item
             index="5"
             @click="addTag('相册管理', 'el-icon-picture-outline', 'album')"
           >
-            <i class="el-icon-bell"></i>
+            <i class="el-icon-picture-outline"></i>
             <span slot="title">相册管理</span>
           </el-menu-item>
           <el-menu-item
             index="6"
             @click="addTag('好友管理', 'el-icon-s-custom', 'relation')"
           >
-            <i class="el-icon-bell"></i>
+            <i class="el-icon-s-custom"></i>
             <span slot="title">好友管理</span>
           </el-menu-item>
           <el-menu-item
             index="7"
             @click="addTag('聊天管理', 'el-icon-chat-line-round', 'chat')"
           >
-            <i class="el-icon-bell"></i>
+            <i class="el-icon-chat-line-round"></i>
             <span slot="title">聊天管理</span>
           </el-menu-item>
           <!-- <el-menu-item

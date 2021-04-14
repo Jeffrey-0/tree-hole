@@ -8,8 +8,8 @@
       label-width="40px"
       class="demo-ruleForm"
     >
-      <el-form-item label="ID" prop="id">
-        <el-input v-model.number="ruleForm.id" maxlength="15" placeholder="ID"></el-input>
+      <el-form-item label="用户" prop="id">
+        <el-input v-model="ruleForm.id" maxlength="15" placeholder="用户"></el-input>
       </el-form-item>
       <el-form-item label="密码" prop="pass">
         <el-input
@@ -30,7 +30,7 @@
 </template>
 
 <script>
-import { login } from "../network/login";
+import { SelectFuzzy } from "../network/user";
 // TODO
 // import {loginP} from '../network/login'
 export default {
@@ -40,14 +40,14 @@ export default {
       if (!value) {
         return callback(new Error("ID不能为空"));
       }
-        if (value !== '') {
-          let regex = /^[1234567890]+$/
-          if (!regex.test(value)) {
-            return callback(new Error('ID只能为数字'))
-          } else {
-            callback()
-          }
-        }
+        // if (value !== '') {
+        //   let regex = /^[1234567890]+$/
+        //   if (!regex.test(value)) {
+        //     return callback(new Error('ID只能为数字'))
+        //   } else {
+        //     callback()
+        //   }
+        // }
         callback()
       // setTimeout(() => {
       //   callback();
@@ -92,13 +92,17 @@ export default {
           console.log(this.ruleForm.id, this.ruleForm.pass);
           // 发起登录请求
           // TODO  ----loginP
-          login(this.ruleForm.id, this.ruleForm.pass).then((res) => {
+          let user = {
+            username: this.ruleForm.id,
+            passowrd: this.ruleForm.pass
+          }
+          SelectFuzzy(user, 1, 1).then((res) => {
             console.log(res);
             // TODO ---res.userId
-            if (res) {
+            if (res.data.length > 0) {
               // 保存用户到sessionStorage
               // TODO res[0] => res
-              if (res.userCategory <= -1) {
+              if (res.data[0].type == 2) {
                 this.$message({
                 message: "登录失败，该用户已被禁用",
                 type: "error",
@@ -119,10 +123,10 @@ export default {
 
                 // TODO
                 console.log(res);
-                if (res.userCategory == "1") {
-                  this.$router.push("/helloworld");
+                if (res.data[0].type === 0) {
+                  this.$router.push("/admin");
                 } else {
-                  this.$router.push("/index");
+                  this.$router.push("/home");
                 }
               }
 
