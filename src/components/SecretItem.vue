@@ -8,7 +8,7 @@
     <div class="content">{{ secret.content }}</div>
     <div class="imgs" v-if="secret.pictures && secret.pictures.length > 0">
       <div v-if="secret.pictures.length === 1">
-        <div class="imgWrap imgWrap1" v-for="item in secret.pictures" :key="item.pictureId">
+        <div class="imgWrap imgWrap1" v-for="item in secret.pictures" :key="item.pictureId" @load="isLoadOK">
           <el-image 
             style="width: 100%"
             :src="$baseImgUrl + item.path" 
@@ -17,7 +17,7 @@
         </div>
       </div>
       <div v-else-if="secret.pictures.length === 2 || secret.pictures.length === 4">
-        <div class="imgWrap imgWrap2" v-for="item in secret.pictures" :key="item.pictureId">
+        <div class="imgWrap imgWrap2" v-for="item in secret.pictures" :key="item.pictureId" @load="isLoadOK">
           <el-image 
             style="width: 100%"
             :src="$baseImgUrl + item.path" 
@@ -26,7 +26,7 @@
         </div>
       </div>
       <div v-else>
-        <div class="imgWrap" v-for="item in secret.pictures" :key="item.pictureId">
+        <div class="imgWrap" v-for="item in secret.pictures" :key="item.pictureId" @load="isLoadOK">
           <!-- <img :src="$baseImgUrl + item.img_url" alt="" width="100%" height="100%"> -->
            <el-image 
             style="width: 100%"
@@ -148,6 +148,7 @@ export default {
     },
     // 点赞
     clickLike(like) {
+      if (this.ifLogin()) { return }
       if (like) {
         let like = {
           userId: this.$user.userId,
@@ -175,6 +176,7 @@ export default {
     },
     // 点击举报
     clickReport () {
+      if (this.ifLogin()) { return }
       console.log('点击举报111', this.$common, this.$common.report)
       this.$common.report(this, this.secret.secretId, this.$user.userId, 1)
       // this.$moment.report()
@@ -192,6 +194,7 @@ export default {
     },
     // 点击删除
     clickDelete () {
+      if (this.ifLogin()) { return }
       // if (secret.userId === this.$user.userId) {
         this.$confirm('是否删除这条秘密?', '提示', {
           confirmButtonText: '确定',
@@ -229,6 +232,7 @@ export default {
     },
     // 发送评论
     sureComment () {
+      if (this.ifLogin()) { return }
       let comment = {
         secretId: this.secret.secretId,
         userId: this.$user.userId,
@@ -253,7 +257,21 @@ export default {
     },
     // 查看某人主页
     toUserHome (item) {
+      if (this.ifLogin()) { return }
       this.$router.push('m-user?userId=' + item.userId)
+    },
+    ifLogin () {
+      if (!this.$user.userId) {
+        this.$message.error('请前往登录')
+        return true
+      } else {
+        return false
+      }
+    },
+    // 图片加载完
+    isLoadOK () {
+      console.log('图片加载完成')
+      this.$emit('imgLoad')
     }
   }
 }

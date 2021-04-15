@@ -198,7 +198,7 @@ export default {
       } else {
         let sign = {
           planId: item.planId,
-          createTime: new Date()
+          createTime: this.$moment(new Date()).format('YYYY-MM-DD HH:mm:ss')
         }
         insertSign(sign).then(res => {
           if (res) {
@@ -232,7 +232,7 @@ export default {
       this.form = Object.assign(item)
       this.form.startTime = this.$moment(this.form.startTime).format('YYYY-MM-DD')
       this.form.endTime = this.$moment(this.form.endTime).format('YYYY-MM-DD')
-      this.form.createTime = new Date(item.createTime)
+      // this.form.createTime = new Date(item.createTime)
       this.dialogFormVisible = true
     },
     // 改变图标
@@ -264,7 +264,8 @@ export default {
       // this.form.createTime = new Date()
       this.form.userId = this.$user.userId
 
-      console.log('修改目标', this.form)
+      console.log('修改目标', this.form, this.form.createTime)
+      this.form.createTime = this.$moment(this.form.createTime).format('YYYY-MM-DD HH:mm:ss')
       updatePlanById(this.form).then(res => {
         console.log(res)
         if (res) {

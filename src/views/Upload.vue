@@ -283,7 +283,7 @@ export default {
       this.form.repeats.map(item => {
         this.form.repeat = this.form.repeat + item + ','
       })
-      this.form.createTime = new Date()
+      this.form.createTime = this.$moment(new Date()).format('YYYY-MM-DD HH:mm:ss')
       this.form.userId = this.$user.userId
       insertPlan(this.form).then(res => {
         console.log(res)

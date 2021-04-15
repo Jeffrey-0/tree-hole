@@ -1,20 +1,20 @@
 <template>
   <div id="loginC">
     <el-form :model="ruleForm" status-icon :rules="rules" ref="ruleForm" label-width="40px" class="demo-ruleForm">
-      <el-form-item label="ID" prop="id">
+      <!-- <el-form-item label="ID" prop="id">
         <el-input type="text" v-model.number="ruleForm.id" autocomplete="off" maxlength="15" placeholder="ID"></el-input>
+      </el-form-item> -->
+      <el-form-item label="用户" prop="username">
+        <el-input type="text" v-model="ruleForm.username" autocomplete="off" maxlength="20" placeholder="用户名"></el-input>
       </el-form-item>
-      <el-form-item label="姓名" prop="username">
-        <el-input type="text" v-model="ruleForm.username" autocomplete="off" maxlength="20" placeholder="姓名"></el-input>
+      <el-form-item label="手机" prop="phone">
+        <el-input type="text" v-model="ruleForm.phone" maxlength="30" placeholder="手机"></el-input>
       </el-form-item>
-      <el-form-item label="邮箱" prop="email">
-        <el-input type="text" v-model="ruleForm.email" maxlength="30" placeholder="邮箱"></el-input>
-      </el-form-item>
-      <el-form-item label="密码" prop="pass">
-        <el-input type="password" v-model="ruleForm.pass" autocomplete="off" maxlength="30" placeholder="密码"></el-input>
+      <el-form-item label="密码" prop="password">
+        <el-input type="passwordword" v-model="ruleForm.password" autocomplete="off" maxlength="30" placeholder="密码"></el-input>
       </el-form-item>
       <el-form-item label="密码" prop="checkPass">
-        <el-input type="password" v-model="ruleForm.checkPass" autocomplete="off" maxlength="30" placeholder="确认密码"></el-input>
+        <el-input type="passwordword" v-model="ruleForm.checkPass" autocomplete="off" maxlength="30" placeholder="确认密码"></el-input>
       </el-form-item>
       
       <el-form-item>
@@ -25,7 +25,8 @@
 </template>
 
 <script>
-import {logon, CheckuserId, CheckuserEmail} from '../network/login'
+// import {logon, CheckuserId, CheckuserPhone} from '../network/login'
+import { SelectFuzzy, insertUser } from "../network/user"
 export default {
     data() {
       var checkID = (rule, value, callback) => {
@@ -52,34 +53,46 @@ export default {
       }
       var checkUsername = (rule, value, callback) => {
         if (!value) {
-          return callback(new Error('姓名不能为空'));
+          return callback(new Error('用户名不能为空'));
         } else {
-          if (value !== '') {
-            let regex = /^[\u4e00-\u9fa5]+$/
-            if (!regex.test(value)) {
-              return callback(new Error('姓名只能为汉字'))
-            } else {
-              callback()
-            }
-          }
-          callback()
+          // if (value !== '') {
+          //   let regex = /^[\u4e00-\u9fa5]+$/
+          //   if (!regex.test(value)) {
+          //     return callback(new Error('姓名只能为汉字'))
+          //   } else {
+          //     callback()
+          //   }
+          // }
+          SelectFuzzy({userName: value}, 1, 1).then(res => {
+            console.log('用户名检测', res)
+              if (res && res.total > 0) {
+                console.log('该用户已被注册')
+                return callback(new Error('该用户名已被注册'))
+              } else {
+                callback()
+              }
+            })
+          // callback()
         }
-        callback()
+        // callback()
       }
-      var checkEmail = (rule, value, callback) => {
+      var checkPhone = (rule, value, callback) => {
         if (!value) {
-          return callback(new Error('邮箱不能为空'));
+          return callback(new Error('手机号不能为空'));
         } else {
           if (value !== '') {
-            let regex = /^\w+([-+.]\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$/
+            // let regex = /^\w+([-+.]\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$/   //  邮箱正则
+            // let regex = /^1[3456789]d{9}$/   //  邮箱正则
+            let regex = /^1[34578]\d{9}$/   //  手机
             if (!regex.test(value)) {
-              return callback(new Error('邮箱格式错误'))
+              // console.log('手机格式错误')
+              return callback(new Error('手机号格式错误'))
             } else {
               
-            CheckuserEmail(value).then(res => {
-              console.log('邮箱检测', res)
-              if (res) {
-                return callback(new Error('该邮箱已注册过账号'))
+            SelectFuzzy({phone: value}, 1, 1).then(res => {
+              console.log('手机检测', res)
+              if (res && res.total > 0) {
+                return callback(new Error('该手机号已注册过账号'))
               } else {
                 callback()
               }
@@ -112,7 +125,7 @@ export default {
       var validatePass2 = (rule, value, callback) => {
         if (value === '') {
           callback(new Error('请再次输入密码'));
-        } else if (value !== this.ruleForm.pass) {
+        } else if (value !== this.ruleForm.password) {
           callback(new Error('两次输入密码不一致!'));
         } else {
           callback();
@@ -120,23 +133,20 @@ export default {
       };
       return {
         ruleForm: {
-          id: '',
           username: '',
-          email: '',
-          pass: '',
+          phone: '',
+          password: '',
           checkPass: '',
+          type: 1
         },
         rules: {
-          id: [
-            { validator: checkID, trigger: 'blur' }
-          ],
           username: [
             { validator: checkUsername, trigger: 'blur' }
           ],
-          email: [
-            { validator: checkEmail, trigger: 'blur' }
+          phone: [
+            { validator: checkPhone, trigger: 'blur' }
           ],
-          pass: [
+          password: [
             { validator: validatePass, trigger: 'blur' }
           ],
           checkPass: [
@@ -153,16 +163,17 @@ export default {
       submitForm(formName) {
         // this.$emit('logonSuccess', {
         //   id: 123,
-        //   password: 123
+        //   passwordword: 123
         // })
         this.$refs[formName].validate((valid) => {
           if (valid) {
             console.log('logon请求')
-            logon(this.ruleForm.id, this.ruleForm.username, this.ruleForm.pass, this.ruleForm.email).then(res => {
+            
+            insertUser( this.ruleForm).then(res => {
               console.log(res)  
               if (!res) {
                 this.$message({
-                  message: '注册失败，ID或邮箱已存在',
+                  message: '注册失败，用户名或手机号已存在',
                   type: 'error',
                   center: true,
                   offset: 40
@@ -176,8 +187,8 @@ export default {
                 })
                 // this.$router.go(0)
                 // this.$router.replace('/login')
-                res.userPassword = this.ruleForm.pass
-                this.$emit('logonSuccess', res)
+                // res.userPassword = this.ruleForm.password
+                this.$emit('logonSuccess', this.ruleForm)
               }
             })
             

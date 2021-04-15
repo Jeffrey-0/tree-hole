@@ -3,10 +3,11 @@
     <!-- 聊天组件 -->
     <div class="chatWrap">
       <div class="title">小疯子</div>
-      <div class="chat-content">
+      <div class="chat-content"  ref="messageList" id="messageList">
         <div v-for="(item, index) in messages" :key="index">
           <message-item :message="item" :acceptUser="acceptUser"></message-item>
         </div>
+        <div id="msgEnd" style="height:0px; overflow:hidden"></div>
       </div>
       <div class="edit">
         <div class="tool">
@@ -64,6 +65,13 @@ export default {
       showAllByTowUserId(this.$user.userId, this.acceptUser.userId, this.page, this.rows).then(res => {
         console.log('获取聊天记录', res)
         this.messages = res.data
+        let that = this
+        setTimeout(function () {
+            that.$el.querySelector(`#msgEnd`).scrollIntoView({
+              behavior: "smooth",  // 平滑过渡
+              block:    "start"  // 上边框与视窗顶部平齐。默认值
+            })
+          }, 50)
       })
     },
     // 发送消息
@@ -72,7 +80,7 @@ export default {
         userId: this.$user.userId,
         acceptId: this.acceptUser.userId,
         content: this.chatInput,
-        createTime: new Date(),
+        createTime: this.$moment(new Date()).format('YYYY-MM-DD HH:mm:ss'),
         type: 1
       }
       insertChat(chat).then(res => {
@@ -81,6 +89,14 @@ export default {
           this.chatInput = ''
           chat.chatId = res
           this.messages.push(chat)
+          // 滚动到底部
+          let that = this
+          setTimeout(function () {
+              that.$el.querySelector(`#msgEnd`).scrollIntoView({
+                behavior: "smooth",  // 平滑过渡
+                block:    "start"  // 上边框与视窗顶部平齐。默认值
+              })
+            }, 50)
         } else {
           this.$message.error('发送失败!')
         }

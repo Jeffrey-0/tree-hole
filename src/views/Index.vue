@@ -52,7 +52,7 @@ export default {
       this.$el.querySelector(`#content`).scrollIntoView({
         behavior: "smooth",  // 平滑过渡
         block:    "start"  // 上边框与视窗顶部平齐。默认值
-      });
+      })
     }
   },
   created () {

@@ -8,15 +8,15 @@
       label-width="40px"
       class="demo-ruleForm"
     >
-      <el-form-item label="用户" prop="id">
-        <el-input v-model="ruleForm.id" maxlength="15" placeholder="用户"></el-input>
+      <el-form-item label="用户" prop="username">
+        <el-input v-model="ruleForm.username" maxlength="15" placeholder="用户名"></el-input>
       </el-form-item>
-      <el-form-item label="密码" prop="pass">
+      <el-form-item label="密码" prop="password">
         <el-input
           type="password"
           show-password
           placeholder="密码"
-          v-model="ruleForm.pass"
+          v-model="ruleForm.password"
           autocomplete="off"
         ></el-input>
       </el-form-item>
@@ -30,28 +30,17 @@
 </template>
 
 <script>
-import { SelectFuzzy } from "../network/user";
+import { SelectFuzzy } from "../network/user"
 // TODO
 // import {loginP} from '../network/login'
 export default {
   props: ["toLoginC"],
   data() {
-    var checkId = (rule, value, callback) => {
+    var checkUsername = (rule, value, callback) => {
       if (!value) {
         return callback(new Error("ID不能为空"));
       }
-        // if (value !== '') {
-        //   let regex = /^[1234567890]+$/
-        //   if (!regex.test(value)) {
-        //     return callback(new Error('ID只能为数字'))
-        //   } else {
-        //     callback()
-        //   }
-        // }
         callback()
-      // setTimeout(() => {
-      //   callback();
-      // }, 1000);
     };
     var validatePass = (rule, value, callback) => {
       if (value === "") {
@@ -74,12 +63,12 @@ export default {
     };
     return {
       ruleForm: {
-        pass: "",
-        id: "",
+        password: "",
+        username: "",
       },
       rules: {
-        pass: [{ validator: validatePass, trigger: "blur" }],
-        id: [{ validator: checkId, trigger: "blur" }],
+        password: [{ validator: validatePass, trigger: "blur" }],
+        username: [{ validator: checkUsername, trigger: "blur" }],
       },
     };
   },
@@ -89,17 +78,14 @@ export default {
         if (valid) {
           // alert('submit!');
           console.log("login---");
-          console.log(this.ruleForm.id, this.ruleForm.pass);
+          console.log(this.ruleForm.username, this.ruleForm.password);
           // 发起登录请求
           // TODO  ----loginP
-          let user = {
-            username: this.ruleForm.id,
-            passowrd: this.ruleForm.pass
-          }
-          SelectFuzzy(user, 1, 1).then((res) => {
+
+          SelectFuzzy(this.ruleForm, 1, 1).then((res) => {
             console.log(res);
             // TODO ---res.userId
-            if (res.data.length > 0) {
+            if (res && res.total > 0) {
               // 保存用户到sessionStorage
               // TODO res[0] => res
               if (res.data[0].type == 2) {
@@ -110,8 +96,8 @@ export default {
                 offset: 40,
               })
               } else {
-                sessionStorage.setItem("user", JSON.stringify(res));
-                Object.assign(this.$user, res);
+                sessionStorage.setItem("user", JSON.stringify(res.data[0]));
+                Object.assign(this.$user, res.data[0]);
 
                 console.log("登录成功$user", this.$user);
                 this.$message({
@@ -133,7 +119,7 @@ export default {
             } else {
               console.log("登录失败");
               this.$message({
-                message: "ID或密码错误",
+                message: "用户名或密码错误",
                 type: "error",
                 center: true,
                 offset: 40,
@@ -154,9 +140,9 @@ export default {
   watch: {
     toLoginC: {
       handler(newValue, oldValue) {
-        console.log(newValue, oldValue);
-        this.ruleForm.id = newValue && newValue.userId;
-        this.ruleForm.pass = newValue && newValue.userPassword;
+        console.log(newValue, oldValue)
+        this.ruleForm.username = newValue && newValue.username;
+        this.ruleForm.password = newValue && newValue.password;
       },
       deep: true,
     },

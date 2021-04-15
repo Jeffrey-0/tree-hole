@@ -13,6 +13,9 @@ import Chat from '../views/m/Chat.vue'
 import User from '../views/m/User.vue'
 import Admin from '../views/admin/Admin.vue'
 
+// 引入弹出框方法
+import { Message } from 'element-ui'
+
 Vue.use(VueRouter)
 
 const routes = [
@@ -141,17 +144,19 @@ const router = new VueRouter({
 })
 
 // 挂载路由导航守卫，如果用户未登陆，则跳转到登录页面
-// router.beforeEach((to, form, next) => {
-// if (to.path === '/login') {
-//   return next()
-// }
-// const user = window.sessionStorage.getItem('user')
-// console.log('tooken', user)
-// if (!user) {
-//   return next('/login')
-// } else {
-//   return next()
-// }
-// })
+router.beforeEach((to, form, next) => {
+if (to.path === '/login' || to.path === '/' || to.path === '/home' || to.path === '/m-secret') {
+  return next()
+}
+const user = window.sessionStorage.getItem('user')
+console.log('tooken', user)
+if (!user) {
+  Message.error('请前往登录')
+  return next('/home')
+  // return next('/login')
+} else {
+  return next()
+}
+})
 
 export default router

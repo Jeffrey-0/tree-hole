@@ -1,3 +1,4 @@
+// 无用
 <template>
   <div id="m-chat">
     <!-- 聊天组件 -->
@@ -7,6 +8,7 @@
         <div v-for="(item, index) in messages" :key="index">
           <message-item :message="item" :acceptUser="acceptUser"></message-item>
         </div>
+        <div id="msgEnd" style="height:0px; overflow:hidden"></div>
       </div>
       <div class="edit">
         <div class="tool">
@@ -66,13 +68,20 @@ export default {
       this.clearTextarea()
     },
     clearTextarea(){
-      this.$refs.emoji.clear()
+      // this.$refs.emoji.clear()
     },
       // 刷新聊天记录
     refresh () {
       showAllByTowUserId(this.$user.userId, this.acceptUser.userId, this.page, this.rows).then(res => {
         console.log('获取聊天记录', res)
         this.messages = res.data
+        let that = this
+        setTimeout(function () {
+            that.$el.querySelector(`#msgEnd`).scrollIntoView({
+              behavior: "smooth",  // 平滑过渡
+              block:    "start"  // 上边框与视窗顶部平齐。默认值
+            })
+          }, 50)
       })
     },
     // 发送消息
@@ -90,6 +99,13 @@ export default {
           this.chatInput = ''
           chat.chatId = res
           this.messages.push(chat)
+          let that = this
+        setTimeout(function () {
+            that.$el.querySelector(`#msgEnd`).scrollIntoView({
+              behavior: "smooth",  // 平滑过渡
+              block:    "start"  // 上边框与视窗顶部平齐。默认值
+            })
+          }, 50)
         } else {
           this.$message.error('发送失败!')
         }

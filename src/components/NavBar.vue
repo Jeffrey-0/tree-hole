@@ -1,6 +1,7 @@
 <template>
   <div id="container">
   <el-upload
+    :disabled="!this.user.userId"
     class="avatar-uploader"
     :action="$baseUrl + 'user/uploadPortrait'"
     :show-file-list="false"
@@ -8,10 +9,11 @@
     :on-success="handleAvatarSuccess"
     :before-upload="beforeAvatarUpload"
   >
-    <img v-if="imageUrl" :src="imageUrl" class="portrait">
-    <img v-else class="portrait" title="点击切换头像" :src="$baseImgUrl + $user.portrait">
+    <!-- <img v-if="imageUrl" :src="imageUrl" class="portrait"> -->
+    <img v-if="$user.portrait" class="portrait" title="点击切换头像" :src="$baseImgUrl + $user.portrait">
+    <img v-else class="portrait" title="点击切换头像" src="../assets/img/default.png">
 </el-upload>
-    <el-input v-model="user.username" placeholder="无名氏" maxlength="10"></el-input>
+    <el-input v-model="user.username" placeholder="未登录" maxlength="10"></el-input>
     <div class="username motto">
       <el-input v-model="user.motto" placeholder="个性签名" type="textarea" maxlength="20">
       </el-input>
@@ -19,25 +21,25 @@
     
     <div class="nav">
       <div class="item">
-        <div class="number">12</div>
+        <!-- <div class="number">0</div> -->
         <div>
           <router-link  to="/myself">秘密</router-link>
         </div>
       </div>
       <div class="item">
-        <div class="number">12</div>
+        <!-- <div class="number">0</div> -->
         <div>
           <router-link  to="/plan">计划</router-link>
         </div>
       </div>
       <div class="item">
-        <div class="number">12</div>
+        <!-- <div class="number">0</div> -->
         <div>
           <router-link  to="/album">相册</router-link>
         </div>
       </div>
     </div>
-    <el-button type="primary" class="exit" @click="signOut">退出登录</el-button>
+    <el-button type="primary" class="exit" @click="signOut">{{ $user.userId ? '退出登录' : '前往登录' }}</el-button>
   </div>
 </template>
 
@@ -48,10 +50,11 @@ export default {
   data () {
     return {
       user: {
-        userId: 0,
+        userId: '',
         username: '',
         motto: '',
-        portrait: ''
+        portrait: '',
+        phone: ''
       },
       notice: {
 
@@ -70,21 +73,38 @@ export default {
   },
   methods: {
     toInfo () {
+      if (this.ifLogin()) { return }
       if (this.$route && this.$route.path !== '/index/info') {
         this.$router.push('/index/info')
       }
     },
     toNotice () {
+      if (this.ifLogin()) { return }
       if (this.$route && this.$route.path !== '/index/notice') {
         this.$router.push('/index/notice')
       }
     },
     signOut () {
+      // if (this.ifLogin()) { return }
+      if (this.$user.userId) {
+        Object.assign(this.$user,
+          {
+            userId : '',
+            username: '',
+            motto: '',
+            type: '',
+            portrait: ''
+          } 
+        )
+        
+        sessionStorage.removeItem("user")
+      }
       if (this.$route && this.$route.path !== '/login') {
         this.$router.push('/login')
       }
     },
     changeAvatar () {
+      if (this.ifLogin()) { return }
       this.avatar = (this.avatar + 1) % 10
       localStorage.setItem('avatar', this.avatar)
     },
@@ -105,13 +125,22 @@ export default {
         this.$message.error('上传头像图片大小不能超过 2MB!');
       }
       return isJPG && isLt2M;
+    },
+    ifLogin () {
+      if (!this.$user.userId) {
+        this.$message.error('请前往登录')
+        return true
+      } else {
+        return false
+      }
     }
   },
   created () {
     // this.user = JSON.parse(sessionStorage.getItem('user'))
     // this.user = this.$user
+    // Object.assign(this.user, JSON.parse(sessionStorage.getItem('user')))
     this.user = this.$user
-    console.log('this.$user', this.$user)
+    console.log('this.$user3333', this.$user)
     // getNewNotice().then(res => {
     //   this.notice = res
     //   console.log(this.notice)
@@ -233,6 +262,8 @@ export default {
 .nav .item {
   width: 33%;
   float: left;
+  height: 40px;
+  line-height: 40px;
 }
 .nav .item:nth-child(2) {
   border-left: 1px dashed #dadada;

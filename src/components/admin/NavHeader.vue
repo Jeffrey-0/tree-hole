@@ -1,7 +1,7 @@
 <template>
   <div class="wrapper">
     <div class="header">
-      <div class="collapse-btn">
+      <div class="collapse-btn" @click="toIndex">
         <!-- <li
           :class="{
             'el-icon-s-unfold': collapse,
@@ -9,28 +9,32 @@
           }"
         ></li> -->
       </div>
-      <div class="logo">树洞网后台管理</div>
+      <div class="logo" @click="toIndex">树洞网后台管理</div>
       <div class="header-right">
         <div class="header-user-con">
           <div class="user-avator">
             <!-- <img :src="$baseImgUrl + $user.portrait" alt="" /> -->
-            {{ this.$user.username }}
+            <!-- {{ this.$user.username }} -->
           </div>
           <div class="user-name el-dropdown">
             <el-dropdown>
-              <span class="el-dropdown-link">
+              <!-- <span class="el-dropdown-link">
                 {{ userName }}<i class="el-icon-arrow-down el-icon--right"></i>
+              </span> -->
+              <span class="username">
+                {{ this.$user.username }}<i class="el-icon-arrow-down el-icon--right"></i>
               </span>
               <el-dropdown-menu slot="dropdown" class="login-out">
                  <el-dropdown-item
-                  ><router-link to="/home"
-                    >设置</router-link
+                  ><div>
+                    设置</div
                   ></el-dropdown-item
                 >
-                <el-dropdown-item
-                  ><router-link to="/login"
-                    >退出</router-link
-                  ></el-dropdown-item>
+                <el-dropdown-item 
+                  ><div @click="exit">
+                    退出</div
+                  >
+                  </el-dropdown-item>
                  
               </el-dropdown-menu>
             </el-dropdown>
@@ -51,19 +55,38 @@ export default {
     };
   },
   created() {
-    this.userName = this.$user.userName;
+    this.userName = this.$user.userName
   },
   methods: {
     handleOpen(key, keyPath) {
-      console.log(key, keyPath);
+      console.log(key, keyPath)
     },
     handleClose(key, keyPath) {
-      console.log(key, keyPath);
+      console.log(key, keyPath)
     },
     isCollapse() {
       this.collapse = !this.collapse;
-      this.$eventBus.$emit("eventBusName", this.collapse);
+      this.$eventBus.$emit("eventBusName", this.collapse)
     },
+    toIndex () {
+      this.$eventBusTag.$emit("eventBusName", '首页', 'el-icon-house')
+      this.$eventBusiIcon.$emit("eventBusName", '首页', 'el-icon-house')
+    },
+    exit () {
+      console.log('退出')
+      Object.assign(this.$user,
+      {
+        userId : '',
+        username: '',
+        motto: '',
+        type: '',
+        portrait: ''
+      } )
+      
+      sessionStorage.removeItem("user")
+      console.log('退出后', this.$user)
+      this.$router.push('/login')
+    }
   },
   created () {
     // this.isCollapse()
@@ -84,6 +107,7 @@ export default {
   background: #fff;
 }
 .header .collapse-btn {
+  cursor: pointer;
   float: left;
   /* padding: 10px; */
   margin:  0px  10px;
@@ -104,6 +128,7 @@ export default {
   line-height: 50px;
   text-align: left;
   font-size: 20px;
+  cursor: pointer;
 }
 .header .header-right {
   float: right;
@@ -149,5 +174,13 @@ export default {
 .login-out a {
   text-decoration: none;
   color: #666;
+}
+.username {
+  display: inline-block;
+  height: 30px;
+  /* padding: 10px; */
+  box-sizing: border-box;
+  line-height: 30px;
+  cursor: pointer;
 }
 </style>

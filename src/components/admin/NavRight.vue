@@ -13,7 +13,7 @@
           active-text-color="#409EFF"
         >
           <el-menu-item index="1" @click="addTag('首页', 'el-icon-house')">
-            <i class="el-icon-view"></i>
+            <i class="el-icon-house"></i>
             <span slot="title">首页</span>
           </el-menu-item>
           <el-menu-item
