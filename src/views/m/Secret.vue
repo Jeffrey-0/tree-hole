@@ -2,18 +2,26 @@
   <div id="m-secret">
     <el-tabs v-model="activeName" @tab-click="handleClick">
       <el-tab-pane label="广场" name="first">
-        <div class="wrapper" ref="wrapper">
+        <div class="wrapper" ref="wrapper1">
           <div class="secretList">
-            <secret-item v-for="secret in allSecretList" :key="secret.secretId" :secret="secret" @imgLoad="imgLoad"></secret-item>
+            <secret-item v-for="secret in SecretList.first" :key="secret.secretId" :secret="secret"></secret-item>
           </div>
         </div>
         
       </el-tab-pane>
-      <el-tab-pane label="关注" name="second" v-if="$user.userId">
-        <secret-item v-for="secret in followSecretList" :key="secret.secretId" :secret="secret"></secret-item>
+      <el-tab-pane label="关注" name="second">
+        <div class="wrapper" ref="wrapper2">
+          <div class="secretList">
+            <secret-item v-for="secret in SecretList.second" :key="secret.secretId" :secret="secret"></secret-item>
+          </div>
+        </div>
       </el-tab-pane>
-      <el-tab-pane label="私人" name="third" v-if="$user.userId">
-        <secret-item v-for="secret in myselfSecretList" :key="secret.secretId" :secret="secret"></secret-item>
+      <el-tab-pane label="私人" name="third">
+        <div class="wrapper" ref="wrapper3">
+          <div class="secretList">
+            <secret-item v-for="secret in SecretList.third" :key="secret.secretId" :secret="secret"></secret-item>
+          </div>
+        </div>
       </el-tab-pane>
     </el-tabs>
   </div>
@@ -36,13 +44,35 @@ export default {
       allSecretList: [],
       followSecretList: [],
       myselfSecretList: [],
-      total1: 0,
-      total2: 0,
-      total3: 0,
-      currentPage: 1,
+      // total1: 0,
+      // total2: 0,
+      // total3: 0,
+      total: {
+        first: 0,
+        second: 0,
+        third: 0
+      },
+      SecretList: {
+        first: [],
+        second: [],
+        third: [],
+      },
+      currentPage: {
+        first: 1,
+        second: 1,
+        third: 1
+      },
+      finish: {
+        first: 0,
+        second: 0,
+        third: 0
+      },
       pageSize: 6,
-      myScroll: '',
-      finish: 0
+      myScroll: {
+        first: '',
+        second: '',
+        third: ''
+      }
     }
   },
   methods: {
@@ -50,27 +80,111 @@ export default {
       console.log(tab, event);
     },
     refresh () {
-      showAllSecretByPower(this.currentPage, this.pageSize).then(res => {
-        this.allSecretList = res.data
-        this.total1 = res.total
+      showAllSecretByPower(this.currentPage.first, this.pageSize).then(res => {
+        this.SecretList.first = res.data
+        this.total.first = res.total
         let that = this
         // 延迟0.2秒给图片加载时间
         setTimeout(function () {
-          that.myScroll.refresh()
+          that.myScroll.first.refresh()
         }, 200)
       })
       if (this.$user.userId) {
-        showAllSecretByFollows(this.$user.userId, this.currentPage, this.pageSize).then(res => {
-          this.followSecretList = res.data
-          this.total2 = res.total
+        showAllSecretByFollows(this.$user.userId, this.currentPage.second, this.pageSize).then(res => {
+          this.SecretList.second = res.data
+          this.total.second = res.total
         })
       }
       if (this.$user.userId) {
-        showAllSecretByMyself(this.$user.userId, this.currentPage, this.pageSize).then(res => {
-          this.myselfSecretList = res.data
-          this.total3 = res.total
+        showAllSecretByMyself(this.$user.userId, this.currentPage.third, this.pageSize).then(res => {
+          this.SecretList.third = res.data
+          this.total.third = res.total
         })
       }
+    },
+    // 下拉刷新
+    pullingDown () {
+      // if (activeName === 'first') {
+        this.currentPage[this.activeName] = 1
+        this.finish[this.activeName] = 0
+        if (this.activeName === 'first') {
+          showAllSecretByPower(this.currentPage[this.activeName], this.pageSize).then(res => {
+            this.SecretList[this.activeName] = res.data
+            this.total[this.activeName] = res.total
+            let that = this
+            // 延迟0.2秒给图片加载时间
+            setTimeout(function () {
+              that.myScroll[that.activeName].refresh()
+            }, 200)
+          })
+        } else if (this.activeName === 'second') {
+          showAllSecretByPower(this.currentPage[this.activeName], this.pageSize).then(res => {
+            this.SecretList[this.activeName] = res.data
+            this.total[this.activeName] = res.total
+            let that = this
+            // 延迟0.2秒给图片加载时间
+            setTimeout(function () {
+              that.myScroll[that.activeName].refresh()
+            }, 200)
+          })
+        } else if (this.activeName === 'third') {
+          showAllSecretByPower(this.currentPage[this.activeName], this.pageSize).then(res => {
+            this.SecretList[this.activeName] = res.data
+            this.total[this.activeName] = res.total
+            let that = this
+            // 延迟0.2秒给图片加载时间
+            setTimeout(function () {
+              that.myScroll[that.activeName].refresh()
+            }, 200)
+          })
+        }
+    },
+    pullingUp () {
+      if (this.finish[this.activeName]) {
+          this.$message('已经到底了!')
+           this.myScroll[this.activeName].finishPullUp()
+          return
+        }
+        
+        this.currentPage[this.activeName] ++
+        this.finish[this.activeName] = 0
+        if (this.activeName === 'first') {
+          showAllSecretByPower(this.currentPage[this.activeName], this.pageSize).then(res => {
+            if (res.data.length < this.pageSize) { this.finish[this.activeName] = 1}
+            res.data.map(item => {
+              this.SecretList[this.activeName].push(item)
+            })
+            let that = this
+            // 延迟0.2秒给图片加载时间
+            setTimeout(function () {
+              that.myScroll[that.activeName].refresh()
+            }, 200)
+          })
+        } else if (this.activeName === 'second') {
+          showAllSecretByPower(this.currentPage[this.activeName], this.pageSize).then(res => {
+            if (res.data.length < this.pageSize) { this.finish[this.activeName] = 1}
+            res.data.map(item => {
+              this.SecretList[this.activeName].push(item)
+            })
+            let that = this
+            // 延迟0.2秒给图片加载时间
+            setTimeout(function () {
+              that.myScroll[that.activeName].refresh()
+            }, 200)
+          })
+        } else if (this.activeName === 'third') {
+          showAllSecretByPower(this.currentPage[this.activeName], this.pageSize).then(res => {
+            if (res.data.length < this.pageSize) { this.finish[this.activeName] = 1}
+            res.data.map(item => {
+              this.SecretList[this.activeName].push(item)
+            })
+            let that = this
+            // 延迟0.2秒给图片加载时间
+            setTimeout(function () {
+              that.myScroll[that.activeName].refresh()
+            }, 200)
+          })
+        }
     },
     imgLoad () {
       // 图片加载完成
@@ -82,81 +196,181 @@ export default {
     this.refresh()
   },
   mounted() {
+    let that = this
     this.$nextTick(() => {
-      this.myScroll = new BScroll(this.$refs.wrapper, {
+      this.myScroll.first = new BScroll(this.$refs.wrapper1, {
         scrollY: true,
         pullDownRefresh: {
           threshold: 50,
-          // probeType: 3
         },
         pullUpLoad: {
           threshold: -100,
           probeType: 3
         }
       })
-      this.myScroll.on('pullingDown', () => {
+      this.myScroll.first.on('pullingDown', () => {
 
         console.log('下拉刷新')
-        // this.$nextTick(() => {
-        //   this.myScroll.refresh() // DOM 结构发生变化后，重新初始化BScroll
-        // })
-        this.currentPage = 1
-        this.finish = 0
-        showAllSecretByPower(this.currentPage, this.pageSize).then(res => {
-          this.allSecretList = res.data
-          this.total1 = res.total
-          let that = this
-          // 延迟0.2秒给图片加载时间
-          setTimeout(function () {
-            that.myScroll.refresh()
-          }, 200)
-        })
-        this.myScroll.finishPullDown() // 下拉刷新动作完成后调用此方法告诉BScroll完成一次下拉动作
+        this.pullingDown()
+        this.myScroll.first.finishPullDown() // 下拉刷新动作完成后调用此方法告诉BScroll完成一次下拉动作
       })
-      this.myScroll.on('pullingUp', () => {
+      this.myScroll.first.on('pullingUp', () => {
         console.log('上拉加载')
-        if (this.finish) {
-          console.log('到底了')
-           this.myScroll.finishPullUp()
-          return
-        }
-        this.currentPage ++
-        showAllSecretByPower(this.currentPage, this.pageSize).then(res => {
-          if (res.data.length < this.pageSize) { this.finish = 1}
-          res.data.map(item => {
-            this.allSecretList.push(item)
-          })
-          
-          this.total1 = res.total
-          let that = this
-          // 延迟0.2秒给图片加载时间
-          setTimeout(function () {
-            that.myScroll.refresh()
-          }, 200)
-        })
-        // this.$nextTick(() => {
-        //   this.myScroll.refresh() // DOM 结构发生变化后，重新初始化BScroll
-        // })
-        this.myScroll.finishPullUp() // 上拉加载动作完成后调用此方法告诉BScroll完成一次上拉动作
+        this.pullingUp()
+        this.myScroll.first.finishPullUp() // 上拉加载动作完成后调用此方法告诉BScroll完成一次上拉动作
       })
     })
 
-
-    // this.myScroll.on('pullingDown', () => {
-    //   console.log('下拉刷新')
-    //   this.$nextTick(() => {
-    //     this.myScroll.refresh() // DOM 结构发生变化后，重新初始化BScroll
+    // this.$nextTick(() => {
+    //   this.myScroll.second = new BScroll(this.$refs.wrapper2, {
+    //     scrollY: true,
+    //     pullDownRefresh: {
+    //       threshold: 50,
+    //     },
+    //     pullUpLoad: {
+    //       threshold: -100,
+    //       probeType: 3
+    //     }
     //   })
-    //   this.myScroll.finishPullDown() // 下拉刷新动作完成后调用此方法告诉BScroll完成一次下拉动作
+    //   this.myScroll.second.on('pullingDown', () => {
+
+    //     console.log('下拉刷新')
+    //     this.pullingDown()
+    //     this.myScroll.second.finishPullDown() // 下拉刷新动作完成后调用此方法告诉BScroll完成一次下拉动作
+    //   })
+    //   this.myScroll.second.on('pullingUp', () => {
+    //     console.log('上拉加载')
+    //     this.pullingUp()
+    //     this.myScroll.second.finishPullUp() // 上拉加载动作完成后调用此方法告诉BScroll完成一次上拉动作
+    //   })
     // })
 
-    // this.myScroll.on('pullingUp', () => {
-    //   console.log('上拉加载')
-    //   this.$nextTick(() => {
-    //     this.myScroll.refresh() // DOM 结构发生变化后，重新初始化BScroll
+    //  this.$nextTick(() => {
+    //   this.myScroll.third = new BScroll(this.$refs.wrapper3, {
+    //     scrollY: true,
+    //     pullDownRefresh: {
+    //       threshold: 50,
+    //     },
+    //     pullUpLoad: {
+    //       threshold: -100,
+    //       probeType: 3
+    //     }
     //   })
-    //   this.myScroll.finishPullUp() // 上拉加载动作完成后调用此方法告诉BScroll完成一次上拉动作
+    //   this.myScroll.third.on('pullingDown', () => {
+
+    //     console.log('下拉刷新')
+    //     this.pullingDown()
+    //     this.myScroll.third.finishPullDown() // 下拉刷新动作完成后调用此方法告诉BScroll完成一次下拉动作
+    //   })
+    //   this.myScroll.third.on('pullingUp', () => {
+    //     console.log('上拉加载')
+    //     this.pullingUp()
+    //     this.myScroll.third.finishPullUp() // 上拉加载动作完成后调用此方法告诉BScroll完成一次上拉动作
+    //   })
     // })
+    // this.$nextTick(() => {
+    //   this.myScroll = new BScroll(this.$refs.wrapper2, {
+    //     scrollY: true,
+    //     pullDownRefresh: {
+    //       threshold: 50,
+    //     },
+    //     pullUpLoad: {
+    //       threshold: -100,
+    //       probeType: 3
+    //     }
+    //   })
+    //   this.myScroll.on('pullingDown', () => {
+
+    //     console.log('下拉刷新')
+    //     this.pullingDown()
+    //     this.myScroll.finishPullDown() // 下拉刷新动作完成后调用此方法告诉BScroll完成一次下拉动作
+    //   })
+    //   this.myScroll.on('pullingUp', () => {
+    //     console.log('上拉加载')
+    //     this.pullingUp()
+    //     this.myScroll.finishPullUp() // 上拉加载动作完成后调用此方法告诉BScroll完成一次上拉动作
+    //   })
+    // })
+    // this.$nextTick(() => {
+    //   this.myScroll = new BScroll(this.$refs.wrapper3, {
+    //     scrollY: true,
+    //     pullDownRefresh: {
+    //       threshold: 50,
+    //     },
+    //     pullUpLoad: {
+    //       threshold: -100,
+    //       probeType: 3
+    //     }
+    //   })
+    //   this.myScroll.on('pullingDown', () => {
+
+    //     console.log('下拉刷新')
+    //     this.pullingDown()
+    //     this.myScroll.finishPullDown() // 下拉刷新动作完成后调用此方法告诉BScroll完成一次下拉动作
+    //   })
+    //   this.myScroll.on('pullingUp', () => {
+    //     console.log('上拉加载')
+    //     this.pullingUp()
+    //     this.myScroll.finishPullUp() // 上拉加载动作完成后调用此方法告诉BScroll完成一次上拉动作
+    //   })
+    // })
+  },
+  watch : {
+    activeName (newVal, oldVal) {
+      this.activeName = newVal
+      if (newVal === 'second') {
+        if (!this.myScroll.second) {
+          this.$nextTick(() => {
+            this.myScroll.second = new BScroll(this.$refs.wrapper2, {
+              scrollY: true,
+              pullDownRefresh: {
+                threshold: 50,
+              },
+              pullUpLoad: {
+                threshold: -100,
+                probeType: 3
+              }
+            })
+            this.myScroll.second.on('pullingDown', () => {
+              console.log('下拉刷新')
+              this.pullingDown()
+              this.myScroll.second.finishPullDown() // 下拉刷新动作完成后调用此方法告诉BScroll完成一次下拉动作
+            })
+            this.myScroll.second.on('pullingUp', () => {
+              console.log('上拉加载')
+              this.pullingUp()
+              this.myScroll.second.finishPullUp() // 上拉加载动作完成后调用此方法告诉BScroll完成一次上拉动作
+            })
+          })
+        }
+      } else if (newVal === 'third') {
+        if (!this.myScroll.third) {
+          this.$nextTick(() => {
+            this.myScroll = new BScroll(this.$refs.wrapper3, {
+              scrollY: true,
+              pullDownRefresh: {
+                threshold: 50,
+              },
+              pullUpLoad: {
+                threshold: -100,
+                probeType: 3
+              }
+            })
+            this.myScroll.on('pullingDown', () => {
+
+              console.log('下拉刷新')
+              this.pullingDown()
+              this.myScroll.finishPullDown() // 下拉刷新动作完成后调用此方法告诉BScroll完成一次下拉动作
+            })
+            this.myScroll.on('pullingUp', () => {
+              console.log('上拉加载')
+              this.pullingUp()
+              this.myScroll.finishPullUp() // 上拉加载动作完成后调用此方法告诉BScroll完成一次上拉动作
+            })
+          })
+        }
+      }
+    }
   }
 }
 </script>
@@ -172,8 +386,9 @@ export default {
   top: 0;
   bottom: 0;
   right: 0;
+  // height: 500px;
   overflow: hidden;
-  -webkit-overflow-scrolling : touch;
+  // -webkit-overflow-scrolling : touch;
 }
 </style>
 <style lang="scss">
