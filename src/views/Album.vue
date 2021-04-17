@@ -2,8 +2,13 @@
   <div id="album">
     <top-navbar></top-navbar>
     <div id="wrap">
-      <vue-waterfall-easy :imgsArr="imgsArr"  @scrollReachBottom="fetchImgsData"></vue-waterfall-easy>
+      <vue-waterfall-easy :imgsArr="imgsArr"  @scrollReachBottom="fetchImgsData" @click="clickFn"></vue-waterfall-easy>
     </div>
+    <el-image 
+      style="width: 100%"
+      :src="currentImg" 
+      :preview-src-list="imgList">
+    </el-image>
   </div>
 </template>
 
@@ -24,7 +29,8 @@ data () {
       fetchImgsArr: [],     //存放每次滚动时下一批要加载的图片的数组
       page: 1,
       rows: 16,
-      total: 0
+      total: 0,
+      currentImg: ''
     }
   },
 　　methods: {
@@ -47,7 +53,19 @@ data () {
         } else {
           this.$message.success('已经到底了')
         }
-　　　}
+　　　},
+    clickFn(event, { index, value }) {
+        // 阻止a标签跳转
+        event.preventDefault()
+        // 只有当点击到图片时才进行操作
+        console.log('点击到图片', index, value)
+        this.currentImg = value.src
+    //     if (event.target.tagName.toLowerCase() == 'img') {
+    //       console.log('img clicked',index, value);
+    //       this.dialogVisible = true;
+    //       this.imgIndex = index;
+    //       this.srcList = value;
+        }
 　　},
     created () {
       // this.imgsArr = this.initImgsArr(0, 40)       //初始化第一次（即页面加载完毕时）要加载的图片数据
@@ -71,7 +89,12 @@ data () {
       })
 
 
-　　}
+　　},
+    computed : {
+      imgList () {
+        return this.imgsArr && this.imgsArr.map((item) => this.$baseImgUrl + item.path)
+      }
+    }
 }
 </script>
 

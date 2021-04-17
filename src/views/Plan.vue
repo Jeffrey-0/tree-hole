@@ -18,6 +18,9 @@
         <div class="targer">
           <div class="doingTarger">
             <div class="targerItem" v-for="(item,index) in doingTargers" :key="item.planId" @click="targerClick(item, index)">
+              <div class="deleteIcon" @click.stop="clickDelete(item, 1)">
+                <i class="el-icon-error" title="删除"></i>
+              </div>
               <div class="icon">
                 <i :class="item.content"></i>
               </div>
@@ -28,6 +31,9 @@
           <div class="title">已结束</div>
           <div class="endTarger">
             <div class="targerItem" v-for="(item,index) in endTargers" :key="item.planId" @click="targerClick(item, index)">
+               <div class="deleteIcon" @click.stop="clickDelete(item, 2)">
+                <i class="el-icon-error" title="删除"></i>
+              </div>
               <div class="icon">
                 <i :class="item.content"></i>
               </div>
@@ -280,7 +286,30 @@ export default {
           this.$message.error('修改目标失败')
         }
       })
-    }
+    },
+    // 点击删除
+    clickDelete (item, type) {
+      console.log('点击删除')
+      // if (this.ifLogin()) { return }
+      // if (secret.userId === this.$user.userId) {
+        this.$confirm('是否删除这条目标?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'error'
+        }).then(() => {
+          deletePlanById(item.planId).then(res => {
+            if (res) {
+              this.$message.success('删除成功!')
+              if (type === 1)
+              this.doingTargers = this.doingTargers.filter(item2 => item2.planId !== item.planId)
+              else 
+              this.endTargers = this.endTargers.filter(item2 => item2.planId !== item.planId)
+            } else {
+              this.$message.error('删除失败!')
+            }
+          })
+        }).catch(() => {})
+    },
   },
   mounted () {
     this.ifMobile = this.$ifMobile.res
@@ -354,6 +383,7 @@ export default {
     }
   }
   .targerItem {
+    position: relative;
     width: 20%;
     height: 200px;
     margin: 3% 6% 3% 7%;
@@ -401,5 +431,17 @@ export default {
     box-sizing: border-box;
     // border-top: 1px solid #ddd;
   }
+}
+.deleteIcon {
+  
+  position: absolute;
+  right: 0;
+  top: 0;
+  font-size: 18px;
+  color: #aaa;
+  display: none;
+}
+.targerItem:hover .deleteIcon{
+  display: inline-block;
 }
 </style>

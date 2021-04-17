@@ -3,12 +3,18 @@
     <!-- 聊天组件 -->
     <div class="chatWrap">
       <div class="title">小疯子</div>
-      <div class="chat-content"  ref="messageList" id="messageList">
-        <div v-for="(item, index) in messages" :key="index">
-          <message-item :message="item" :acceptUser="acceptUser"></message-item>
+
+        <div class="chat-content"  ref="messageList" id="messageList">
+            <div class="wrapper" ref="wrapper">
+              <div>
+                <div v-for="(item, index) in messages" :key="index">
+                  <message-item :message="item" :acceptUser="acceptUser"></message-item>
+                </div>
+                <!-- <div id="msgEnd" style="height:0px; overflow:hidden"></div> -->
+              </div>
+            </div> 
+            
         </div>
-        <div id="msgEnd" style="height:0px; overflow:hidden"></div>
-      </div>
       <div class="edit">
         <div class="tool">
           <div class="sendPic"></div>
@@ -24,6 +30,7 @@
 </template>
 
 <script>
+import BScroll from 'better-scroll'
 import {selectChatById, showAllChatByPage, deleteChatById, insertChat, updateChatById, showAllByTowUserId} from '@/network/chat'
 import MessageItem from '@/components/MessageItem'
 import {selectUserById, showAllUserByPage, deleteUserById, insertUser, updateUserById} from '@/network/user'
@@ -46,7 +53,9 @@ export default {
         userId: 0,
         username: '暂无选中用户',
         portrait: 'user/114.jpg'
-      }
+      },
+      myScroll: '',
+      finish: 0
     }
   },
   methods: {
@@ -67,11 +76,16 @@ export default {
         this.messages = res.data
         let that = this
         setTimeout(function () {
-            that.$el.querySelector(`#msgEnd`).scrollIntoView({
-              behavior: "smooth",  // 平滑过渡
-              block:    "start"  // 上边框与视窗顶部平齐。默认值
-            })
-          }, 50)
+            that.myScroll.refresh()
+            that.myScroll.scrollTo(0, that.myScroll.maxScrollY)
+          }, 200)
+        
+        // setTimeout(function () {
+        //     that.$el.querySelector(`#msgEnd`).scrollIntoView({
+        //       behavior: "smooth",  // 平滑过渡
+        //       block:    "start"  // 上边框与视窗顶部平齐。默认值
+        //     })
+        //   }, 50)
       })
     },
     // 发送消息
@@ -91,15 +105,46 @@ export default {
           this.messages.push(chat)
           // 滚动到底部
           let that = this
-          setTimeout(function () {
-              that.$el.querySelector(`#msgEnd`).scrollIntoView({
-                behavior: "smooth",  // 平滑过渡
-                block:    "start"  // 上边框与视窗顶部平齐。默认值
-              })
-            }, 50)
+        setTimeout(function () {
+            that.myScroll.refresh()
+            that.myScroll.scrollTo(0, that.myScroll.maxScrollY)
+          }, 200)
+          // let that = this
+          // setTimeout(function () {
+          //     that.$el.querySelector(`#msgEnd`).scrollIntoView({
+          //       behavior: "smooth",  // 平滑过渡
+          //       block:    "start"  // 上边框与视窗顶部平齐。默认值
+          //     })
+          //   }, 50)
         } else {
           this.$message.error('发送失败!')
         }
+      })
+    },
+    // 下拉加载之前历史记录
+    pullingDown () {
+      if (this.finish) {
+        this.$message.success('已经加载完了!')
+      }
+      this.page ++
+      showAllByTowUserId(this.$user.userId, this.acceptUser.userId, this.page, this.rows).then(res => {
+        if (!res.data || res.data.length < this.rows) {
+          this.finish = 1
+        }
+        this.messages = res.data.concat(this.messages)
+        let that = this
+        setTimeout(function () {
+            that.myScroll.refresh()
+          }, 200)
+        
+        // this.messages = res.data
+        // let that = this
+        // setTimeout(function () {
+        //     that.$el.querySelector(`#msgEnd`).scrollIntoView({
+        //       behavior: "smooth",  // 平滑过渡
+        //       block:    "start"  // 上边框与视窗顶部平齐。默认值
+        //     })
+        //   }, 50)
       })
     }
   },
@@ -109,6 +154,29 @@ export default {
     selectUserById(this.acceptUser.userId).then(res => {
       this.acceptUser = res
       this.refresh()
+    })
+  },
+  mounted () {
+    this.$nextTick(() => {
+      this.myScroll = new BScroll(this.$refs.wrapper, {
+        scrollY: true,
+        pullDownRefresh: {
+          threshold: 50,
+          probeType: 3
+        },
+        pullUpLoad: {
+          threshold: -70,
+          probeType: 3
+        },
+        mouseWheel: true,
+        click: true
+      })
+      this.myScroll.on('pullingDown', () => {
+
+        console.log('下拉加载之前聊天记录')
+        this.pullingDown()
+        this.myScroll.finishPullDown() // 下拉刷新动作完成后调用此方法告诉BScroll完成一次下拉动作
+      })
     })
   }
 }
@@ -127,6 +195,7 @@ export default {
     background: #f4f5f7;
     vertical-align: top;
     .chat-content {
+      position: relative;
       width: 100%;
       height: calc(100% - 90px);
       // overflow: hidden;
@@ -285,5 +354,15 @@ export default {
   background-color: rgba(0,0,0,0.5);
 }
 
+.wrapper {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  right: 0;
+  // height: 500px;
+  overflow: hidden;
+  // -webkit-overflow-scrolling : touch;
+}
 
 </style>

@@ -105,6 +105,7 @@ export default {
     // 下拉刷新
     pullingDown () {
       // if (activeName === 'first') {
+        console.log('this.activeName', this.activeName)
         this.currentPage[this.activeName] = 1
         this.finish[this.activeName] = 0
         if (this.activeName === 'first') {
@@ -118,7 +119,7 @@ export default {
             }, 200)
           })
         } else if (this.activeName === 'second') {
-          showAllSecretByPower(this.currentPage[this.activeName], this.pageSize).then(res => {
+          showAllSecretByFollows(this.$user.userId, this.currentPage[this.activeName], this.pageSize).then(res => {
             this.SecretList[this.activeName] = res.data
             this.total[this.activeName] = res.total
             let that = this
@@ -128,7 +129,7 @@ export default {
             }, 200)
           })
         } else if (this.activeName === 'third') {
-          showAllSecretByPower(this.currentPage[this.activeName], this.pageSize).then(res => {
+          showAllSecretByMyself(this.$user.userId, this.currentPage[this.activeName], this.pageSize).then(res => {
             this.SecretList[this.activeName] = res.data
             this.total[this.activeName] = res.total
             let that = this
@@ -139,7 +140,9 @@ export default {
           })
         }
     },
+    // 上拉加载
     pullingUp () {
+      console.log('this.activeName', this.activeName, this.finish[this.activeName])
       if (this.finish[this.activeName]) {
           this.$message('已经到底了!')
            this.myScroll[this.activeName].finishPullUp()
@@ -147,7 +150,7 @@ export default {
         }
         
         this.currentPage[this.activeName] ++
-        this.finish[this.activeName] = 0
+        // this.finish[this.activeName] = 0
         if (this.activeName === 'first') {
           showAllSecretByPower(this.currentPage[this.activeName], this.pageSize).then(res => {
             if (res.data.length < this.pageSize) { this.finish[this.activeName] = 1}
@@ -161,7 +164,7 @@ export default {
             }, 200)
           })
         } else if (this.activeName === 'second') {
-          showAllSecretByPower(this.currentPage[this.activeName], this.pageSize).then(res => {
+          showAllSecretByFollows(this.$user.userId, this.currentPage[this.activeName], this.pageSize).then(res => {
             if (res.data.length < this.pageSize) { this.finish[this.activeName] = 1}
             res.data.map(item => {
               this.SecretList[this.activeName].push(item)
@@ -173,7 +176,7 @@ export default {
             }, 200)
           })
         } else if (this.activeName === 'third') {
-          showAllSecretByPower(this.currentPage[this.activeName], this.pageSize).then(res => {
+          showAllSecretByMyself(this.$user.userId, this.currentPage[this.activeName], this.pageSize).then(res => {
             if (res.data.length < this.pageSize) { this.finish[this.activeName] = 1}
             res.data.map(item => {
               this.SecretList[this.activeName].push(item)
@@ -204,9 +207,11 @@ export default {
           threshold: 50,
         },
         pullUpLoad: {
-          threshold: -100,
+          threshold: -50,
           probeType: 3
-        }
+        },
+        mouseWheel: true,
+        click: true
       })
       this.myScroll.first.on('pullingDown', () => {
 
@@ -220,100 +225,6 @@ export default {
         this.myScroll.first.finishPullUp() // 上拉加载动作完成后调用此方法告诉BScroll完成一次上拉动作
       })
     })
-
-    // this.$nextTick(() => {
-    //   this.myScroll.second = new BScroll(this.$refs.wrapper2, {
-    //     scrollY: true,
-    //     pullDownRefresh: {
-    //       threshold: 50,
-    //     },
-    //     pullUpLoad: {
-    //       threshold: -100,
-    //       probeType: 3
-    //     }
-    //   })
-    //   this.myScroll.second.on('pullingDown', () => {
-
-    //     console.log('下拉刷新')
-    //     this.pullingDown()
-    //     this.myScroll.second.finishPullDown() // 下拉刷新动作完成后调用此方法告诉BScroll完成一次下拉动作
-    //   })
-    //   this.myScroll.second.on('pullingUp', () => {
-    //     console.log('上拉加载')
-    //     this.pullingUp()
-    //     this.myScroll.second.finishPullUp() // 上拉加载动作完成后调用此方法告诉BScroll完成一次上拉动作
-    //   })
-    // })
-
-    //  this.$nextTick(() => {
-    //   this.myScroll.third = new BScroll(this.$refs.wrapper3, {
-    //     scrollY: true,
-    //     pullDownRefresh: {
-    //       threshold: 50,
-    //     },
-    //     pullUpLoad: {
-    //       threshold: -100,
-    //       probeType: 3
-    //     }
-    //   })
-    //   this.myScroll.third.on('pullingDown', () => {
-
-    //     console.log('下拉刷新')
-    //     this.pullingDown()
-    //     this.myScroll.third.finishPullDown() // 下拉刷新动作完成后调用此方法告诉BScroll完成一次下拉动作
-    //   })
-    //   this.myScroll.third.on('pullingUp', () => {
-    //     console.log('上拉加载')
-    //     this.pullingUp()
-    //     this.myScroll.third.finishPullUp() // 上拉加载动作完成后调用此方法告诉BScroll完成一次上拉动作
-    //   })
-    // })
-    // this.$nextTick(() => {
-    //   this.myScroll = new BScroll(this.$refs.wrapper2, {
-    //     scrollY: true,
-    //     pullDownRefresh: {
-    //       threshold: 50,
-    //     },
-    //     pullUpLoad: {
-    //       threshold: -100,
-    //       probeType: 3
-    //     }
-    //   })
-    //   this.myScroll.on('pullingDown', () => {
-
-    //     console.log('下拉刷新')
-    //     this.pullingDown()
-    //     this.myScroll.finishPullDown() // 下拉刷新动作完成后调用此方法告诉BScroll完成一次下拉动作
-    //   })
-    //   this.myScroll.on('pullingUp', () => {
-    //     console.log('上拉加载')
-    //     this.pullingUp()
-    //     this.myScroll.finishPullUp() // 上拉加载动作完成后调用此方法告诉BScroll完成一次上拉动作
-    //   })
-    // })
-    // this.$nextTick(() => {
-    //   this.myScroll = new BScroll(this.$refs.wrapper3, {
-    //     scrollY: true,
-    //     pullDownRefresh: {
-    //       threshold: 50,
-    //     },
-    //     pullUpLoad: {
-    //       threshold: -100,
-    //       probeType: 3
-    //     }
-    //   })
-    //   this.myScroll.on('pullingDown', () => {
-
-    //     console.log('下拉刷新')
-    //     this.pullingDown()
-    //     this.myScroll.finishPullDown() // 下拉刷新动作完成后调用此方法告诉BScroll完成一次下拉动作
-    //   })
-    //   this.myScroll.on('pullingUp', () => {
-    //     console.log('上拉加载')
-    //     this.pullingUp()
-    //     this.myScroll.finishPullUp() // 上拉加载动作完成后调用此方法告诉BScroll完成一次上拉动作
-    //   })
-    // })
   },
   watch : {
     activeName (newVal, oldVal) {
@@ -327,9 +238,11 @@ export default {
                 threshold: 50,
               },
               pullUpLoad: {
-                threshold: -100,
+                threshold: -70,
                 probeType: 3
-              }
+              },
+              mouseWheel: true,
+              click: true
             })
             this.myScroll.second.on('pullingDown', () => {
               console.log('下拉刷新')
@@ -346,26 +259,28 @@ export default {
       } else if (newVal === 'third') {
         if (!this.myScroll.third) {
           this.$nextTick(() => {
-            this.myScroll = new BScroll(this.$refs.wrapper3, {
+            this.myScroll.third = new BScroll(this.$refs.wrapper3, {
               scrollY: true,
               pullDownRefresh: {
                 threshold: 50,
               },
               pullUpLoad: {
-                threshold: -100,
+                threshold: -70,
                 probeType: 3
-              }
+              },
+              mouseWheel: true,
+              click: true
             })
-            this.myScroll.on('pullingDown', () => {
+            this.myScroll.third.on('pullingDown', () => {
 
               console.log('下拉刷新')
               this.pullingDown()
-              this.myScroll.finishPullDown() // 下拉刷新动作完成后调用此方法告诉BScroll完成一次下拉动作
+              this.myScroll.third.finishPullDown() // 下拉刷新动作完成后调用此方法告诉BScroll完成一次下拉动作
             })
-            this.myScroll.on('pullingUp', () => {
+            this.myScroll.third.on('pullingUp', () => {
               console.log('上拉加载')
               this.pullingUp()
-              this.myScroll.finishPullUp() // 上拉加载动作完成后调用此方法告诉BScroll完成一次上拉动作
+              this.myScroll.third.finishPullUp() // 上拉加载动作完成后调用此方法告诉BScroll完成一次上拉动作
             })
           })
         }

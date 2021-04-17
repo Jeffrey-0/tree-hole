@@ -211,7 +211,6 @@ export default {
             }
           })
         }).catch(() => {})
-      // }
     },
     handleSizeChange(val) {
       console.log(`每页 ${val} 条`);

@@ -39,8 +39,10 @@
     <div class="bottom">
       <el-tabs v-model="activeName" @tab-click="handleClick">
         <el-tab-pane label="秘密" name="first">
-          <div class="secretList">
-            <secret-item v-for="secret in SecretList" :key="secret.secretId" :secret="secret"></secret-item>
+          <div class="wrapper" ref="wrapper">
+            <div class="secretList">
+              <secret-item v-for="secret in SecretList" :key="secret.secretId" :secret="secret"></secret-item>
+            </div>
           </div>
         </el-tab-pane>
         <el-tab-pane label="计划" name="second">
@@ -81,6 +83,8 @@
 </template>
 
 <script>
+// 导入滑动插件
+import BScroll from 'better-scroll'
 import SecretItem from '@/components/SecretItem'
 import Album from '@/views/Album'
 import vueWaterfallEasy from 'vue-waterfall-easy'
@@ -118,14 +122,16 @@ export default {
       },
       // 秘密
       currentPage: 1,
-      pageSize: 6,
+      pageSize: 3,
+      finish: 0,
       total: 0,
       // 目标
       endTargers: [],
       doingTargers: [],
       // 相册
       page: 1,
-      rows: 16
+      rows: 16,
+      myScroll: ''
     }
   },
   methods: {
@@ -163,16 +169,24 @@ export default {
 
       // 获取秘密
       if (this.currentUser.userId === this.$user.userId) {
-      showAllSecretByMyself(this.currentUser.userId, this.currentPage, this.pageSize).then(res => {
-          this.SecretList = res.data
-          this.total = res.total
-      })
-    } else {
-      showAllSecretByUserId(this.currentUser.userId, this.currentPage, this.pageSize).then(res => {
-          this.SecretList = res.data
-          this.total = res.total
-      })
-    }
+        showAllSecretByMyself(this.currentUser.userId, this.currentPage, this.pageSize).then(res => {
+            this.SecretList = res.data
+            this.total = res.total
+            let that = this
+          setTimeout(function () {
+              that.myScroll.refresh()
+            }, 200)
+        })
+      } else {
+        showAllSecretByUserId(this.currentUser.userId, this.currentPage, this.pageSize).then(res => {
+            this.SecretList = res.data
+            this.total = res.total
+            let that = this
+          setTimeout(function () {
+              that.myScroll.refresh()
+            }, 200)
+        })
+      }
 
       // 获取目标数据
       showAllPlanByUserId(this.currentUser.userId).then(res => {
@@ -198,6 +212,64 @@ export default {
         console.log('获取图片', this.imgsArr, this.fetchImgsArr)
       })
     },
+        // 下拉刷新
+    pullingDown () {
+      // if (activeName === 'first') {
+        this.currentPage = 1
+        this.finish = 0
+
+        // 获取秘密
+      if (this.currentUser.userId === this.$user.userId) {
+        showAllSecretByMyself(this.currentUser.userId, this.currentPage, this.pageSize).then(res => {
+            this.SecretList = res.data
+            this.total = res.total
+            let that = this
+          setTimeout(function () {
+              that.myScroll.refresh()
+            }, 200)
+        })
+      } else {
+        showAllSecretByUserId(this.currentUser.userId, this.currentPage, this.pageSize).then(res => {
+            this.SecretList = res.data
+            this.total = res.total
+            let that = this
+          setTimeout(function () {
+              that.myScroll.refresh()
+            }, 200)
+        })
+      }
+    },
+    // 上拉加载
+    pullingUp () {
+      if (this.finish) {
+          this.$message('已经到底了!')
+           this.myScroll.finishPullUp()
+          return
+        }
+        
+        this.currentPage ++
+        // this.finish = 0
+        // 获取秘密
+      if (this.currentUser.userId === this.$user.userId) {
+        showAllSecretByMyself(this.currentUser.userId, this.currentPage, this.pageSize).then(res => {
+          if (res.data.length < this.pageSize) { this.finish = 1}
+            this.SecretList = this.SecretList.concat(res.data)
+            let that = this
+          setTimeout(function () {
+              that.myScroll.refresh()
+            }, 200)
+        })
+      } else {
+        showAllSecretByUserId(this.currentUser.userId, this.currentPage, this.pageSize).then(res => {
+          if (res.data.length < this.pageSize) { this.finish = 1}
+            this.SecretList = this.SecretList.concat(res.data)
+            let that = this
+          setTimeout(function () {
+              that.myScroll.refresh()
+            }, 200)
+        })
+      }
+    },
   },
   computed : {
   },
@@ -206,6 +278,33 @@ export default {
     // console.log('当前路由', this.$route, this.$route.path)
     this.currentUser.userId = this.$route.query.userId ? this.$route.query.userId - 0 :this.$user.userId
     this.refresh()
+  },
+  mounted () {
+    this.$nextTick(() => {
+      this.myScroll = new BScroll(this.$refs.wrapper, {
+        scrollY: true,
+        pullDownRefresh: {
+          threshold: 50,
+        },
+        pullUpLoad: {
+          threshold: -50,
+          probeType: 3
+        },
+        mouseWheel: true,
+        click: true
+      })
+      this.myScroll.on('pullingDown', () => {
+
+        console.log('下拉刷新')
+        this.pullingDown()
+        this.myScroll.finishPullDown() // 下拉刷新动作完成后调用此方法告诉BScroll完成一次下拉动作
+      })
+      this.myScroll.on('pullingUp', () => {
+        console.log('上拉加载')
+        this.pullingUp()
+        this.myScroll.finishPullUp() // 上拉加载动作完成后调用此方法告诉BScroll完成一次上拉动作
+      })
+    })
   }
 }
 </script>
@@ -366,6 +465,16 @@ export default {
       bottom: 0;
     }
   }
+  .wrapper {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  right: 0;
+  // height: 500px;
+  overflow: hidden;
+  // -webkit-overflow-scrolling : touch;
+}
   
 }
 </style>

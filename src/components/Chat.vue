@@ -9,8 +9,13 @@
       </div>
     </div>
     <div class="chatWrap">
-      <div class="title">{{ acceptUser.username }}</div>
+      <div class="title">{{ acceptUser.username }}
+        
+      </div>
       <div class="chat-content" id="messageList">
+        <div class="top-bt-wrap">
+            <i class="el-icon-arrow-up top-bt" title="加载更多历史" @click="getMoreMessage"></i> 
+        </div>
         <div v-for="(item, index) in messages" :key="index">
           <message-item :message="item" :acceptUser="acceptUser"></message-item>
         </div>
@@ -57,7 +62,7 @@ export default {
       chatInput: '',
       emojiInput: '',
       page: 1,
-      rows: 10,
+      rows: 5,
       acceptUser: {
         userId: 0,
         username: '暂无选中用户',
@@ -84,7 +89,12 @@ export default {
     refresh () {
       showAllByTowUserId(this.$user.userId, this.acceptUser.userId, this.page, this.rows).then(res => {
         console.log('获取聊天记录', res)
+        this.page = 1
+        this.finish = 0
         this.messages = res.data
+        if (res.data.length < this.rows) {
+          this.finish = 1
+        }
         let that = this
         setTimeout(function () {
             that.$el.querySelector(`#msgEnd`).scrollIntoView({
@@ -129,6 +139,20 @@ export default {
         } else {
           this.$message.error('发送失败!')
         }
+      })
+    },
+    getMoreMessage () {
+      if (this.finish) {
+        this.$message('无更多消息!')
+        return
+      }
+      this.page ++
+      showAllByTowUserId(this.$user.userId, this.acceptUser.userId, this.page, this.rows).then(res => {
+        // console.log('获取聊天记录', res)
+        if (res.data.length < this.rows) {
+          this.finish = 1
+        }
+        this.messages = res.data.concat(this.messages)
       })
     }
   },
@@ -276,7 +300,14 @@ export default {
       overflow: hidden;
     }
   }
-  
+  .top-bt-wrap {
+    text-align: center;
+  }
+  .top-bt {
+    font-size: 22px;
+    cursor: pointer;
+    color: #aaa;
+  }
 }
 
 /*定义滚动条高宽及背景 高宽分别对应横竖滚动条的尺寸*/
