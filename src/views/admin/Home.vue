@@ -6,33 +6,33 @@
           <el-col :span="6">
             <el-card shadow="always">
               <div class="icons">
-                <i class="el-icon-notebook-2"></i>
+                <i class="el-icon-user"></i>
               </div>
               <div class="info">
-                <div class="num">{{ borrowToday }}</div>
-                <div>今日借出数</div>
+                <div class="num">{{ totals.user }}</div>
+                <div>用户</div>
               </div>
             </el-card>
           </el-col>
           <el-col :span="6">
             <el-card shadow="always">
               <div class="icons">
-                <i class="el-icon-notebook-2"></i>
+                <i class="el-icon-edit"></i>
               </div>
               <div class="info">
-                <div class="num">{{ borrowThisMonth }}</div>
-                <div>本月借出数</div>
+                <div class="num">{{ totals.secret }}</div>
+                <div>秘密</div>
               </div>
             </el-card>
           </el-col>
           <el-col :span="6">
             <el-card shadow="always">
               <div class="icons">
-                <i class="el-icon-notebook-2"></i>
+                <i class="el-icon-document-checked"></i>
               </div>
               <div class="info">
-                <div class="num">{{ borrowThisYear }}</div>
-                <div>年度借出数</div>
+                <div class="num">{{ totals.plan }}</div>
+                <div>计划</div>
               </div>
             </el-card>
           </el-col>
@@ -41,97 +41,140 @@
           <el-col :span="6">
             <el-card shadow="always">
               <div class="icons">
-                <i class="el-icon-collection"></i>
+                <i class="el-icon-picture-outline"></i>
               </div>
               <div class="info">
-                <div class="num">{{ backToday }}</div>
-                <div>今日归还数</div>
+                <div class="num">{{ totals.album }}</div>
+                <div>相册</div>
               </div>
             </el-card>
           </el-col>
           <el-col :span="6">
             <el-card shadow="always">
               <div class="icons">
-                <i class="el-icon-collection"></i>
+                <i class="el-icon-s-custom"></i>
               </div>
               <div class="info">
-                <div class="num">{{ backThisMonth }}</div>
-                <div>本月归还数</div>
+                <div class="num">{{ totals.relation }}</div>
+                <div>好友</div>
               </div>
             </el-card>
           </el-col>
           <el-col :span="6">
             <el-card shadow="always">
               <div class="icons">
-                <i class="el-icon-collection"></i>
+                <i class="el-icon-chat-line-round"></i>
               </div>
               <div class="info">
-                <div class="num">{{ backThisYear }}</div>
-                <div>年度归还数</div>
+                <div class="num">{{ totals.chat }}</div>
+                <div>聊天</div>
               </div>
             </el-card>
           </el-col>
+          
         </el-row>
       </div>
       <!-- 公告显示 -->
       <el-card class="box-card">
         <div slot="header" class="clearfix">
-          <span>最新公告</span>
+          <span>最新举报</span>
         </div>
-        <div class="new">{{ getNewNotice.noticeContent }}</div>
+        <div class="new">
+                  <el-table
+          :data="tableData"
+          style="width: 100%; min-height: 330px; margin-bottom: 15px"
+        >
+          <el-table-column prop="reportId" label="ID" width="40"> </el-table-column>
+          <el-table-column prop="contentId" label="内容ID" width="80"> </el-table-column>
+          <el-table-column prop="type" label="类型" :formatter="forType" width="60"></el-table-column>
+          <el-table-column prop="note" label="备注"></el-table-column>
+          <el-table-column prop="userId" label="举报者ID" width="80"> </el-table-column>
+          <el-table-column prop="createTime" label="创建时间" :formatter="forDate">
+          </el-table-column>
+          
+           <el-table-column label="状态">
+            <template slot-scope="scope" align="center">
+              <el-switch
+                style="display: block"
+                v-model="scope.row.finish"
+                active-color="#13ce66"
+                inactive-color="#ff4949"
+                active-text="已处理"
+                inactive-text="待处理"
+                :active-value="1"
+                :inactive-value="0"
+                @change="changeFinish(scope.row)">
+              </el-switch>
+            </template>
+          </el-table-column>
+          <el-table-column  label="操作"  align="center">
+            <template slot-scope="scope">
+              <el-tag
+                @click="handleClick(scope.row)"
+                type="primary"
+                class="tag-btn"
+              >查 看</el-tag>
+              <el-tag
+                @click="deleteClick(scope.row)"
+                type="danger"
+                class="tag-btn"
+              >删除</el-tag>
+            </template>
+          </el-table-column>
+        </el-table>
+        </div>
       </el-card>
     </div>
   </div>
 </template>
 
 <script>
-import {
-  borrowToday,
-  backToday,
-  borrowThisMonth,
-  backThisMonth,
-  borrowThisYear,
-  backThisYear,
-  getNewNotice,
-} from "../../network/history";
+import {showAllReportByPage, SelectFuzzy, deleteReportById, updateReportByIdSelective } from "../../network/report"
 export default {
   name: "Home",
   data() {
     return {
-      borrowToday: 0,
-      backToday: 0,
-      borrowThisMonth: 0,
-      backThisMonth: 0,
-      borrowThisYear: 0,
-      backThisYear: 0,
-      getNewNotice: {
-        noticeContent: "",
+      totals: {
+        user: 10,
+        secret: 20,
+        plan: 20,
+        album: 30,
+        relation: 15,
+        chat: 30
       },
-    };
+      tableData: []
+    }
   },
   created() {
-    borrowToday().then((res) => {
-      this.borrowToday = res;
-    });
-    backToday().then((res) => {
-      this.backToday = res;
-    });
-    borrowThisMonth().then((res) => {
-      this.borrowThisMonth = res;
-    });
-    backThisMonth().then((res) => {
-      this.backThisMonth = res;
-    });
-    borrowThisYear().then((res) => {
-      this.borrowThisYear = res;
-    });
-    backThisYear().then((res) => {
-      this.backThisYear = res;
-    });
-    getNewNotice().then((res) => {
-      this.getNewNotice.noticeContent = res.noticeContent;
-    });
+    showAllReportByPage(1, 6).then((res) => {
+      console.log("普通查询")
+      // TODO
+      this.tableData = res.data
+      // this.total = res.total
+    })
   },
+  methods : {
+    forType(row) {
+      if (row.type === 0) {
+        return '用户'
+      } else if (row.type === 1) {
+        return '秘密'
+      } else if (row.type === 2) {
+        return '计划'
+      } else if (row.type === 3) {
+        return '相册'
+      } else if (row.type === 4) {
+        return '消息'
+      } else if (row.type === 5) {
+        return '评论'
+      } else {
+        return '未知'
+      }
+    },
+    forDate(row) {
+      return this.$moment(row.createTime).format('YYYY-MM-DD HH:mm')
+    }
+  }
 };
 </script>
 
@@ -182,7 +225,7 @@ export default {
 }
 .content-box .content .box-card {
   margin: 0 7% 0 6%;
-  height: 200px;
+  height: 510px;
 }
 .content-box .content .box-card .new {
   margin: 15px 30px;

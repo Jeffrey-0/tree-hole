@@ -36,7 +36,6 @@
         </div>
         <el-table
           :data="tableData"
-          stripe
           style="width: 100%; min-height: 330px; margin-bottom: 15px"
         >
           <el-table-column prop="userId" label="ID"> </el-table-column>

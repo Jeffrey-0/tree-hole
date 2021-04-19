@@ -22,8 +22,8 @@
         <div class="iframe" v-if="item.path == 'chat'"><chat-list /></div>
         <div class="iframe" v-if="item.path == 'report'"><report-list /></div>
         <!-- <div class="iframe" v-if="item.path == 'books'"><books /></div>
-        <div class="iframe" v-if="item.path == 'notice'"><notice /></div>
-        <div class="iframe" v-if="item.path == 'home'"><home /></div> -->
+        <div class="iframe" v-if="item.path == 'notice'"><notice /></div> -->
+        <div class="iframe" v-if="item.path == 'home'"><home /></div>
       </el-tab-pane>
     </el-tabs>
   </div>

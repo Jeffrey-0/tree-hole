@@ -9,8 +9,8 @@
     :on-success="handleAvatarSuccess"
     :before-upload="beforeAvatarUpload"
   >
-    <!-- <img v-if="imageUrl" :src="imageUrl" class="portrait"> -->
-    <img v-if="$user.portrait" class="portrait" title="点击切换头像" :src="$baseImgUrl + $user.portrait">
+    <img v-if="imageUrl" :src="imageUrl" class="portrait">
+    <!-- <img v-if="$user.portrait" class="portrait" title="点击切换头像" :src="$baseImgUrl + $user.portrait"> -->
     <img v-else class="portrait" title="点击切换头像" src="../assets/img/default.png">
 </el-upload>
     <el-input v-model="user.username" placeholder="未登录" maxlength="10"></el-input>
@@ -111,6 +111,7 @@ export default {
     handleAvatarSuccess(res, file) {
       console.log('上传头像成功', file)
       this.imageUrl = URL.createObjectURL(file.raw);
+      // this.$user.portrait = URL.createObjectURL(file.raw);
       console.log('上传头像成功2', this.imageUrl)
     },
     beforeAvatarUpload(file) {
@@ -141,6 +142,8 @@ export default {
     // Object.assign(this.user, JSON.parse(sessionStorage.getItem('user')))
     this.user = this.$user
     console.log('this.$user3333', this.$user)
+    if (this.$user.portrait)
+    this.imageUrl = this.$baseImgUrl + this.$user.portrait
     // getNewNotice().then(res => {
     //   this.notice = res
     //   console.log(this.notice)

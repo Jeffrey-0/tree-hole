@@ -70,7 +70,6 @@
       <div class="content-body">
         <el-table
           border
-          stripe
           :data="tableData"
           style="width: 100%; min-height: 300px"
         >

@@ -52,7 +52,6 @@
         </div>
         <el-table
           :data="tableData"
-          stripe
           style="width: 100%; min-height: 330px; margin-bottom: 15px"
         >
           <el-table-column prop="reportId" label="ID" width="80"> </el-table-column>
@@ -284,7 +283,7 @@ export default {
       }
     },
     forType(row) {
-      if (row.type === -1) {
+      if (row.type === 0) {
         return '用户'
       } else if (row.type === 1) {
         return '秘密'

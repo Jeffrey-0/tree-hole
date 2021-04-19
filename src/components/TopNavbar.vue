@@ -5,8 +5,8 @@
       <el-menu-item index="watch"><i class="el-icon-s-promotion"></i>关注</el-menu-item>
       <el-menu-item index="myself"><i class="el-icon-s-custom"></i>私人</el-menu-item>
       <el-menu-item index="plan"><i class="el-icon-s-claim"></i>计划</el-menu-item>
-      <el-menu-item index="album"><i class="el-icon-picture"></i>相册</el-menu-item>
       <el-menu-item index="friend"><i class="el-icon-s-comment"></i>好友</el-menu-item>
+      <el-menu-item index="album"><i class="el-icon-picture"></i>相册</el-menu-item>
       <el-menu-item index="upload"><i class="el-icon-circle-plus"></i>发表</el-menu-item>
       <!-- <el-menu-item>
         <el-switch

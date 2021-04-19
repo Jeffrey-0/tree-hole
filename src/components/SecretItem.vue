@@ -237,7 +237,7 @@ export default {
         userId: this.$user.userId,
         replyId: this.replyId ? this.replyId : '',
         content: this.commentInput,
-        createTime: new Date(),
+        createTime: this.$moment(new Date()).format('YYYY-MM-DD hh:mm:ss'),
         username: this.$user.username,
         replyname: this.replyname
       }
@@ -294,6 +294,7 @@ export default {
   .user {
     height: 50px;
     .portrait {
+      object-fit: cover;
       width: 50px;
       height: 50px;
       float: left;

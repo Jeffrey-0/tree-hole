@@ -8,9 +8,10 @@
         <div class="usernameMotto">
           <div class="username">
             <span>{{ this.currentUser.username }}</span>
-            <el-button round size="small">关注</el-button>
-            <!-- <el-button icon="el-icon-setting" round size="small">聊天</el-button> -->
-            <el-button round size="small">聊天</el-button>
+            <el-button v-if="currentUser.userId === $user.userId" round size="small">编辑</el-button>
+            <el-button v-if="currentUser.userId === $user.userId" round size="small">退出</el-button>
+            <el-button v-if="currentUser.userId !== $user.userId" round size="small">取关</el-button>
+            <el-button v-if="currentUser.userId !== $user.userId" round size="small">聊天</el-button>
           </div>
           <div class="motto">{{ this.currentUser.motto }}</div>
         </div>

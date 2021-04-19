@@ -145,18 +145,18 @@ const router = new VueRouter({
 
 // 挂载路由导航守卫，如果用户未登陆，则跳转到登录页面
 router.beforeEach((to, form, next) => {
-if (to.path === '/login' || to.path === '/' || to.path === '/home' || to.path === '/m-secret') {
-  return next()
-}
-const user = window.sessionStorage.getItem('user')
-console.log('tooken', user)
-if (!user) {
-  Message.error('请前往登录')
-  return next('/home')
+  if (to.path === '/login' || to.path === '/' || to.path === '/home' || to.path === '/m-secret') {
+    return next()
+  }
+  const user = window.sessionStorage.getItem('user')
+  console.log('tooken', user)
+  if (!user) {
+    Message.error('请前往登录')
+    return next('/home')
   // return next('/login')
-} else {
-  return next()
-}
+  } else {
+    return next()
+  }
 })
 
 export default router
