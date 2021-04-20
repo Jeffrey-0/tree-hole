@@ -559,19 +559,19 @@
 }
 
 /* 用户 */
-#mIndex #user .el-tabs__item {
+#mIndex #user .el-tabs__item, #user .el-tabs__item {
     font-size: 20px;
 }
-#mIndex #user .el-tabs__content {
+#mIndex #user .el-tabs__content, #user .el-tabs__content {
     margin-top: 0;
 }
-#mIndex #user #secret {
+#mIndex #user #secret, #user #secret {
     padding: 10px;
 }
-#mIndex #user #secret .content {
+#mIndex #user #secret .content, #user #secret .content {
   text-align: left;
 }
-#mIndex #user .el-tab-pane {
+#mIndex #user .el-tab-pane, #user .el-tab-pane {
     height: 100%;
     overflow-y: scroll;
 }
@@ -606,6 +606,9 @@
 }
 /* pc端用户主页 */
 #index #user{
+    padding: 20px;
+    background: #fff;
+    box-sizing: border-box;
 
 }
 #index #user .el-tabs__nav{
@@ -626,6 +629,11 @@
 }
 #index #user .el-tabs--top {
     background: #fff;
+    height: 100%;
+}
+
+#index #user .el-tabs__content {
+    height: calc(100% - 50px);
 }
 
 /* 搜索框 */

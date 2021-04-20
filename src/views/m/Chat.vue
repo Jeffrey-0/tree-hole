@@ -2,7 +2,7 @@
   <div id="m-chat">
     <!-- 聊天组件 -->
     <div class="chatWrap">
-      <div class="title">小疯子</div>
+      <div class="title">{{ acceptUser.username}}</div>
 
         <div class="chat-content"  ref="messageList" id="messageList">
             <div class="wrapper" ref="wrapper">

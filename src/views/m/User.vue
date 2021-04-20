@@ -9,9 +9,9 @@
           <div class="username">
             <span>{{ this.currentUser.username }}</span>
             <el-button v-if="currentUser.userId === $user.userId" round size="small">编辑</el-button>
-            <el-button v-if="currentUser.userId === $user.userId" round size="small">退出</el-button>
+            <el-button v-if="currentUser.userId === $user.userId" round size="small" @click="signOut">退出</el-button>
             <el-button v-if="currentUser.userId !== $user.userId" round size="small">取关</el-button>
-            <el-button v-if="currentUser.userId !== $user.userId" round size="small">聊天</el-button>
+            <el-button v-if="currentUser.userId !== $user.userId" round size="small" @click="chatTo">聊天</el-button>
           </div>
           <div class="motto">{{ this.currentUser.motto }}</div>
         </div>
@@ -174,6 +174,7 @@ export default {
             this.SecretList = res.data
             this.total = res.total
             let that = this
+            console.log('获取自己秘密', this.SecretList)
           setTimeout(function () {
               that.myScroll.refresh()
             }, 200)
@@ -183,6 +184,7 @@ export default {
             this.SecretList = res.data
             this.total = res.total
             let that = this
+            console.log('获取用户秘密', this.SecretList)
           setTimeout(function () {
               that.myScroll.refresh()
             }, 200)
@@ -271,14 +273,42 @@ export default {
         })
       }
     },
+    // 退出登录
+    signOut () {
+      // if (this.ifLogin()) { return }
+      if (this.$user.userId) {
+        Object.assign(this.$user,
+          {
+            userId : '',
+            username: '',
+            motto: '',
+            type: '',
+            portrait: ''
+          } 
+        )
+        
+        sessionStorage.removeItem("user")
+      }
+      if (this.$route && this.$route.path !== '/login') {
+        this.$router.push('/login')
+      }
+    },
+    // 聊天
+    chatTo () {
+      if (this.$ifMobile.res) {
+        this.$router.push('/m-chat?userId=' + this.currentUser.userId)
+      } else {
+        this.$router.push('/friend?userId=' + this.currentUser.userId)
+      }
+    }
   },
   computed : {
   },
   created () {
-    
-    // console.log('当前路由', this.$route, this.$route.path)
     this.currentUser.userId = this.$route.query.userId ? this.$route.query.userId - 0 :this.$user.userId
     this.refresh()
+    // console.log('当前路由', this.$route, this.$route.path)
+    
   },
   mounted () {
     this.$nextTick(() => {
@@ -306,6 +336,13 @@ export default {
         this.myScroll.finishPullUp() // 上拉加载动作完成后调用此方法告诉BScroll完成一次上拉动作
       })
     })
+  },
+  watch : {
+    $route (newVal, oldVal) {
+      console.log('路由切换')
+      this.currentUser.userId = this.$route.query.userId ? this.$route.query.userId - 0 :this.$user.userId
+      this.refresh()
+    }
   }
 }
 </script>

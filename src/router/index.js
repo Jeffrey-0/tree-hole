@@ -14,7 +14,7 @@ import User from '../views/m/User.vue'
 import Admin from '../views/admin/Admin.vue'
 
 // 引入弹出框方法
-import { Message } from 'element-ui'
+import { Message, Alert } from 'element-ui'
 
 Vue.use(VueRouter)
 
@@ -151,8 +151,14 @@ router.beforeEach((to, form, next) => {
   const user = window.sessionStorage.getItem('user')
   console.log('tooken', user)
   if (!user) {
+
+    // Alert('请前往登录', '未登录', {
+    //   confirmButtonText: '确定',
+    //   callback: action => {
+    //   }
+    // })
     Message.error('请前往登录')
-    return next('/home')
+    // return next('/home')
   // return next('/login')
   } else {
     return next()
