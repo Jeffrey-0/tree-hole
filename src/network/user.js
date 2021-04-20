@@ -157,3 +157,17 @@ export function SelectFuzzy (user, page, rows) {
     params: user
   })
 }
+
+// 根据当前用户id+用户id
+export function selectByCurrentUserId (userId, currentUserId) {
+  if (!currentUserId) {
+    currentUserId = -1
+  }
+  return request({
+    url: baseTable + 'selectByCurrentUserId',
+    params: {
+      userId,
+      currentUserId
+    }
+  })
+}

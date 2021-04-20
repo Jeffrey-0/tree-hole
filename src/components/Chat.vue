@@ -48,6 +48,7 @@
 
 <script>
 import {selectChatById, showAllChatByPage, deleteChatById, insertChat, updateChatById, showAllByTowUserId} from '@/network/chat'
+import {selectUserById} from '@/network/user'
 import MessageItem from '@/components/MessageItem'
 // 引入表情库
 // import VueEmoji from 'emoji-vue'
@@ -157,6 +158,14 @@ export default {
     }
   },
   created () {
+    if (this.$route.query.userId) {
+      // this.acceptUser.userId = this.$route.query.userId
+      selectUserById(this.$route.query.userId).then(res => {
+        if (res) {
+          this.acceptUser = res
+        }
+      })
+    }
     this.refresh()
   }
 }

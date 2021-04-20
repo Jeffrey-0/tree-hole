@@ -707,3 +707,12 @@
 #mIndex #secret {
     min-height: 120px;
 }
+
+/* 评论刷新按钮 */
+#secret .el-input__prefix {
+  left: 5px;
+  line-height: 40px;
+  transition: all .3s;
+  cursor: pointer;
+  font-size: 20px;
+}

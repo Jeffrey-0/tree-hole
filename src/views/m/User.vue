@@ -10,7 +10,8 @@
             <span>{{ this.currentUser.username }}</span>
             <el-button v-if="currentUser.userId === $user.userId" round size="small">编辑</el-button>
             <el-button v-if="currentUser.userId === $user.userId" round size="small" @click="signOut">退出</el-button>
-            <el-button v-if="currentUser.userId !== $user.userId" round size="small">取关</el-button>
+            <el-button v-if="currentUser.userId !== $user.userId && currentUser.ifFollow" round size="small" @click="cancelWatch" type="danger">取关</el-button>
+            <el-button v-if="currentUser.userId !== $user.userId && !currentUser.ifFollow" round size="small" @click="sureWatch" type="info">关注</el-button>
             <el-button v-if="currentUser.userId !== $user.userId" round size="small" @click="chatTo">聊天</el-button>
           </div>
           <div class="motto">{{ this.currentUser.motto }}</div>
@@ -92,7 +93,8 @@ import vueWaterfallEasy from 'vue-waterfall-easy'
 import {showAllByUserId} from "@/network/album"
 import {showAllSecretByPage, showAllSecretByPower, showAllSecretByFollows, showAllSecretByUserId, showAllSecretByMyself} from '@/network/secret'
 import {selectPlanById, showAllPlanByPage, deletePlanById, insertPlan, updatePlanById, showAllPlanByUserId, showAllByCurrentDate} from '@/network/plan'
-import {selectUserById, showAllUserByPage, deleteUserById, insertUser, updateUserById} from '@/network/user'
+import {selectUserById, showAllUserByPage, deleteUserById, insertUser, updateUserById, selectByCurrentUserId} from '@/network/user'
+import {selectRelationById, showAllRelationByPage, deleteRelationById, insertRelation, updateRelationById, cancelFollow} from '@/network/relation'
 export default {
   name: '',
   components: {
@@ -119,7 +121,8 @@ export default {
       currentUser: {
         userId: 3,
         username: '无名',
-        portrait: 'user/111.jpg'
+        portrait: 'user/111.jpg',
+        ifFollow: 0
       },
       // 秘密
       currentPage: 1,
@@ -164,7 +167,7 @@ export default {
     // 刷新
     refresh () {
       // 获取用户
-      selectUserById(this.currentUser.userId).then(res => {
+      selectByCurrentUserId(this.currentUser.userId, this.$user.userId).then(res => {
         this.currentUser = res
       })
 
@@ -300,6 +303,34 @@ export default {
       } else {
         this.$router.push('/friend?userId=' + this.currentUser.userId)
       }
+    },
+    // 取消关注
+    cancelWatch () {
+      // let relation = {
+      //   userId: this.$user.userId,
+      //   followId: this.currentUser.userId
+      // }
+      cancelFollow(this.$user.userId, this.currentUser.userId).then(res => {
+        if (res) {
+          this.currentUser.ifFollow =0
+        } else {
+          this.$message.error('取消关注失败')
+        }
+      })
+    },
+    // 关注
+    sureWatch () {
+      let relation = {
+        userId: this.$user.userId,
+        followId: this.currentUser.userId
+      }
+      insertRelation(relation).then(res => {
+        if (res) {
+          this.currentUser.ifFollow = 1
+        } else {
+          this.$message.error('关注失败')
+        }
+      })
     }
   },
   computed : {

@@ -146,3 +146,14 @@ export function SelectFuzzy (relation, page, rows) {
     params: relation
   })
 }
+
+// 取消关注cancelFollow
+export function cancelFollow (userId, followId) {
+  return request({
+    url: baseTable + 'cancelFollow',
+    params: {
+      userId,
+      followId
+    }
+  })
+}

@@ -64,6 +64,8 @@
     <div class="comments" :class="{show: ifShowComment}">
       <div style="margin-top: 15px;">
         <el-input :placeholder="this.replyname ? '回复' + this.replyname : '评论' " v-model="commentInput" class="input-with-select">
+          <!-- <i slot="append" class="el-icon-refresh" @click="sureComment"></i> -->
+         <i slot="prefix" class="el-icon-refresh" @click="refreshComment"></i>
           <el-button  type="success" slot="append" icon="el-icon-finished" @click="sureComment"></el-button>
         </el-input>
       </div>
@@ -232,6 +234,10 @@ export default {
     // 发送评论
     sureComment () {
       if (this.ifLogin()) { return }
+      if (!this.commentInput) {
+        this.$message.error('输入不能为空!')
+        return
+      }
       let comment = {
         secretId: this.secret.secretId,
         userId: this.$user.userId,
@@ -271,6 +277,11 @@ export default {
     isLoadOK () {
       console.log('图片加载完成')
       this.$emit('imgLoad')
+    },
+    // 刷新评论
+    refreshComment() {
+      this.commentInput = ''
+      this.replyname = ''
     }
   }
 }
@@ -400,6 +411,7 @@ export default {
     text-align: center;
     border-radius: 5px;
   }
+
 }
 #secret .el-image__inner{
   width: 100%;
