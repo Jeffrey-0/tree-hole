@@ -8,7 +8,7 @@
         <div class="usernameMotto">
           <div class="username">
             <span>{{ this.currentUser.username }}</span>
-            <el-button v-if="currentUser.userId === $user.userId" round size="small">编辑</el-button>
+            <el-button v-if="currentUser.userId === $user.userId" round size="small" @click="edit">编辑</el-button>
             <el-button v-if="currentUser.userId === $user.userId" round size="small" @click="signOut">退出</el-button>
             <el-button v-if="currentUser.userId !== $user.userId && currentUser.ifFollow" round size="small" @click="cancelWatch" type="danger">取关</el-button>
             <el-button v-if="currentUser.userId !== $user.userId && !currentUser.ifFollow" round size="small" @click="sureWatch" type="info">关注</el-button>
@@ -81,6 +81,50 @@
       </div>
     </div>
 
+<!-- 编辑模态框 -->
+    <el-drawer
+      :with-header="false"
+      :visible.sync="drawer"
+      direction="ltr"
+      size="100%"
+      >
+      <el-form ref="form" :model="form" label-width="80px">
+        <div class="form-title">用户信息</div>
+        <el-form-item label="用户名">
+          <el-input v-model="form.username"></el-input>
+        </el-form-item>
+        <el-form-item label="手机号">
+          <el-input v-model="form.phone"></el-input>
+        </el-form-item>
+        <el-form-item label="座右铭">
+          <el-input v-model="form.motto"></el-input>
+        </el-form-item>
+        <!-- <el-form-item label="密码">
+          <el-input v-model="form.password"></el-input>
+        </el-form-item> -->
+        <el-form-item label="新密码">
+          <el-input v-model="form.password"></el-input>
+        </el-form-item>
+        <div class="form-title">隐私设置</div>
+        <el-form-item label="秘密">
+          <el-switch v-model="form.secret"></el-switch>
+        </el-form-item>
+        <el-form-item label="计划">
+          <el-switch v-model="form.plan"></el-switch>
+        </el-form-item>
+        <el-form-item label="相册">
+          <el-switch v-model="form.album"></el-switch>
+        </el-form-item>
+        <el-form-item label="聊天">
+          <el-switch v-model="form.chat"></el-switch>
+        </el-form-item>
+        
+        <el-form-item>
+          <el-button type="primary" @click="onSubmit">保存</el-button>
+          <el-button @click="closeDrawer">取消</el-button>
+        </el-form-item>
+      </el-form>
+    </el-drawer>
   </div>
 </template>
 
@@ -93,7 +137,7 @@ import vueWaterfallEasy from 'vue-waterfall-easy'
 import {showAllByUserId} from "@/network/album"
 import {showAllSecretByPage, showAllSecretByPower, showAllSecretByFollows, showAllSecretByUserId, showAllSecretByMyself} from '@/network/secret'
 import {selectPlanById, showAllPlanByPage, deletePlanById, insertPlan, updatePlanById, showAllPlanByUserId, showAllByCurrentDate} from '@/network/plan'
-import {selectUserById, showAllUserByPage, deleteUserById, insertUser, updateUserById, selectByCurrentUserId} from '@/network/user'
+import {selectUserById, showAllUserByPage, deleteUserById, insertUser, updateUserById, selectByCurrentUserId, updateUserByIdSelective} from '@/network/user'
 import {selectRelationById, showAllRelationByPage, deleteRelationById, insertRelation, updateRelationById, cancelFollow} from '@/network/relation'
 export default {
   name: '',
@@ -135,7 +179,21 @@ export default {
       // 相册
       page: 1,
       rows: 16,
-      myScroll: ''
+      myScroll: '',
+      drawer: false,  //抽屉
+      form: {       // 用户编辑
+        userId: '',
+          username: '',
+          phone: '',
+          motto: '',
+          password: '',
+          newPassword: '',
+          portrait: '',
+          secret: true,
+          plan: true,
+          album: false,
+          chat: true
+        }
     }
   },
   methods: {
@@ -169,6 +227,9 @@ export default {
       // 获取用户
       selectByCurrentUserId(this.currentUser.userId, this.$user.userId).then(res => {
         this.currentUser = res
+        this.form = Object.assign( this.form, res)
+        this.form.ifFollow = 1
+        console.log('this.form', this.form)
       })
 
       // 获取秘密
@@ -331,6 +392,27 @@ export default {
           this.$message.error('关注失败')
         }
       })
+    },
+    // 点击编辑
+    edit () {
+      this.drawer = true
+    },
+    // 确认编辑
+    onSubmit() {
+      console.log('submit!');
+      updateUserByIdSelective(this.form).then(res => {
+        if (res) {
+          this.$message.success('修改成功!')
+          this.currentUser = Object.assign(this.currentUser, this.form)
+          this.drawer = false
+        } else {
+          this.$message.error('修改失败!')
+        }
+      })
+    },
+    // 取消抽屉
+    closeDrawer () {
+      this.drawer = false
     }
   },
   computed : {
@@ -544,6 +626,36 @@ export default {
   overflow: hidden;
   // -webkit-overflow-scrolling : touch;
 }
-  
+.portrait {
+  object-fit: cover;
+}
+ .form-title {
+   font-size: 18px;
+   text-align: center;
+   padding: 10px;
+   box-sizing: border-box;
+ }
+}
+/*定义滚动条高宽及背景 高宽分别对应横竖滚动条的尺寸*/
+::-webkit-scrollbar {
+  width: 0px;
+  height: 0px;
+  background-color: rgba(0,0,0,0);
+}
+
+/*定义滚动条轨道 内阴影+圆角*/
+::-webkit-scrollbar-track
+{
+	-webkit-box-shadow: inset 0 0 0px rgba(0,0,0,0.3);
+	border-radius: 3px;
+	background-color: rgba(0,0,0,0);
+  color: transparent;
+}
+
+/*定义滑块 内阴影+圆角*/
+::-webkit-scrollbar-thumb {
+  border-radius: 3px;
+  -webkit-box-shadow: inset 0 0 0px rgba(0, 0, 0, 0.3);
+  background-color: rgba(0,0,0,0.5);
 }
 </style>

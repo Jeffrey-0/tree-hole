@@ -716,3 +716,26 @@
   cursor: pointer;
   font-size: 20px;
 }
+
+/* 照片dialog */
+#album .el-dialog {
+    width: 100%;
+    height: 100%;
+    margin-top: 0 !important;
+    margin: 0;
+    background: transparent;
+}
+#album .el-dialog .el-dialog__body {
+    width: 100%;
+    height: 100%;
+    padding: 0;
+}
+#album .el-dialog .el-dialog__header {
+    display: none;
+    padding: 0;
+}
+
+/* 编辑抽屉 */
+#index .el-drawer {
+    width: 30% !important;
+}
