@@ -15,6 +15,7 @@
                   :data="currentSecret"
                   :file-list="fileListSecret"
                   :on-success="uploadSecretSuccess"
+                  :limit="6"
                   ref="uploadSecret"
                   :auto-upload="false">
                     <i slot="default" class="el-icon-plus"></i>
@@ -55,9 +56,9 @@
       <el-tab-pane label="目标" name="second">
 
         <div class="targer">
-          <el-form :model="form">
-            <el-form-item label="名称">
-              <el-input v-model="form.name" autocomplete="off">
+          <el-form :model="form" :rules="rules" ref="targerForm">
+            <el-form-item label="名称" required  prop="name">
+              <el-input v-model="form.name" autocomplete="off"  required>
     `            <template slot="append">
                   <el-popover
                     placement="left"
@@ -75,7 +76,7 @@
                 </template>
               </el-input>
             </el-form-item>
-            <el-form-item label="开始时间">
+            <el-form-item label="开始时间" prop="startTime">
                 <el-date-picker
                   v-model="form.startTime"
                   type="date"
@@ -83,7 +84,7 @@
                   placeholder="开始时间">
                 </el-date-picker>
             </el-form-item>
-            <el-form-item label="结束时间">
+            <el-form-item label="结束时间"  prop="endTime">
                 <el-date-picker
                   v-model="form.endTime"
                   value-format="yyyy-MM-dd"
@@ -109,7 +110,7 @@
       <el-tab-pane label="相册" name="third">
         <!-- <chat></chat> -->
         <div class="album">
-          <el-form :model="form">
+          <el-form>
             <div class="photos">
               <!-- :file-list="fileList" -->
               <el-upload
@@ -205,7 +206,7 @@ export default {
         repeats: []
       },
       formLabelWidth: '0',
-      activeName: 'first',
+      activeName: 'second',
       records: [],
       iconsVisible: false,
       dialogImageUrl: '',
@@ -229,6 +230,24 @@ export default {
       fileListSecret: [], // 秘密上传图片
       currentSecret: {
         secretId: 0
+      },
+      rules :{
+        name: [
+            { required: true, message: '请输入目标名称', trigger: 'blur' },
+            { min: 3, max: 10, message: '长度在 3 到 10 个字符', trigger: 'blur' }
+        ],
+        content: [
+          { required: true, message: '请选择图标', trigger: 'blur' }
+        ],
+        // startTime: [
+        //   { type: 'date', required: true, message: '请选择开始时间', trigger: 'blur' }
+        // ],
+        // endTime: [
+        //   { type: 'date', required: true, message: '请选择结束时间', trigger: 'blur' }
+        // ],
+        // repeats: [
+        //   { type: 'array', required: true, message: '请至少选择一个活动性质', trigger: 'change' }
+        // ]
       }
     };
   },
@@ -277,30 +296,39 @@ export default {
     },
     // 添加目标
     addPlan () {
-      
-      // 格式数据
-      this.form.repeat = ''
-      this.form.repeats.map(item => {
-        this.form.repeat = this.form.repeat + item + ','
-      })
-      this.form.createTime = this.$moment(new Date()).format('YYYY-MM-DD HH:mm:ss')
-      this.form.userId = this.$user.userId
-      insertPlan(this.form).then(res => {
-        console.log(res)
-        if (res) {
-          this.$message.success('添加目标成功')
-          this.dialogFormVisible = false
-          this.form =  {
-            name: '',
-            content: 'el-icon-edit', // 图标
-            startTime: '',
-            endTime: '',
-            repeats: []
-          }
+      console.log('添加目标', this.$refs.targerForm)
+      this.$refs.targerForm.validate((valid) => {
+        console.log('验证是否符合规则', valid)
+        if (valid) {
+                  // 格式数据
+          this.form.repeat = ''
+          this.form.repeats.map(item => {
+            this.form.repeat = this.form.repeat + item + ','
+          })
+          this.form.createTime = this.$moment(new Date()).format('YYYY-MM-DD HH:mm:ss')
+          this.form.userId = this.$user.userId
+          insertPlan(this.form).then(res => {
+            console.log(res)
+            if (res) {
+              this.$message.success('添加目标成功')
+              this.dialogFormVisible = false
+              this.form =  {
+                name: '',
+                content: 'el-icon-edit', // 图标
+                startTime: '',
+                endTime: '',
+                repeats: []
+              }
+            } else {
+              this.$message.error('添加目标失败')
+            }
+          })
         } else {
-          this.$message.error('添加目标失败')
+          console.log('error submit!!');
+          return false;
         }
       })
+
     },
 
     // 添加秘密

@@ -25,11 +25,11 @@
                 {{ this.$user.username }}<i class="el-icon-arrow-down el-icon--right"></i>
               </span>
               <el-dropdown-menu slot="dropdown" class="login-out">
-                 <el-dropdown-item
+                 <!-- <el-dropdown-item
                   ><div>
                     设置</div
                   ></el-dropdown-item
-                >
+                > -->
                 <el-dropdown-item 
                   ><div @click="exit">
                     退出</div

@@ -107,7 +107,7 @@
               </el-switch>
             </template>
           </el-table-column>
-          <el-table-column  label="操作"  align="center">
+          <!-- <el-table-column  label="操作"  align="center">
             <template slot-scope="scope">
               <el-tag
                 @click="handleClick(scope.row)"
@@ -120,7 +120,7 @@
                 class="tag-btn"
               >删除</el-tag>
             </template>
-          </el-table-column>
+          </el-table-column> -->
         </el-table>
         </div>
       </el-card>

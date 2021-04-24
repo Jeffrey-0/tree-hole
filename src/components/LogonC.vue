@@ -11,10 +11,10 @@
         <el-input type="text" v-model="ruleForm.phone" maxlength="30" placeholder="手机"></el-input>
       </el-form-item>
       <el-form-item label="密码" prop="password">
-        <el-input type="passwordword" v-model="ruleForm.password" autocomplete="off" maxlength="30" placeholder="密码"></el-input>
+        <el-input type="password" v-model="ruleForm.password" autocomplete="off" maxlength="30" placeholder="密码"></el-input>
       </el-form-item>
       <el-form-item label="密码" prop="checkPass">
-        <el-input type="passwordword" v-model="ruleForm.checkPass" autocomplete="off" maxlength="30" placeholder="确认密码"></el-input>
+        <el-input type="password" v-model="ruleForm.checkPass" autocomplete="off" maxlength="30" placeholder="确认密码"></el-input>
       </el-form-item>
       
       <el-form-item>
