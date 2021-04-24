@@ -5,6 +5,10 @@
     <!-- <div class="top">
       {{ title }}
     </div> -->
+    <!-- <div class="goLogin">
+      登录
+    </div> -->
+    <el-button  v-if="!this.$user.userId&&this.$route.path!=='/login'" class="goLogin" @click="goLogin">登录</el-button>
     <div class="center">
       <!-- 嵌套路由 -->
       <router-view></router-view>
@@ -28,6 +32,9 @@ export default {
     }
   },
   methods: {
+    goLogin () {
+      this.$router.push('/login')
+    }
   },
   mounted () {
     this.title = this.$route.name
@@ -47,6 +54,13 @@ export default {
   width: 100%;
   height: 100%;
   color: #000;
+  .goLogin {
+    position: fixed;
+    z-index: 10;
+    right: 0px;
+    bottom: 0px;
+    height: 60px;
+  }
 }
 .top {
   width: 100%;

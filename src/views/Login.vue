@@ -64,6 +64,8 @@ export default {
   /* background-image: url(../assets/img/bg_lake.jpg); */
   background-size: 100%;
   position: relative;
+  background-size: cover;
+  background-position: center;
  }
  #container {
   /* width: 400px; */

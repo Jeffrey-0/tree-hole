@@ -1,5 +1,5 @@
 <template>
-  <div id="index">
+  <div id="index" ref="index">
     <div class="top-bg">
       <div class="title">
         <div class="header">树洞网</div>
@@ -32,6 +32,7 @@
       </div>
     </div>
     <!-- <bottom-navbar></bottom-navbar> -->
+    <div class="back-to-top" v-if="ifToTop" @click="backToTop"></div>
   </div>
 </template>
 
@@ -41,6 +42,11 @@ import BottomNavbar from "@/components/BottomNavbar.vue";
 import NavBar from "@/components/NavBar.vue";
 export default {
   name: "Index",
+  data() {
+    return {
+      ifToTop: false
+    }
+  },
   components: {
     NavBar,
     TopNavbar,
@@ -53,12 +59,43 @@ export default {
         behavior: "smooth",  // 平滑过渡
         block:    "start"  // 上边框与视窗顶部平齐。默认值
       })
+    },
+    backToTop () {
+      // this.$refs.index.scrollIntoView({
+      //   behavior: "smooth",  // 平滑过渡
+      //   block:    "end"  // 上边框与视窗顶部平齐。默认值
+      // })
+      let timer = setInterval(() => {
+        if (this.$refs.index.scrollTop <= 0) {
+          this.$refs.index.scrollTop = 0
+          clearInterval(timer)
+        } else {
+
+          this.$refs.index.scrollTop = this.$refs.index.scrollTop - 50
+        }
+      }, 10);
     }
   },
   created () {
     let user = JSON.parse(sessionStorage.getItem('user'))
     console.log('sessionStorage', sessionStorage.getItem('user'))
     console.log(user && user.userName, user && user.userId)
+
+    // // 监听页面滚动
+    // window.addEventListener('scroll', function () {
+    //   console.log('滚动', document.documentElement.clientHeight)
+    // })
+  },
+  mounted () {
+    // console.log('mounted', '滚动')
+    let that = this
+    this.$refs.index.addEventListener('scroll', function () {
+      if (that.$refs.index.scrollTop >= 1000) {
+        that.ifToTop = true
+      } else {
+        that.ifToTop = false
+      }
+    })
   },
   watch: {
     // $route: {
@@ -215,11 +252,23 @@ export default {
     top: 60px;
     margin-top: 60px;
   }
+  @media screen and (max-width: 1000px){
+    .navbar {
+    display: none;
+    }
+    #content {
+      width: calc(100%);
+    }
+    #content .content {
+      width: 90%;
+      margin-left: 5%;
+    }
+  }
   .content {
     vertical-align: top;
     display: inline-block;
-    width: 70%;
-    margin-left: 15%;
+    width: 80%;
+    margin-left: 10%;
     // min-height: 662px;
     // background: white;
     // border: 1px solid black;
@@ -238,5 +287,21 @@ export default {
       content: '';
       clear: both;
     }
+  }
+  // 返回顶部
+  .back-to-top {
+    position: fixed;
+    width: 50px;
+    height: 50px;
+    // background-color: red;
+    background-image: url('../assets/img/icon/上拉.png');
+    background-size: 70%;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-color: gray;
+    border-radius: 50%;
+    bottom: 100px;
+    right: 40px;
+    cursor: pointer;
   }
 </style>

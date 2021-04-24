@@ -54,9 +54,8 @@ export default {
   background-color: rgba(40,42,44,0.6);
   width: 100%;
 }
+
 .el-menu--horizontal>.el-menu-item {
-  padding-left: 40px;
-  padding-right: 40px;
   cursor: pointer;
   &:hover {
     background-color: aqua;
@@ -78,7 +77,9 @@ export default {
   border-bottom: 0px;
 }
 #navbar ul{
-  padding-left: 50px;
+  // padding-left: 50px;
+  display: flex;
+  justify-content: space-between;
 }
 
 #navbar ul li{
@@ -86,10 +87,14 @@ export default {
   color: #fff !important;
   background: #00000000 !important;
   font-size: 16px;
-  
+  padding: 0;
   &:hover  {
     color:#409eff !important;
   }
 }
-
+@media screen and (max-width: 600px) {
+  #navbar ul li {
+    font-size: 10px;
+  }
+}
 </style>
