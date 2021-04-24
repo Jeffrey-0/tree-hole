@@ -31,6 +31,7 @@
 
 <script>
 import { SelectFuzzy } from "../network/user"
+import {showRecentChatByUserId} from '@/network/chat'
 // TODO
 // import {loginP} from '../network/login'
 export default {
@@ -108,11 +109,20 @@ export default {
                 });
 
                 // TODO
-                console.log(res);
+                // console.log("登录成功0， 建立websocket通信");
                 if (res.data[0].type === 0) {
                   this.$router.push("/admin");
                 } else {
-                  this.$router.push("/home");
+
+                  // 获取最近聊天用户
+                  showRecentChatByUserId(this.$user.userId).then(res => {
+                    this.$mydata.setRecentUsers(res.data)
+                    this.$eventBus.$emit('updateRecentUsers')
+                  })
+                  // console.log('登录成功1， 建立websocket通信')
+                  // 通知父组件去建立websocket通信
+                  this.$eventBus.$emit('conectWebSocket')
+                  this.$router.push("/home")
                 }
               }
 
@@ -135,6 +145,7 @@ export default {
     resetForm(formName) {
       this.$refs[formName].resetFields();
     },
+
   },
   // 监听父组件中传过来的参数toLoginC变化
   watch: {

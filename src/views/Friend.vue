@@ -8,14 +8,14 @@
     </div> -->
 
     <el-tabs v-model="activeName" @tab-click="handleClick">
-      <!-- <el-tab-pane label="消息" name="first">
-        <chat :users="latelyUsers"></chat>
-      </el-tab-pane> -->
+      <el-tab-pane label="消息" name="first">
+        <chat :users="latelyUsers" :usersType="1" @updateUsersBySon="updateUsersBySon"></chat>
+      </el-tab-pane>
       <el-tab-pane label="关注" name="second">
-        <chat :users="followUsers"></chat>
+        <chat :users="followUsers" :usersType="2"></chat>
       </el-tab-pane>
       <el-tab-pane label="粉丝" name="third">
-        <chat :users="fanUsers"></chat>
+        <chat :users="fanUsers" :usersType="3"></chat>
       </el-tab-pane>
       <!-- <el-tab-pane label="评论" name="fourth">
         <comment-list></comment-list>
@@ -26,6 +26,7 @@
 
 <script>
 import {selectrelationById, showAllrelationByPage, deleterelationById, insertrelation, updaterelationById, showAllFansByUserId, showAllFollowsByUserId} from '@/network/relation'
+import {showRecentChatByUserId} from '@/network/chat'
 import Chat from '@/components/Chat'
 import CommentList from '@/components/CommentList'
 export default {
@@ -36,7 +37,7 @@ export default {
   },
   data() {
     return {
-      activeName: 'second',
+      activeName: 'first',
       fanUsers: [],
       followUsers: [],
       latelyUsers: [],
@@ -46,6 +47,17 @@ export default {
   methods: {
     handleClick(tab, event) {
       console.log(tab, event);
+    },
+    updateUsersBySon(index) {
+      // 1:需要重新获取列表，2不需要
+      console.log('监听到chat组件发送过来的更新请求')
+      if (index === 1) {
+        showRecentChatByUserId(this.$user.userId).then(res => {
+          this.latelyUsers = res.data
+        })
+      } else {
+        this.latelyUsers = this.$mydata.recentUsers
+      }
     }
   },
   created () {
@@ -55,6 +67,13 @@ export default {
     showAllFollowsByUserId(this.$user.userId).then (res => {
       this.followUsers = res
     })
+    this.latelyUsers = this.$mydata.recentUsers
+    this.$eventBus.$on('updateRecentUsers', () => {
+      this.latelyUsers = this.$mydata.recentUsers
+    })
+    // showRecentChatByUserId(this.$user.userId).then(res => {
+    //   this.latelyUsers = res.data
+    // })
   }
 }
 </script>

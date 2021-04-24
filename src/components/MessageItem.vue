@@ -4,8 +4,11 @@
       <img :src="message.userId === $user.userId ? $baseImgUrl + $user.portrait : $baseImgUrl + acceptUser.portrait" alt="">
     </div>
     <div class="icon"></div>
-    <div class="text">
+    <div class="text" v-if="message.type">
       {{message && message.content}}
+    </div>
+    <div class="text" v-else>
+      <img :src="message.content ? $baseImgUrl + message.content : $baseImgUrl + message.content" alt="">
     </div>
   </div>
 </template>
@@ -28,6 +31,11 @@ export default {
   },
   computed: {
     // myself: message && message.myself
+  },
+  watch : {
+    message (newVal, oldVal) {
+      this.message = newVal
+    }
   }
 }
 </script>
@@ -71,6 +79,9 @@ export default {
     vertical-align: top;
     display: inline-block;
     border-radius: 4px;
+    img {
+      width: 100%;
+    }
     
   }
 }

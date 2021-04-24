@@ -17,7 +17,19 @@
         </div>
       <div class="edit">
         <div class="tool">
-          <div class="sendPic"></div>
+          <el-upload
+            class="upload"
+            list-type="picture"
+            :action="$baseUrl + 'chat/upload'"
+            :data="chat"
+            :show-file-list="false"
+            :on-success="uploadSuccess"
+            :on-error="uploadError"
+            :before-upload="beforePicUpload"
+            ref="upload"
+          >
+            <div class="sendPic"  @click="sendPicClick"></div>
+          </el-upload>
 
         </div>
         <div class="input-content">
@@ -31,7 +43,7 @@
 
 <script>
 import BScroll from 'better-scroll'
-import {selectChatById, showAllChatByPage, deleteChatById, insertChat, updateChatById, showAllByTowUserId} from '@/network/chat'
+import {selectChatById, showAllChatByPage, deleteChatById, insertChat, updateChatById, showAllByTowUserId, updateChatLook} from '@/network/chat'
 import MessageItem from '@/components/MessageItem'
 import {selectUserById, showAllUserByPage, deleteUserById, insertUser, updateUserById} from '@/network/user'
 // 引入表情库
@@ -55,7 +67,15 @@ export default {
         portrait: 'user/114.jpg'
       },
       myScroll: '',
-      finish: 0
+      finish: 0,
+      chat: {
+        userId: this.$user.userId,
+        acceptId: 2,
+        content: '',
+        createTime: this.$moment(new Date()).format('YYYY-MM-DD HH:mm:ss'),
+        finish: true,
+        type: false
+      }
     }
   },
   methods: {
@@ -75,6 +95,10 @@ export default {
         console.log('获取聊天记录', res)
         this.messages = res.data
         let that = this
+        // 获取成功后，将俩人聊天记录设置为已观看
+        updateChatLook(this.acceptUser.userId, this.$user.userId).then(res => {
+          console.log('聊天记录设置为已观看,修改记录：', res)
+        })
         setTimeout(function () {
             that.myScroll.refresh()
             that.myScroll.scrollTo(0, that.myScroll.maxScrollY)
@@ -100,6 +124,9 @@ export default {
       insertChat(chat).then(res => {
         if (res) {
           console.log('发送成功', res)
+          // 利用websocket去通知接收者
+          this.sendMessage()
+
           this.chatInput = ''
           chat.chatId = res
           this.messages.push(chat)
@@ -109,13 +136,6 @@ export default {
             that.myScroll.refresh()
             that.myScroll.scrollTo(0, that.myScroll.maxScrollY)
           }, 200)
-          // let that = this
-          // setTimeout(function () {
-          //     that.$el.querySelector(`#msgEnd`).scrollIntoView({
-          //       behavior: "smooth",  // 平滑过渡
-          //       block:    "start"  // 上边框与视窗顶部平齐。默认值
-          //     })
-          //   }, 50)
         } else {
           this.$message.error('发送失败!')
         }
@@ -146,6 +166,62 @@ export default {
         //     })
         //   }, 50)
       })
+    },
+    // 发送消息
+    sendMessage: function(item) {
+      let chat = {
+        userId: this.$user.userId,
+        acceptId: this.acceptUser.userId,
+        content: this.chatInput,
+        createTime: this.$moment(new Date()).format('YYYY-MM-DD HH:mm:ss'),
+        type: 1
+      }
+      if (item) {
+        Object.assign(chat, item)
+      }
+      this.$websocket.websocket.send(JSON.stringify(chat))
+    },
+    // 发送图片之前
+    beforePicUpload () {
+      // this.chat = {
+      //   userId: this.$user.userId,
+      //   acceptId: this.acceptUser.userId,
+      //   content: '',
+      //   createTime: this.$moment(new Date()).format('YYYY-MM-DD hh:mm:ss'),
+      //   finish: false,
+      //   type: true
+      // }
+      // console.log('上传之前', this.chat)
+    },
+    // 
+    uploadSuccess (item) {
+      console.log('上传图片成功,返回内容' , item)
+      let that = this
+      // 利用websocket去通知接收者
+      this.sendMessage(item)
+      // 通知父组件刷新用户列表
+      that.$emit('updateUsersBySon', 1)
+      this.messages.push(item)
+          // 滚动到底部
+        setTimeout(function () {
+            that.myScroll.refresh()
+            that.myScroll.scrollTo(0, that.myScroll.maxScrollY)
+          }, 200)
+    },
+    uploadError () {
+      this.$message.error('上传失败，请检查是否存在该用户')
+    },
+    // 上传点击
+    sendPicClick () {
+      this.chat = {
+        userId: this.$user.userId,
+        acceptId: this.acceptUser.userId,
+        content: '',
+        createTime: this.$moment(new Date()).format('YYYY-MM-DD HH:mm:ss'),
+        finish: true,
+        type: false
+      }
+      console.log('点击上传图标之前', this.chat)
     }
   },
   created () {
@@ -155,6 +231,32 @@ export default {
       this.acceptUser = res
       this.refresh()
     })
+
+    // 接受用户发送过来的消息
+    let that = this
+    this.$eventBus.$on('updateRecentUsers', function (chat) {
+        if (!that.acceptUser.userId) {
+          return
+        }
+        // let newChat = JSON.parse(JSON.stringify(chat))
+        // let newChat = chat
+        // 判断用户是否打开的聊天和接受到消息的用户相同
+        if (chat && chat.userId  && chat.userId == that.acceptUser.userId ) {
+          // console.log(chat)
+          console.log('添加到聊天框中', chat)
+          that.messages.push(chat)
+          // 将俩人聊天记录设置为已观看
+          updateChatLook(that.acceptUser.userId, that.$user.userId).then(res => {
+            console.log('聊天记录设置为已观看,修改记录：', res)
+            // that.$emit('updateUsersBySon', 1)
+          })
+          setTimeout(function () {
+            that.myScroll.refresh()
+            that.myScroll.scrollTo(0, that.myScroll.maxScrollY)
+          }, 200)
+        } else {
+        }
+      })
   },
   mounted () {
     this.$nextTick(() => {
@@ -231,6 +333,8 @@ export default {
           cursor: pointer;
         }
         .sendPic {
+          width: 40px;
+          height: 40px;
           background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABYAAAAVCAYAAABCIB6VAAAAAXNSR0IArs4c6QAAAjFJREFUOBG1lUtrU0EUgHMfSX5AkEINSOmii4JuigihFERpoIgrsykEal6bLgQ34h8oXZUiCnlgaRZSshErhZQWAn24sEUFoSRIQQlEEZJNaRpoHn7n0gupN2mTWx04mTkz53znzJm5E8Vx1pLJ5P1mszmpKMqgOddP32q1SqqqrkcikQ3xU+UnHo8vAs0CHRPdThNfYQhL/JVEInGPaOuapk2Fw+GsHajpk0ql/I1GY43M/SpQP9G2rwoVuDCEJSVVGUhNS2ZU6YnsQx4Q1ChV+1oP45IwLY6UJsB2dpBVDnSuB1BHEwuYLNsPsH3cEdBt0gLGMI4cIL8Q2xnrOJ9rsVjskInRc5M2lE4Z28BYXf4b2FIKa2zrDLdlgFszyUHfZPUU+ezxeN4HAoET07ovcC6X0wuFwvN6vf4MwE/kI3dWo58pl8uvuKqP+wYLNJ/Pr+B4m0/2EYe8ZkIymYxWqVRm2UWGta8E+yZvxRsx8Hq9M8Vi8Snbm0YdQRrIF2TZ7Xa/rtVq84wfOp3OCT7dH4wtjQdoCv93LGwZYBQducHENfp5HqRPRHeh+5BZMpDaDZGNLxqN7jHu2oB/YPHUqDGPxh2U3y6X61YoFDpq89pNp9Mvq9XqAvCly6Dih9136XWg0l9ni3f/gsq8IxgMHtNFDaW3n0F2va/quv6WLToIMNybX3creY+BjpN1VhGzs1dfarmNWurueuGKZCrQF5TsiQEW83/xnyeZAt0U3h+pCu2ZMB0nRQAAAABJRU5ErkJggg==) center/24px no-repeat;
           &:hover {
             background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABYAAAAVCAYAAABCIB6VAAAAAXNSR0IArs4c6QAAAkFJREFUOBG1lctr1FAUxr+bZKzFhStRFJX6aqlgN4MIQzeiOCDSlYNQa9GFqy4EN+I/IF2VIgpuKp1IkW5EpdKi4MLHQkUFYRKtilKoRRAXVdoyTU6/k2E0Np3OQ72Qm5Nz7vnly0nuiUF5uIXDEHMEgs1lV11ng2kYmUBP+33Ns6LkvDeI0IzTTkfXjU3piKEsDoPhd4eAYAKWOYqeNoU3Plw/i1DGYEnWggmyxD/6a6jKUWHKYkmtqKbC+sTHDT+DvHcMIqVSxWPVbGXxPSUTXT+HIHxM6B243qVqnErxJBhh7AWamF0JsbI/CU6lrrFOBS6fgdgNK3YS9zux+wN9exP+Oh1JxXUCKi3/b+BkKSpJiPtHPm5EMM/tb/bRXYQxr9C07i5yW+fKy+oDPxQHU/5FLC5c4Kb9QsgzHjYkPI35H1fh+me48yJ27eAS9Ca/7/3sMMfZbMbK6jAqNhbe9hE6St8bHpO/wfcmm/Bt8TwTu6mmFZCAO+g1Fw1jW/MQlfbTl4azthPdOz7/gqqRMwHnQbiF9yzPbebNsgl5I/xuHQK3s1YbaPfDWC8JWYMQGT5mH/1zjLfAtjM42fr8D+jyi7z3lOBiSbHIAar8ivWmA11ts7G1T5CfuQJ8HyD8elWoJgo+6cmJOnJotsBKHUTXrjhU48CpTT85n43sWiYT/SheWOzDt7QtQ4o7a8lbdY32Y0EnW8E4iRza9QWspfbSZS10VVIsqEoVCrmM3vZzJbDG/8U/j0rRu+eB4pYAPcu+2hPWIJ0AAAAASUVORK5CYII=);

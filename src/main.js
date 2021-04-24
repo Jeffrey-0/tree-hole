@@ -46,6 +46,22 @@ Vue.prototype.$common = common
 Vue.prototype.$eventBus = new Vue()
 Vue.prototype.$eventBusTag = new Vue()
 Vue.prototype.$eventBusiIcon = new Vue()
+// websocket实例
+Vue.prototype.$websocket = {
+  websocket: '',
+  setWebsocket (websocket) {
+    this.websocket = websocket
+  }
+}
+
+Vue.prototype.$mydata = {
+  recentUsers: [],
+  setRecentUsers (recentUsers) {
+    this.recentUsers = recentUsers
+  }
+}
+// Vue.prototype.$recentUsers = []
+
 new Vue({
   router,
   render: h => h(App)

@@ -141,3 +141,24 @@ export function SelectFuzzy (chat, page, rows) {
     params: chat
   })
 }
+
+// 普通分页查询
+export function showRecentChatByUserId (userId) {
+  return request({
+    url: baseTable + 'showRecentChatByUserId',
+    params: {
+      userId
+    }
+  })
+}
+
+// 设置俩人聊天已查看updateChatLook
+export function updateChatLook (userId1, userId2) {
+  return request({
+    url: baseTable + 'updateChatLook',
+    params: {
+      userId1,
+      userId2
+    }
+  })
+}

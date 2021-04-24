@@ -8,14 +8,14 @@
     </div> -->
 
     <el-tabs v-model="activeName" @tab-click="handleClick">
-      <!-- <el-tab-pane label="消息" name="first">
-        <message-list></message-list>
-      </el-tab-pane> -->
+      <el-tab-pane label="消息" name="first">
+        <friend-list :users="latelyUsers" :usersType="1"></friend-list>
+      </el-tab-pane>
       <el-tab-pane label="关注" name="second">
-        <friend-list :users="followUsers"></friend-list>
+        <friend-list :users="followUsers" :usersType="2"></friend-list>
       </el-tab-pane>
       <el-tab-pane label="粉丝" name="third">
-        <friend-list :users="fanUsers"></friend-list>
+        <friend-list :users="fanUsers" :usersType="3"></friend-list>
       </el-tab-pane>
       <!-- <el-tab-pane label="评论" name="fourth">
         <comment-list></comment-list>
@@ -40,7 +40,7 @@ export default {
   },
   data() {
     return {
-      activeName: 'second',
+      activeName: 'first',
       fanUsers: [],
       followUsers: [],
       latelyUsers: [],
@@ -57,6 +57,11 @@ export default {
     })
     showAllFollowsByUserId(this.$user.userId).then (res => {
       this.followUsers = res
+    })
+    this.latelyUsers = this.$mydata.recentUsers
+    this.$eventBus.$on('updateRecentUsers', () => {
+      console.log('获取用户最新列表', 123123123)
+      this.latelyUsers = this.$mydata.recentUsers
     })
   }
 }
