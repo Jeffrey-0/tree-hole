@@ -158,6 +158,14 @@ export function SelectFuzzy (user, page, rows) {
   })
 }
 
+// 登录
+export function login (user) {
+  return request({
+    url: baseTable + 'login',
+    params: user
+  })
+}
+
 // 根据当前用户id+用户id
 export function selectByCurrentUserId (userId, currentUserId) {
   if (!currentUserId) {

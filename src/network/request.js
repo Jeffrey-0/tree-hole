@@ -9,6 +9,11 @@ export function request (config) {
   // 2.axios的拦截器
   // 2.1请求拦截
   instance.interceptors.request.use(config => {
+    const accessToken = window.sessionStorage.getItem('accessToken')
+    console.log('获取sessionStorage中accessToken', accessToken)
+    if (accessToken) {
+      config.headers.accessToken = accessToken
+    }
     return config
   }, err => {
     console.log(err)

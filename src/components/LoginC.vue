@@ -30,7 +30,7 @@
 </template>
 
 <script>
-import { SelectFuzzy } from "../network/user"
+import { SelectFuzzy, login } from "../network/user"
 import {showRecentChatByUserId} from '@/network/chat'
 // TODO
 // import {loginP} from '../network/login'
@@ -83,13 +83,13 @@ export default {
           // 发起登录请求
           // TODO  ----loginP
 
-          SelectFuzzy(this.ruleForm, 1, 1).then((res) => {
+          login(this.ruleForm).then((res) => {
             console.log(res);
             // TODO ---res.userId
-            if (res && res.total > 0) {
+            if (res) {
               // 保存用户到sessionStorage
               // TODO res[0] => res
-              if (res.data[0].type == 2) {
+              if (res.type == 2) {
                 this.$message({
                 message: "登录失败，该用户已被禁用",
                 type: "error",
@@ -97,8 +97,10 @@ export default {
                 offset: 40,
               })
               } else {
-                sessionStorage.setItem("user", JSON.stringify(res.data[0]));
-                Object.assign(this.$user, res.data[0]);
+                sessionStorage.setItem("user", JSON.stringify(res));
+                Object.assign(this.$user, res);
+                // 保存accessToken
+                sessionStorage.setItem("accessToken", res.accessToken)
 
                 console.log("登录成功$user", this.$user);
                 this.$message({
@@ -110,7 +112,7 @@ export default {
 
                 // TODO
                 // console.log("登录成功0， 建立websocket通信");
-                if (res.data[0].type === 0) {
+                if (res.type === 0) {
                   this.$router.push("/admin");
                 } else {
 
