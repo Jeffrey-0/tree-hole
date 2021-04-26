@@ -88,6 +88,38 @@
       direction="ltr"
       size="100%"
       >
+      <el-form :model="ruleForm" status-icon :rules="rules" ref="ruleForm" label-width="70px" class="demo-ruleForm">
+        <div class="form-title">用户信息</div>
+      <el-form-item label="用户名" prop="username">
+        <el-input type="text" v-model="ruleForm.username" autocomplete="off" maxlength="20" placeholder="用户名"></el-input>
+      </el-form-item>
+      <el-form-item label="手机号" prop="phone">
+        <el-input type="text" v-model="ruleForm.phone" maxlength="30" placeholder="手机号"></el-input>
+      </el-form-item>
+      <el-form-item label="座右铭">
+        <el-input type="text" v-model="ruleForm.motto" autocomplete="off" maxlength="20" placeholder="座右铭"></el-input>
+      </el-form-item>
+      <el-form-item>
+          <el-button type="primary" @click="onSubmit">保存</el-button>
+          <el-button @click="closeDrawer">取消</el-button>
+        </el-form-item>
+
+      <div class="form-title">重置密码</div>
+      <el-form-item label="原密码" prop="password">
+        <el-input type="password" v-model="ruleForm.password" autocomplete="off" maxlength="30" placeholder="原密码"></el-input>
+      </el-form-item>
+      <el-form-item label="新密码" prop="checkPass">
+        <el-input type="password" v-model="ruleForm.checkPass" autocomplete="off" maxlength="30" placeholder="新密码"></el-input>
+      </el-form-item>
+      <el-form-item>
+          <el-button type="primary" @click="onSubmitPassword">保存</el-button>
+          <el-button @click="closeDrawer">取消</el-button>
+        </el-form-item>
+      <!-- <el-form-item>
+        <el-button type="primary" @click="submitForm('ruleForm')">注册</el-button>
+      </el-form-item> -->
+    </el-form>
+<!--     
       <el-form ref="form" :model="form" label-width="80px">
         <div class="form-title">用户信息</div>
         <el-form-item label="用户名">
@@ -99,14 +131,20 @@
         <el-form-item label="座右铭">
           <el-input v-model="form.motto"></el-input>
         </el-form-item>
-        <!-- <el-form-item label="密码">
-          <el-input v-model="form.password"></el-input>
-        </el-form-item> -->
-        <el-form-item label="新密码">
+        <el-form-item>
+          <el-button type="primary" @click="onSubmit">保存</el-button>
+          <el-button @click="closeDrawer">取消</el-button>
+        </el-form-item>
+        <div class="form-title">重置密码</div>
+        
+        <el-form-item label="旧密码">
           <el-input v-model="form.password"></el-input>
         </el-form-item>
-        <div class="form-title">隐私设置</div>
-        <el-form-item label="秘密">
+        
+        <el-form-item label="新密码">
+          <el-input v-model="form.newPassword"></el-input>
+        </el-form-item> -->
+        <!-- <el-form-item label="秘密">
           <el-switch v-model="form.secret"></el-switch>
         </el-form-item>
         <el-form-item label="计划">
@@ -117,13 +155,13 @@
         </el-form-item>
         <el-form-item label="聊天">
           <el-switch v-model="form.chat"></el-switch>
-        </el-form-item>
+        </el-form-item> -->
         
-        <el-form-item>
+        <!-- <el-form-item>
           <el-button type="primary" @click="onSubmit">保存</el-button>
           <el-button @click="closeDrawer">取消</el-button>
         </el-form-item>
-      </el-form>
+      </el-form> -->
     </el-drawer>
   </div>
 </template>
@@ -137,7 +175,7 @@ import vueWaterfallEasy from 'vue-waterfall-easy'
 import {showAllByUserId} from "@/network/album"
 import {showAllSecretByPage, showAllSecretByPower, showAllSecretByFollows, showAllSecretByUserId, showAllSecretByMyself} from '@/network/secret'
 import {selectPlanById, showAllPlanByPage, deletePlanById, insertPlan, updatePlanById, showAllPlanByUserId, showAllByCurrentDate} from '@/network/plan'
-import {selectUserById, showAllUserByPage, deleteUserById, insertUser, updateUserById, selectByCurrentUserId, updateUserByIdSelective} from '@/network/user'
+import {selectUserById, showAllUserByPage, deleteUserById, insertUser, updateUserById, selectByCurrentUserId, updateUserByIdSelective, SelectFuzzy } from '@/network/user'
 import {selectRelationById, showAllRelationByPage, deleteRelationById, insertRelation, updateRelationById, cancelFollow} from '@/network/relation'
 export default {
   name: '',
@@ -147,6 +185,126 @@ export default {
     vueWaterfallEasy
   },
   data () {
+      var checkID = (rule, value, callback) => {
+        if (!value) {
+          return callback(new Error('ID不能为空'))
+        }
+          if (value !== '') {
+          let regex = /^[1234567890]+$/
+          if (!regex.test(value)) {
+            return callback(new Error('ID只能为数字'))
+          } else {
+            
+            CheckuserId(value).then(res => {
+              console.log('id检测', res)
+              if (res) {
+                return callback(new Error('ID已存在'))
+              } else {
+                callback()
+              }
+            })
+            
+          }
+        }
+      }
+      var checkUsername = (rule, value, callback) => {
+        if (!value) {
+          return callback(new Error('用户名不能为空'));
+        } else {
+          // if (value !== '') {
+          //   let regex = /^[\u4e00-\u9fa5]+$/
+          //   if (!regex.test(value)) {
+          //     return callback(new Error('姓名只能为汉字'))
+          //   } else {
+          //     callback()
+          //   }
+          // }
+          SelectFuzzy({userName: value}, 1, 1).then(res => {
+            console.log('用户名检测', res)
+              if (res && res.total > 0) {
+                if (res.data[0].userId !== this.$user.userId) {
+                  return callback(new Error('该用户名已被注册'))
+                } else {
+                  callback()
+                }
+                
+              } else {
+                callback()
+              }
+            })
+          // callback()
+        }
+        // callback()
+      }
+      var checkPhone = (rule, value, callback) => {
+        if (!value) {
+          return callback()
+        } else {
+          if (value !== '') {
+            // let regex = /^\w+([-+.]\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$/   //  邮箱正则
+            // let regex = /^1[3456789]d{9}$/   //  邮箱正则
+            let regex = /^1[34578]\d{9}$/   //  手机
+            if (!regex.test(value)) {
+              // console.log('手机格式错误')
+              return callback(new Error('手机号格式错误'))
+            } else {
+              
+            SelectFuzzy({phone: value}, 1, 1).then(res => {
+              console.log('手机检测', res)
+              if (res && res.total > 0) {
+                if (res.data[0].userId !== this.$user.userId) {
+                  return callback(new Error('该手机号已注册过账号'))
+                } else {
+                  callback()
+                }
+              } else {
+                callback()
+              }
+            })
+              
+            }
+          }
+        }
+      }
+      var validatePass = (rule, value, callback) => {
+        if (value === '') {
+          callback(new Error('请输入密码'));
+        } else {
+          if (value !== '') {
+            let regex = /(?=.*[a-z])(?=.*[A-Z])(?=.*[^a-zA-Z0-9]).{8,30}/
+            if (value.length < 8) {
+              return callback(new Error('长度不能小于8'))
+            } else if (value.length > 30) {
+              return callback(new Error('长度不能大于30'))
+            } else if (!regex.test(value)) {
+              return callback(new Error('必须有大小写字母和特殊字符'))
+            } else {
+              SelectFuzzy({userId: this.$user.userId, password: value}, 1, 1).then(res => {
+                console.log('密码检测', res)
+                if (!res || res.total === 0) {
+                
+                  
+                 return callback(new Error('密码错误'))
+                  console.log('密码检测333', res)
+                }
+              })
+              callback()
+            }
+            callback()
+            }
+          
+          callback()
+        }
+      }
+      var validatePass2 = (rule, value, callback) => {
+        if (value === '') {
+          callback(new Error('请再次输入密码'));
+        } else if (value === this.ruleForm.password) {
+          callback(new Error('新密码和旧密码一样!'));
+        } else {
+          callback();
+        }
+      }
     return {
       activeName: 'first',
       targers: [{
@@ -193,6 +351,30 @@ export default {
           plan: true,
           album: false,
           chat: true
+        },
+
+        ruleForm: {
+          userId: '',
+          username: '',
+          phone: '',
+          password: '',
+          checkPass: '',
+          motto: '',
+          type: 1
+        },
+        rules: {
+          username: [
+            { validator: checkUsername, trigger: 'blur' }
+          ],
+          phone: [
+            { validator: checkPhone, trigger: 'blur' }
+          ],
+          password: [
+            { validator: validatePass, trigger: 'blur' }
+          ],
+          checkPass: [
+            { validator: validatePass2, trigger: 'blur' }
+          ]
         }
     }
   },
@@ -228,7 +410,8 @@ export default {
       selectByCurrentUserId(this.currentUser.userId, this.$user.userId).then(res => {
         this.currentUser = res
         this.form = Object.assign( this.form, res)
-        this.form.ifFollow = 1
+        this.ruleForm = Object.assign( this.form, res)
+        // this.form.ifFollow = 1
         console.log('this.form', this.form)
       })
 
@@ -399,16 +582,47 @@ export default {
     },
     // 确认编辑
     onSubmit() {
-      console.log('submit!');
-      updateUserByIdSelective(this.form).then(res => {
+      let newForm = {
+        userId: this.ruleForm.userId,
+        username: this.ruleForm.username,
+        motto: this.ruleForm.motto
+      }
+      console.log('submit!', newForm);
+      updateUserByIdSelective(newForm).then(res => {
         if (res) {
           this.$message.success('修改成功!')
-          this.currentUser = Object.assign(this.currentUser, this.form)
+          this.currentUser = Object.assign(this.currentUser, newForm)
           this.drawer = false
         } else {
           this.$message.error('修改失败!')
         }
       })
+    },
+    onSubmitPassword () {
+      let result = 1
+      SelectFuzzy({userId: this.$user.userId, password: this.ruleForm.password}, 1, 1).then(res => {
+        console.log('密码检测', res)
+        if (!res || res.total === 0) {
+          this.$message.error('原密码错误')
+          result = 0
+        } else {
+          let newForm = {
+            userId: this.ruleForm.userId,
+            password: this.ruleForm.checkPass,
+          }
+          
+          updateUserByIdSelective(newForm).then(res => {
+            if (res) {
+              this.$message.success('修改成功!')
+              // this.currentUser = Object.assign(this.currentUser, newForm)
+              this.drawer = false
+            } else {
+              this.$message.error('修改失败!')
+            }
+          })
+        }
+      })
+      
     },
     // 取消抽屉
     closeDrawer () {

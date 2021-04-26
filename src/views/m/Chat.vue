@@ -36,7 +36,9 @@
         <div class="input-content">
             <el-input type="textarea" v-model="chatInput" placeholder="回复一下吧"></el-input>
         </div>
-        <el-button @click="addChat">发送</el-button>
+        <!-- <el-button @click="addChat">发送</el-button> -->
+        <el-button v-if="chatInput" @click="addChat">发送</el-button>
+        <el-button v-else disabled>发送</el-button>
       </div>
     </div>
   </div>
@@ -184,16 +186,14 @@ export default {
       this.$websocket.websocket.send(JSON.stringify(chat))
     },
     // 发送图片之前
-    beforePicUpload () {
-      // this.chat = {
-      //   userId: this.$user.userId,
-      //   acceptId: this.acceptUser.userId,
-      //   content: '',
-      //   createTime: this.$moment(new Date()).format('YYYY-MM-DD hh:mm:ss'),
-      //   finish: false,
-      //   type: true
-      // }
-      // console.log('上传之前', this.chat)
+    beforePicUpload (file) {
+      console.log('上传之前', file)
+      const isJPG = file.type === 'image/jpeg' || file.type === 'image/png' || file.type==="image/jpg";
+
+      if (!isJPG) {
+        this.$message.error('只能上传图片!');
+      }
+      return isJPG;
     },
     // 
     uploadSuccess (item) {

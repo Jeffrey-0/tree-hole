@@ -3,24 +3,29 @@
     <el-tabs v-model="activeName" @tab-click="handleClick">
       <el-tab-pane label="秘密" name="first">
         <div class="secret">
-          <el-form>
+          <el-form v-model="formSecret">
             <el-form-item>
-              <el-input type="textarea" v-model="formSecret.content" placeholder="说点什么吧"></el-input>
+              <el-input type="textarea" v-model="formSecret.content" placeholder="说点什么吧" minlength="3" maxlength="200"></el-input>
             </el-form-item>
             <el-form-item>
               <div class="photos">
                 <el-upload
+                  accept=".jpg, .png, .jpeg"
                   list-type="picture-card"
                   :action="$baseUrl + 'picture/upload'"
                   :data="currentSecret"
-                  :file-list="fileListSecret"
                   :headers="{accessToken : accessToken}"
                   :on-success="uploadSecretSuccess"
-                  :on-remove="handleRemove2"
+                  :on-error="uploadError"
+                  :on-remove="handleRemove"
                   :limit="6"
                   ref="uploadSecret"
                   :auto-upload="false">
-                    <i slot="default" class="el-icon-plus"></i>
+                  <i class="el-icon-plus"></i>
+                  <el-dialog :visible.sync="dialogVisible">
+                    <img width="100%" :src="dialogImageUrl" alt="">
+                  </el-dialog>
+                    <!-- <i slot="default" class="el-icon-plus"></i>
                     <div slot="file" slot-scope="{file}">
                       <img
                         class="el-upload-list__item-thumbnail"
@@ -36,12 +41,12 @@
                         <span
                           v-if="!disabled"
                           class="el-upload-list__item-delete"
-                          @click="handleRemove(file, 1)"
+                          @click="handleRemove(file, fileList)"
                         >
                           <i class="el-icon-delete"></i>
                         </span>
                       </span>
-                    </div>
+                    </div> -->
                 </el-upload>
               </div>
             </el-form-item>
@@ -116,43 +121,20 @@
             <div class="photos">
               <!-- :file-list="fileList" -->
               <el-upload
+                accept=".jpg, .png, .jpeg"
                 list-type="picture-card"
                 :action="$baseUrl + 'album/upload'"
                 ref="upload"
-                :data="$user"
-                :on-success="uploadSuccess"
-                :headers="{accessToken : accessToken}"
                 :file-list="fileList"
+                :on-success="uploadSuccess"
+                :on-error="uploadError"
+                :data="$user"
+                :headers="{accessToken : accessToken}"
                 :auto-upload="false">
-                  <i slot="default" class="el-icon-plus"></i>
-                  <div slot="file" slot-scope="{file}">
-                    <img
-                      class="el-upload-list__item-thumbnail"
-                      :src="file.url" alt=""
-                    >
-                    <span class="el-upload-list__item-actions">
-                      <span
-                        class="el-upload-list__item-preview"
-                        @click="handlePictureCardPreview(file)"
-                      >
-                        <i class="el-icon-zoom-in"></i>
-                      </span>
-                      <!-- <span
-                        v-if="!disabled"
-                        class="el-upload-list__item-delete"
-                        @click="handleDownload(file)"
-                      >
-                        <i class="el-icon-download"></i>
-                      </span> -->
-                      <span
-                        v-if="!disabled"
-                        class="el-upload-list__item-delete"
-                        @click="handleRemove(file, 2)"
-                      >
-                        <i class="el-icon-delete"></i>
-                      </span>
-                    </span>
-                  </div>
+                <i class="el-icon-plus"></i>
+                  <el-dialog :visible.sync="dialogVisibleAlbum">
+                    <img width="100%" :src="dialogImageUrl" alt="">
+                  </el-dialog>
               </el-upload>
             </div>
 
@@ -177,6 +159,11 @@ import Chat from '@/components/Chat'
 import CommentList from '@/components/CommentList'
 // import Calendar from '@/components/Calendar'
 import Calendar from '../components/Calendar.vue'
+
+
+
+let uploadSuccessAll = 1
+
 export default {
   name: '',
   components: {
@@ -209,12 +196,13 @@ export default {
         repeats: []
       },
       formLabelWidth: '0',
-      activeName: 'second',
+      activeName: 'third',
       records: [],
       iconsVisible: false,
       dialogImageUrl: '',
       dialogVisible: false,
       disabled: false,
+      dialogVisibleAlbum: false,
       icons: [
         'el-icon-user-solid',
         'el-icon-user',
@@ -234,6 +222,7 @@ export default {
       currentSecret: {
         secretId: 0
       },
+      // 计划rules
       rules :{
         name: [
             { required: true, message: '请输入目标名称', trigger: 'blur' },
@@ -242,15 +231,13 @@ export default {
         content: [
           { required: true, message: '请选择图标', trigger: 'blur' }
         ],
-        // startTime: [
-        //   { type: 'date', required: true, message: '请选择开始时间', trigger: 'blur' }
-        // ],
-        // endTime: [
-        //   { type: 'date', required: true, message: '请选择结束时间', trigger: 'blur' }
-        // ],
-        // repeats: [
-        //   { type: 'array', required: true, message: '请至少选择一个活动性质', trigger: 'change' }
-        // ]
+      },
+      // 秘密rules
+      secretRules: {
+        content: [
+            { required: true, message: '请输入文本', trigger: 'blur' },
+            { min: 5, max: 10, message: '长度在 5到 10 个字符', trigger: 'blur' }
+        ]
       },
       accessToken: sessionStorage.getItem('accessToken')
     };
@@ -285,7 +272,9 @@ export default {
       this.iconsVisible = false
     },
     // 图片移除
-    handleRemove(file, index) {
+    handleRemove(file, fileList) {
+      console.log('图片移除', file, fileList)
+      return
       if (index === 1) {  //删除秘密图片列表中某项
         console.log(file, this.fileListSecret)
       } else { // 删除相册图片列表中某项
@@ -346,6 +335,10 @@ export default {
 
     // 添加秘密
     addSecret () {
+      if (!this.formSecret.content || this.formSecret.content.length < 5) {
+        this.$message.error('文本长度不能小于5')
+        return 
+      } 
       console.log('添加秘密')
       this.formSecret.createTime = this.$moment(new Date()).format('YYYY-MM-DD HH:mm:ss')
       insertSecret(this.formSecret).then(res => {
@@ -371,26 +364,41 @@ export default {
     submitUpload () {
       console.log('this.fileList', this.fileList)
       this.$refs.upload.submit()
-      this.$refs.upload.clearFiles()
+      // this.$refs.upload.clearFiles()
       this.$message.success('上传成功')
-      this.fileList = []
+      // this.fileList = []
     },
     // // 上传成功
     uploadSuccess () {
       // :on-success="uploadSuccess"  应该添加在upload元素上
       // this.$message.success('上传成功')
+      console.log('上传成功')
       let that = this
+      // this.dialogVisibleAlbum = false
       setTimeout(() => {
         that.$refs.upload.clearFiles()
       }, 1000)
     },
+    // 上传秘密成功后
     uploadSecretSuccess () {
       console.log('上传成功')
       let that = this
-      setTimeout(() => {
-        that.$refs.uploadSecret.clearFiles()
-      }, 1000)
-    }
+      if (uploadSuccessAll === 1) {
+        uploadSuccessAll = 0
+        setTimeout(() => {
+          that.$refs.uploadSecret.clearFiles()
+          uploadSuccessAll = 1
+        }, 1000)
+      }
+    },
+    uploadError () {
+      this.$message.error('请上传图片')
+    },
+    // 上传秘密之前
+    // beforeSecretUpload (file, fileList) {
+    //   console.log('上传秘密之前', file, fileList)
+    //   return false
+    // }
   },
   mounted () {
 

@@ -739,3 +739,33 @@
 #index .el-drawer {
     width: 30% !important;
 }
+
+
+/* 手机端上传图片不显示 */
+#mIndex .el-upload-list--picture-card .el-upload-list__item-thumbnail {
+    position: absolute;
+    background-size: cover;
+}
+
+/* PC端图片上传样式 */
+#index .el-upload-list--picture-card .el-upload-list__item {
+    width: 30%;
+}
+
+
+/* 左侧导航栏 */
+.navbar .el-input.is-disabled .el-input__inner {
+    background: transparent;
+    cursor: pointer;
+}
+
+.navbar .el-textarea.is-disabled .el-textarea__inner {
+    background: transparent;
+}
+
+/* 编辑抽屉 */
+.el-drawer__body {
+    flex: 1;
+    padding: 20px;
+    box-sizing: border-box;
+}

@@ -8,15 +8,20 @@
     :show-file-list="false"
     :data="$user"
     :on-success="handleAvatarSuccess"
+    :on-error="uploadError"
+     accept=".jpg, .png, .jpeg"
     :before-upload="beforeAvatarUpload"
   >
     <img v-if="imageUrl" :src="imageUrl" class="portrait">
     <!-- <img v-if="$user.portrait" class="portrait" title="点击切换头像" :src="$baseImgUrl + $user.portrait"> -->
     <img v-else class="portrait" title="点击切换头像" src="../assets/img/default.png">
 </el-upload>
-    <el-input v-model="user.username" placeholder="未登录" maxlength="10"></el-input>
+<div  @click="goMyHome" title="前往主页">
+<el-input v-model="user.username" placeholder="未登录" maxlength="10" disabled></el-input>
+</div>
+    
     <div class="username motto">
-      <el-input v-model="user.motto" placeholder="个性签名" type="textarea" maxlength="20">
+      <el-input v-model="user.motto" placeholder="个性签名" type="textarea" maxlength="20" disabled>
       </el-input>
     </div>
     
@@ -118,11 +123,11 @@ export default {
     },
     beforeAvatarUpload(file) {
       console.log('上传之前', file)
-      const isJPG = file.type === 'image/jpeg';
+      const isJPG = file.type === 'image/jpeg' || file.type === 'image/png' || file.type==="image/jpg";
       const isLt2M = file.size / 1024 / 1024 < 2;
 
       if (!isJPG) {
-        this.$message.error('上传头像图片只能是 JPG 格式!');
+        this.$message.error('只能上传图片!');
       }
       if (!isLt2M) {
         this.$message.error('上传头像图片大小不能超过 2MB!');
@@ -136,6 +141,12 @@ export default {
       } else {
         return false
       }
+    },
+    uploadError () {
+      this.$message.error('上传失败')
+    },
+    goMyHome () {
+      this.$router.push('m-user?userId=' + this.$user.userId)
     }
   },
   created () {

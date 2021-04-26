@@ -4,7 +4,7 @@
       <el-tab-pane label="广场" name="first">
         <div class="wrapper" ref="wrapper1">
           <div class="secretList">
-            <secret-item v-for="secret in SecretList.first" :key="secret.secretId" :secret="secret"></secret-item>
+            <secret-item v-for="secret in SecretList.first" :key="secret.secretId" :secret="secret" @deleteSecret="deleteSecret"></secret-item>
           </div>
         </div>
         
@@ -12,14 +12,14 @@
       <el-tab-pane label="关注" name="second">
         <div class="wrapper" ref="wrapper2">
           <div class="secretList">
-            <secret-item v-for="secret in SecretList.second" :key="secret.secretId" :secret="secret"></secret-item>
+            <secret-item v-for="secret in SecretList.second" :key="secret.secretId" :secret="secret" @deleteSecret="deleteSecret"></secret-item>
           </div>
         </div>
       </el-tab-pane>
       <el-tab-pane label="私人" name="third">
         <div class="wrapper" ref="wrapper3">
           <div class="secretList">
-            <secret-item v-for="secret in SecretList.third" :key="secret.secretId" :secret="secret"></secret-item>
+            <secret-item v-for="secret in SecretList.third" :key="secret.secretId" :secret="secret" @deleteSecret="deleteSecret"></secret-item>
           </div>
         </div>
       </el-tab-pane>
@@ -193,13 +193,22 @@ export default {
       // 图片加载完成
       this.myScroll.refresh()
       console.log('图片加载完成')
+    },
+    // 监听到子组件删除秘密
+    deleteSecret (secretId) {
+      // this.refresh()
+      this.SecretList.first = this.SecretList.first.filter((item) => item.secretId !== secretId)
+      this.SecretList.second = this.SecretList.second.filter((item) => item.secretId !== secretId)
+      this.SecretList.third = this.SecretList.third.filter((item) => item.secretId !== secretId)
     }
   },
   created () {
     this.refresh()
+    
   },
   mounted() {
     let that = this
+
     this.$nextTick(() => {
       this.myScroll.first = new BScroll(this.$refs.wrapper1, {
         scrollY: true,

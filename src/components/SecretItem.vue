@@ -207,7 +207,8 @@ export default {
             if (res) {
               this.$message.success('删除成功!')
               // 通知父组件已经删除，刷新数据
-              this.$emit('deleteSecret')
+              console.log('删除成功，通知父组件刷新数据')
+              this.$emit('deleteSecret', this.secret.secretId)
             } else {
               this.$message.error('删除失败!')
             }

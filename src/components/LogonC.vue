@@ -1,9 +1,6 @@
 <template>
   <div id="loginC">
     <el-form :model="ruleForm" status-icon :rules="rules" ref="ruleForm" label-width="40px" class="demo-ruleForm">
-      <!-- <el-form-item label="ID" prop="id">
-        <el-input type="text" v-model.number="ruleForm.id" autocomplete="off" maxlength="15" placeholder="ID"></el-input>
-      </el-form-item> -->
       <el-form-item label="用户" prop="username">
         <el-input type="text" v-model="ruleForm.username" autocomplete="off" maxlength="20" placeholder="用户名"></el-input>
       </el-form-item>
@@ -100,7 +97,6 @@ export default {
               
             }
           }
-          // callback()
         }
       }
       var validatePass = (rule, value, callback) => {
