@@ -20,6 +20,7 @@
           <el-upload
             class="upload"
             list-type="picture"
+            :headers="{accessToken : accessToken}"
             :action="$baseUrl + 'chat/upload'"
             :data="chat"
             :show-file-list="false"
@@ -75,7 +76,8 @@ export default {
         createTime: this.$moment(new Date()).format('YYYY-MM-DD HH:mm:ss'),
         finish: true,
         type: false
-      }
+      },
+      accessToken: sessionStorage.getItem('accessToken')
     }
   },
   methods: {

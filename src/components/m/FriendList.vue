@@ -141,11 +141,13 @@ export default {
           color: #aaa;
           height: 50px;
           line-height: 50px;
+          width: 100px;
         }
         .username {
           float: left;
           height: 50px;
           line-height: 50px;
+          width: calc(100% - 100px);
           border: 0;
         }
       }

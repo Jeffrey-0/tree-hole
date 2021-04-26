@@ -1,6 +1,7 @@
 <template>
   <div id="container">
   <el-upload
+    :headers="{accessToken : accessToken}"
     :disabled="!this.user.userId"
     class="avatar-uploader"
     :action="$baseUrl + 'user/uploadPortrait'"
@@ -62,7 +63,8 @@ export default {
       avatar: 0,
       motto: '',
       avatarPhoto: '',
-      imageUrl:''
+      imageUrl:'',
+      accessToken: sessionStorage.getItem('accessToken')
     }
   },
   computed: {

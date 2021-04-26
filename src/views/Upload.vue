@@ -14,7 +14,9 @@
                   :action="$baseUrl + 'picture/upload'"
                   :data="currentSecret"
                   :file-list="fileListSecret"
+                  :headers="{accessToken : accessToken}"
                   :on-success="uploadSecretSuccess"
+                  :on-remove="handleRemove2"
                   :limit="6"
                   ref="uploadSecret"
                   :auto-upload="false">
@@ -34,7 +36,7 @@
                         <span
                           v-if="!disabled"
                           class="el-upload-list__item-delete"
-                          @click="handleRemove(file)"
+                          @click="handleRemove(file, 1)"
                         >
                           <i class="el-icon-delete"></i>
                         </span>
@@ -119,6 +121,7 @@
                 ref="upload"
                 :data="$user"
                 :on-success="uploadSuccess"
+                :headers="{accessToken : accessToken}"
                 :file-list="fileList"
                 :auto-upload="false">
                   <i slot="default" class="el-icon-plus"></i>
@@ -144,7 +147,7 @@
                       <span
                         v-if="!disabled"
                         class="el-upload-list__item-delete"
-                        @click="handleRemove(file)"
+                        @click="handleRemove(file, 2)"
                       >
                         <i class="el-icon-delete"></i>
                       </span>
@@ -248,7 +251,8 @@ export default {
         // repeats: [
         //   { type: 'array', required: true, message: '请至少选择一个活动性质', trigger: 'change' }
         // ]
-      }
+      },
+      accessToken: sessionStorage.getItem('accessToken')
     };
   },
   methods: {
@@ -280,12 +284,21 @@ export default {
       this.form.content = item
       this.iconsVisible = false
     },
-    // 图片上传
-    handleRemove(file) {
-      console.log(file, this.fileList);
+    // 图片移除
+    handleRemove(file, index) {
+      if (index === 1) {  //删除秘密图片列表中某项
+        console.log(file, this.fileListSecret)
+      } else { // 删除相册图片列表中某项
+        console.log(file, this.fileList)
+      }
+      
       // this.fileList = this.fileList.filter(item => {
       //   return item.uid !== file.uid
       // });
+    },
+    // 图片移除2
+    handleRemove2 (file, index) {
+      console.log('图片移除2', index, this.fileListSecret, file)
     },
     handlePictureCardPreview(file) {
       this.dialogImageUrl = file.url;
