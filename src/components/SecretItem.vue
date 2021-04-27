@@ -32,6 +32,9 @@
             style="width: 100%"
             :src="$baseImgUrl + item.path" 
             :preview-src-list="imgList">
+            <div slot="error" class="image-slot">
+              <i class="el-icon-picture-outline"></i>
+            </div>
           </el-image>
 
         </div>

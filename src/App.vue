@@ -20,6 +20,7 @@ import Login from '@/views/Login.vue'
 import mIndex from '@/views/m/Index.vue'
 import Admin from '@/views/admin/Admin.vue'
 import {showRecentChatByUserId} from '@/network/chat'
+import {selectUserById} from '@/network/user'
 
 export default {
   name: '',
@@ -119,6 +120,17 @@ export default {
           this.$websocket.websocket.close();
         };
       }
+    },
+    // 刷新用户数据
+    refreshUser () {
+      selectUserById(this.$user.userId).then({
+        if(res) {
+          this.user = res
+          Object.assign(this.$user, res)
+          // sessionStorage.removeItem("user")
+          sessionStorage.setItem("user", JSON.stringify(res))
+        }
+      })
     }
   },
   created () {
@@ -149,6 +161,8 @@ export default {
 
     // 判断用户是否登录，登录则建立websocket
     if (this.$user.userId) {
+      // this.refreshUser()
+
       this.conectWebSocket()
 
       // 获取最近聊天用户

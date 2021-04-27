@@ -49,12 +49,12 @@
           </el-table-column>
           <!-- <el-table-column prop="type" label="类型" width="60">
           </el-table-column> -->
-          <el-table-column prop="phone" label="手机" min-width="150"> </el-table-column>
+          <!-- <el-table-column prop="phone" label="手机" min-width="150"> </el-table-column> -->
           <!-- <el-table-column prop="userAge" label="年龄" width="60">
           </el-table-column> -->
           <el-table-column prop="motto" label="座右铭" min-width="200">
           </el-table-column>
-          <el-table-column label="封禁" min-width="200">
+          <el-table-column label="封禁" min-width="100">
             <template slot-scope="scope" align="center">
               <el-switch
                 v-if="scope.row.type !== 0"
@@ -68,21 +68,46 @@
                 :inactive-value="2"
                 @change="changeFinish(scope.row)">
               </el-switch>
+              <el-switch
+                v-else
+                disabled
+                style="display: block"
+                v-model="isOne"
+                active-color="#13ce66"
+                inactive-color="#ff4949"
+                active-text="正常"
+                inactive-text="禁用"
+                :active-value="1"
+                :inactive-value="2">
+              </el-switch>
             </template>
           </el-table-column>
           <el-table-column fixed="right" label="操作" min-width="170">
             <template slot-scope="scope">
-              <el-tag
+              <el-button
+                size="mini"
                 @click="handleClick(scope.row)"
                 type="primary"
                 class="tag-btn"
-                >查 看</el-tag
+                >查 看</el-button
               >
-              <el-tag
-                @click="handleClick(scope.row)"
+
+              <el-button
+                v-if="scope.row.type!==0 || (scope.row.type===0&&$user.username === 'admin') && scope.row.username !== 'admin'"
+                size="mini"
+                @click="handleClickDelete(scope.row)"
                 type="danger"
                 class="tag-btn"
-                >删 除</el-tag
+                >删 除</el-button
+              >
+              <el-button
+                v-else
+                disabled
+                size="mini"
+                @click="handleClickDelete(scope.row)"
+                type="danger"
+                class="tag-btn"
+                >删 除</el-button
               >
               <!-- <el-tag
                 @click="cancel(scope.row)"
@@ -120,11 +145,17 @@
               <el-form-item label="权限" :label-width="formLabelWidth">
                 <el-input v-model="user.type" disabled></el-input>
               </el-form-item>
-              <el-form-item label="手机" :label-width="formLabelWidth">
+              <!-- <el-form-item label="手机" :label-width="formLabelWidth">
                 <el-input v-model="user.phone" disabled></el-input>
-              </el-form-item>
+              </el-form-item> -->
               <el-form-item label="座右铭" :label-width="formLabelWidth">
                 <el-input v-model="user.motto" disabled></el-input>
+              </el-form-item>
+              <el-form-item label="头像" :label-width="formLabelWidth" v-if="user.portrait">
+                <el-image 
+                  style="width: 300px; height: 300px"
+                  :src="$baseImgUrl + user.portrait" >
+                </el-image>
               </el-form-item>
             </el-form>
           </el-form>
@@ -149,11 +180,12 @@
 </template>
 
 <script>
-import {showAllUserByPage, SelectFuzzy, forbiddenUser, updateUserByIdSelective } from "../../network/user";
+import {showAllUserByPage, SelectFuzzy, forbiddenUser, updateUserByIdSelective, deleteUserById } from "../../network/user";
 export default {
   name: "User",
   data() {
     return {
+      isOne: 1,
       collapse: true,
       tagName: "",
       // formInline: {
@@ -206,7 +238,22 @@ export default {
       this.dialogFormVisible = true;
       this.user = row;
     },
-
+    handleClickDelete (row) {
+      this.$confirm('是否删除这个用户?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'error'
+        }).then(() => {
+          deleteUserById(row.userId).then(res => {
+            if (res) {
+              this.$message.success('删除成功!')
+              this.handleCurrentChange(this.currentPage)
+            } else {
+              this.$message.error('删除失败!')
+            }
+          })
+        }).catch(() => {})
+    },
     handleCurrentChange(val) {
       console.log(`当前页: ${val}`);
       this.currentPage = val;
@@ -371,5 +418,8 @@ export default {
   background: #fff;
   border: 1px solid #ddd;
   border-radius: 5px;
+}
+.el-image {
+  float: left;
 }
 </style>

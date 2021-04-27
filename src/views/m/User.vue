@@ -8,13 +8,20 @@
         <div class="usernameMotto">
           <div class="username">
             <span>{{ this.currentUser.username }}</span>
-            <el-button v-if="currentUser.userId === $user.userId" round size="small" @click="edit">编辑</el-button>
-            <el-button v-if="currentUser.userId === $user.userId" round size="small" @click="signOut">退出</el-button>
-            <el-button v-if="currentUser.userId !== $user.userId && currentUser.ifFollow" round size="small" @click="cancelWatch" type="danger">取关</el-button>
-            <el-button v-if="currentUser.userId !== $user.userId && !currentUser.ifFollow" round size="small" @click="sureWatch" type="info">关注</el-button>
-            <el-button v-if="currentUser.userId !== $user.userId" round size="small" @click="chatTo">聊天</el-button>
+            <span class="username-motto">{{ this.currentUser.motto }}</span>
+            
           </div>
-          <div class="motto">{{ this.currentUser.motto }}</div>
+          <div class="motto">
+            <el-button v-if="currentUser.userId === $user.userId" round size="mini" @click="edit">编辑</el-button>
+            <el-button v-if="currentUser.userId === $user.userId" round size="mini" @click="signOut">退出</el-button>
+            <el-button v-if="currentUser.userId !== $user.userId && currentUser.ifFollow" round size="mini" @click="cancelWatch" type="danger">取关</el-button>
+            <el-button v-if="currentUser.userId !== $user.userId && !currentUser.ifFollow" round size="mini" @click="sureWatch" >关注</el-button>
+            <el-button v-if="currentUser.userId !== $user.userId && currentUser.ifBlock" round size="mini" @click="cancelBlock"  type="info">拉白</el-button>
+            <el-button v-if="currentUser.userId !== $user.userId && !currentUser.ifBlock" round size="mini" @click="sureBlock" >拉黑</el-button>
+            <el-button v-if="currentUser.userId !== $user.userId" round size="mini" @click="chatTo">聊天</el-button>
+            <!-- <el-button v-if="currentUser.userId !== $user.userId" round size="mini" @click="chatTo">拉黑</el-button> -->
+            <el-button v-if="currentUser.userId !== $user.userId" round size="mini" @click="clickReport">举报</el-button>
+          </div>
         </div>
       </div>
       <!-- <div class="edit">
@@ -93,9 +100,9 @@
       <el-form-item label="用户名" prop="username">
         <el-input type="text" v-model="ruleForm.username" autocomplete="off" maxlength="20" placeholder="用户名"></el-input>
       </el-form-item>
-      <el-form-item label="手机号" prop="phone">
+      <!-- <el-form-item label="手机号" prop="phone">
         <el-input type="text" v-model="ruleForm.phone" maxlength="30" placeholder="手机号"></el-input>
-      </el-form-item>
+      </el-form-item> -->
       <el-form-item label="座右铭">
         <el-input type="text" v-model="ruleForm.motto" autocomplete="off" maxlength="20" placeholder="座右铭"></el-input>
       </el-form-item>
@@ -115,10 +122,10 @@
           <el-button type="primary" @click="onSubmitPassword">保存</el-button>
           <el-button @click="closeDrawer">取消</el-button>
         </el-form-item>
+    </el-form>
       <!-- <el-form-item>
         <el-button type="primary" @click="submitForm('ruleForm')">注册</el-button>
       </el-form-item> -->
-    </el-form>
 <!--     
       <el-form ref="form" :model="form" label-width="80px">
         <div class="form-title">用户信息</div>
@@ -177,6 +184,7 @@ import {showAllSecretByPage, showAllSecretByPower, showAllSecretByFollows, showA
 import {selectPlanById, showAllPlanByPage, deletePlanById, insertPlan, updatePlanById, showAllPlanByUserId, showAllByCurrentDate} from '@/network/plan'
 import {selectUserById, showAllUserByPage, deleteUserById, insertUser, updateUserById, selectByCurrentUserId, updateUserByIdSelective, SelectFuzzy } from '@/network/user'
 import {selectRelationById, showAllRelationByPage, deleteRelationById, insertRelation, updateRelationById, cancelFollow} from '@/network/relation'
+import {insertBlacklist, cancelBlock} from '@/network/blacklist'
 export default {
   name: '',
   components: {
@@ -211,14 +219,6 @@ export default {
         if (!value) {
           return callback(new Error('用户名不能为空'));
         } else {
-          // if (value !== '') {
-          //   let regex = /^[\u4e00-\u9fa5]+$/
-          //   if (!regex.test(value)) {
-          //     return callback(new Error('姓名只能为汉字'))
-          //   } else {
-          //     callback()
-          //   }
-          // }
           SelectFuzzy({userName: value}, 1, 1).then(res => {
             console.log('用户名检测', res)
               if (res && res.total > 0) {
@@ -267,7 +267,7 @@ export default {
         }
       }
       var validatePass = (rule, value, callback) => {
-        if (value === '') {
+        if (!value) {
           callback(new Error('请输入密码'));
         } else {
           if (value !== '') {
@@ -279,18 +279,8 @@ export default {
             } else if (!regex.test(value)) {
               return callback(new Error('必须有大小写字母和特殊字符'))
             } else {
-              SelectFuzzy({userId: this.$user.userId, password: value}, 1, 1).then(res => {
-                console.log('密码检测', res)
-                if (!res || res.total === 0) {
-                
-                  
-                 return callback(new Error('密码错误'))
-                  console.log('密码检测333', res)
-                }
-              })
-              callback()
+              return callback()
             }
-            callback()
             }
           
           callback()
@@ -550,10 +540,6 @@ export default {
     },
     // 取消关注
     cancelWatch () {
-      // let relation = {
-      //   userId: this.$user.userId,
-      //   followId: this.currentUser.userId
-      // }
       cancelFollow(this.$user.userId, this.currentUser.userId).then(res => {
         if (res) {
           this.currentUser.ifFollow =0
@@ -576,30 +562,75 @@ export default {
         }
       })
     },
+
+        // 取消拉黑 === 拉白
+    cancelBlock () {
+      cancelBlock(this.$user.userId, this.currentUser.userId).then(res => {
+        if (res) {
+          this.currentUser.ifBlock =0
+        } else {
+          this.$message.error('取消关注失败')
+        }
+      })
+    },
+    // 拉黑
+    sureBlock () {
+
+      let blacklist = {
+        userId: this.$user.userId,
+        blockId: this.currentUser.userId
+      }
+      insertBlacklist(blacklist).then(res => {
+        if (res) {
+          this.currentUser.ifBlock = 1
+        } else {
+          this.$message.error('关注失败')
+        }
+      })
+    },
     // 点击编辑
     edit () {
       this.drawer = true
     },
     // 确认编辑
     onSubmit() {
-      let newForm = {
-        userId: this.ruleForm.userId,
-        username: this.ruleForm.username,
-        motto: this.ruleForm.motto
-      }
-      console.log('submit!', newForm);
-      updateUserByIdSelective(newForm).then(res => {
-        if (res) {
-          this.$message.success('修改成功!')
-          this.currentUser = Object.assign(this.currentUser, newForm)
-          this.drawer = false
-        } else {
-          this.$message.error('修改失败!')
-        }
-      })
+      if (!this.ruleForm.username) {
+        this.$message.error('用户名不能为空')
+        return}
+
+          SelectFuzzy({userName: this.ruleForm.username}, 1, 1).then(res => {
+              if (res && res.total > 0) {
+                if (res.data[0].userId !== this.$user.userId) {
+                  this.$message.error('用户名已被注册')
+                  return}
+              } else {
+                 let newForm = {
+                  userId: this.ruleForm.userId,
+                  username: this.ruleForm.username,
+                  motto: this.ruleForm.motto
+                }
+                console.log('submit!', newForm);
+                updateUserByIdSelective(newForm).then(res => {
+                  if (res) {
+                    this.$message.success('修改成功!')
+                    this.currentUser = Object.assign(this.currentUser, newForm)
+                    this.drawer = false
+                  } else {
+                    this.$message.error('修改失败!')
+                  }
+                })
+
+              }
+            })
+            
+     
     },
     onSubmitPassword () {
       let result = 1
+      if (!this.ruleForm.password || !this.ruleForm.checkPass) {
+        this.$message.error('请输入密码')
+        return
+      }
       SelectFuzzy({userId: this.$user.userId, password: this.ruleForm.password}, 1, 1).then(res => {
         console.log('密码检测', res)
         if (!res || res.total === 0) {
@@ -627,7 +658,13 @@ export default {
     // 取消抽屉
     closeDrawer () {
       this.drawer = false
-    }
+    },
+    // 举报某人
+    // 点击举报
+    clickReport () {
+      console.log('点击举报111', this.$common, this.$common.report)
+      this.$common.report(this, this.currentUser.userId, this.$user.userId, 0)
+    },
   },
   computed : {
   },
@@ -714,9 +751,15 @@ export default {
           line-height: 30px;
           // display: flex;
           // justify-content: space-between;
+          
           button {
             margin-left: 30px;
           }
+        }
+        .username-motto {
+          font-size: 14px;
+          margin-left: 20px;
+          color: grey;
         }
         .motto {
           width: 100%;

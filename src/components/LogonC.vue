@@ -4,9 +4,9 @@
       <el-form-item label="用户" prop="username">
         <el-input type="text" v-model="ruleForm.username" autocomplete="off" maxlength="20" placeholder="用户名"></el-input>
       </el-form-item>
-      <el-form-item label="手机" prop="phone">
+      <!-- <el-form-item label="手机" prop="phone">
         <el-input type="text" v-model="ruleForm.phone" maxlength="30" placeholder="手机"></el-input>
-      </el-form-item>
+      </el-form-item> -->
       <el-form-item label="密码" prop="password">
         <el-input type="password" v-model="ruleForm.password" autocomplete="off" maxlength="30" placeholder="密码"></el-input>
       </el-form-item>

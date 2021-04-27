@@ -8,7 +8,7 @@
             <div class="wrapper" ref="wrapper">
               <div>
                 <div v-for="(item, index) in messages" :key="index">
-                  <message-item :message="item" :acceptUser="acceptUser"></message-item>
+                  <message-item :message="item" :acceptUser="acceptUser"  :messagesPic="messagesPic"></message-item>
                 </div>
                 <!-- <div id="msgEnd" style="height:0px; overflow:hidden"></div> -->
               </div>
@@ -282,7 +282,19 @@ export default {
         this.myScroll.finishPullDown() // 下拉刷新动作完成后调用此方法告诉BScroll完成一次下拉动作
       })
     })
-  }
+  },
+  computed : {
+    messagesPic () {
+      let messagesPic2 = []
+      this.messages.map(item => {
+        if (!item.type) {
+          // item.path = this.$baseImgUrl + item.content
+          messagesPic2.push(this.$baseImgUrl + item.content)
+        }
+      })
+      return messagesPic2
+    }
+  },
 }
 </script>
 

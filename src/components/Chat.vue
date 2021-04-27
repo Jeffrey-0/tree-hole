@@ -3,20 +3,20 @@
     <!-- 聊天组件 -->
     <div class="person"  v-if="usersType != 1">
       <!-- <div class="title">最近聊天</div> -->
-      <div class="user" v-for="item in users" :key="item.userId" @click="changeAcceptUser(item)">
+      <div class="user" v-for="item in users" :key="item.userId">
           <img class="portrait" :src="$baseImgUrl + item.portrait">
-        <div class="username">{{ item.username }}</div>
+        <div class="username"  @click="changeAcceptUser(item)">{{ item.username }}</div>
       </div>
     </div>
     <!-- 最近聊天 -->
     <div class="person recently"  v-else>
-      <div class="user" v-for="item in users" :key="item.userId" @click="changeAcceptUser(item)">
+      <div class="user" v-for="item in users" :key="item.userId">
         <el-badge :value="item.unread" :max="99" class="item" v-if="item.unread">
           <img class="portrait" :src="$baseImgUrl + item.portrait">
         </el-badge>
           <img class="portrait" :src="$baseImgUrl + item.portrait" v-else>
         <div class="createTime">{{isOverOneDay(item.createTime) ? $moment(item.createTime).format('YYYY-MM-DD') : $moment(item.createTime).fromNow()}}</div>
-        <div class="username">{{ item.username }}</div>
+        <div class="username"  @click="changeAcceptUser(item)">{{ item.username }}</div>
       </div>
     </div>
     <div class="chatWrap">
@@ -28,7 +28,7 @@
             <i class="el-icon-arrow-up top-bt" title="加载更多历史" @click="getMoreMessage"></i> 
         </div>
         <div v-for="(item, index) in messages" :key="index">
-          <message-item :message="item" :acceptUser="acceptUser"></message-item>
+          <message-item :message="item" :acceptUser="acceptUser" :messagesPic="messagesPic"></message-item>
         </div>
         <div id="msgEnd" style="height:0px; overflow:hidden" ref="msgEnd"></div>
       </div>
@@ -97,7 +97,7 @@ export default {
       chatInput: '',
       emojiInput: '',
       page: 1,
-      rows: 5,
+      rows: 10,
       acceptUser: {
         userId: 0,
         username: '暂无选中用户',
@@ -124,6 +124,18 @@ export default {
   props : {
     users: {},
     usersType: {}  //接收users的类型，1：最近聊天 2：关注 3：粉丝
+  },
+  computed : {
+    messagesPic () {
+      let messagesPic2 = []
+      this.messages.map(item => {
+        if (!item.type) {
+          // item.path = this.$baseImgUrl + item.content
+          messagesPic2.push(this.$baseImgUrl + item.content)
+        }
+      })
+      return messagesPic2
+    }
   },
   methods: {
     onInput(event) {
@@ -187,7 +199,10 @@ export default {
       let that = this
       // 先添加到数据库，若添加成功，则利用websocket去通知接收者
       insertChat(chat).then(res => {
-        if (res) {
+        if (res === -1) {
+          this.$message.error('发送失败，你已被对方拉黑!')
+        }
+        else if (res) {
           console.log('发送成功', res)
           // 利用websocket去通知接收者
           this.sendMessage()

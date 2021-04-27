@@ -12,7 +12,8 @@
      accept=".jpg, .png, .jpeg"
     :before-upload="beforeAvatarUpload"
   >
-    <img v-if="imageUrl" :src="imageUrl" class="portrait">
+    <!-- <img :src="imageUrl" class="portrait" title="点击切换头像"> -->
+    <img v-if="imageUrl" :src="imageUrl" class="portrait" title="点击切换头像">
     <!-- <img v-if="$user.portrait" class="portrait" title="点击切换头像" :src="$baseImgUrl + $user.portrait"> -->
     <img v-else class="portrait" title="点击切换头像" src="../assets/img/default.png">
 </el-upload>
@@ -50,6 +51,7 @@
 </template>
 
 <script>
+import {selectUserById} from '@/network/user'
 // import {getNewNotice} from '../network/notice'
 export default {
   name: '',
@@ -117,9 +119,11 @@ export default {
     },
     handleAvatarSuccess(res, file) {
       console.log('上传头像成功', file)
-      this.imageUrl = URL.createObjectURL(file.raw);
+      this.imageUrl = URL.createObjectURL(file.raw)
       // this.$user.portrait = URL.createObjectURL(file.raw);
-      console.log('上传头像成功2', this.imageUrl)
+      console.log('上传头像成功2222', this.imageUrl)
+      sessionStorage.setItem('newImageUrl', this.imageUrl)
+      console.log('上传头像成功333', sessionStorage.getItem('newImageUrl'))
     },
     beforeAvatarUpload(file) {
       console.log('上传之前', file)
@@ -147,16 +151,33 @@ export default {
     },
     goMyHome () {
       this.$router.push('m-user?userId=' + this.$user.userId)
+    },
+    // 刷新导航栏数据
+    refresh () {
+      selectUserById(this.$user.userId).then({
+        if(res) {
+          this.user = res
+          Object.assign(this.$user, res)
+          sessionStorage.removeItem("user")
+          sessionStorage.setItem("user", JSON.stringify(res))
+        }
+      })
     }
   },
-  created () {
+  mounted () {
     // this.user = JSON.parse(sessionStorage.getItem('user'))
     // this.user = this.$user
     // Object.assign(this.user, JSON.parse(sessionStorage.getItem('user')))
+    
+    console.log('this.$user3333',this.user, this.$user, sessionStorage.getItem('user'), sessionStorage.getItem('newBaseImgUrl'))
     this.user = this.$user
-    console.log('this.$user3333', this.$user)
-    if (this.$user.portrait)
-    this.imageUrl = this.$baseImgUrl + this.$user.portrait
+    if (sessionStorage.getItem('newImageUrl')) {
+      this.imageUrl = sessionStorage.getItem('newImageUrl')
+    }
+    else if (this.$user.portrait) {
+
+      this.imageUrl = this.$baseImgUrl + this.$user.portrait
+    }
     // getNewNotice().then(res => {
     //   this.notice = res
     //   console.log(this.notice)

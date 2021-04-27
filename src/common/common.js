@@ -16,8 +16,9 @@ export default {
         contentId,
         userId,
         type,
-        createTime: new Date(),
-        note: value
+        createTime: vue.$moment(new Date()).format('YYYY-MM-DD HH:mm:ss'),
+        note: value,
+        finish: 0
       }
       insertReport(report).then(res => {
         if (res) {

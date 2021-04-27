@@ -30,8 +30,8 @@
             <el-form-item>
               <el-select v-model="formInline.type" placeholder="类型">
                 <el-option label="类型" value=""></el-option>
-                <el-option label="文本" :value="false"></el-option>
-                <el-option label="图片" :value="true"></el-option>
+                <el-option label="文本" :value="true"></el-option>
+                <el-option label="图片" :value="false"></el-option>
               </el-select>
             </el-form-item>
             <el-form-item>
@@ -94,14 +94,12 @@
               <el-form-item label="接收者ID" :label-width="formLabelWidth">
                 <el-input v-model="chat.acceptId" disabled></el-input>
               </el-form-item>
-              <el-form-item label="内容" :label-width="formLabelWidth">
-                <el-input v-model="chat.content" disabled></el-input>
-              </el-form-item>
+              
               <el-form-item label="类型" :label-width="formLabelWidth">
                 <!-- <el-input v-model="chat.type" disabled></el-input> -->
                 <el-select v-model="chat.type" placeholder="权限" disabled>
-                  <el-option label="文本" :value="false"></el-option>
-                  <el-option label="图片" :value="true"></el-option>
+                  <el-option label="文本" :value="true"></el-option>
+                  <el-option label="图片" :value="false"></el-option>
                 </el-select>
               </el-form-item>
               
@@ -113,6 +111,13 @@
                   placeholder="创建时间"
                   disabled>
                 </el-date-picker>
+              </el-form-item>
+              <el-form-item label="内容" :label-width="formLabelWidth">
+                <el-input v-model="chat.content" disabled v-if="chat.type"></el-input>
+                <el-image  v-else
+                  style="width: 300px; height: 300px"
+                  :src="$baseImgUrl + chat.content" >
+                </el-image>
               </el-form-item>
             </el-form>
           <!-- </el-form> -->

@@ -8,7 +8,16 @@
       {{message && message.content}}
     </div>
     <div class="text" v-else>
-      <img :src="message.content ? $baseImgUrl + message.content : $baseImgUrl + message.content" alt="">
+      <!-- <img :src="message.content ? $baseImgUrl + message.content : $baseImgUrl + message.content" alt=""> -->
+      <el-image 
+            style="width: 100%"
+            :src="message.content ? $baseImgUrl + message.content : $baseImgUrl + message.content"
+             @click="handleClickImage"
+            :preview-src-list="messagesPic">
+            <div slot="error" class="image-slot">
+              <i class="el-icon-picture-outline"></i>
+            </div>
+          </el-image>
     </div>
   </div>
 </template>
@@ -20,7 +29,8 @@ export default {
   },
   props: {
     message: {},
-    acceptUser: {}
+    acceptUser: {},
+    messagesPic: {}
   },
   data () {
     return {
@@ -28,8 +38,21 @@ export default {
     }
   },
   methods: {
+    // 点击图片
+    handleClickImage () {
+      console.log('点击图片', this.message, this.messagesPic)
+    }
   },
   computed: {
+    imgList () {
+      let imgList = []
+      
+      if (this.message.type === 0) {
+        this.message.path = this.$baseImgUrl + this.message.content
+         imgList.push(this.message)
+      }
+      return imgList
+    }
     // myself: message && message.myself
   },
   watch : {
