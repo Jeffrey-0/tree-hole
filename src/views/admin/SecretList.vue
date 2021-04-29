@@ -72,7 +72,7 @@
           </el-table-column>
         </el-table>
         <!-- 查看资料对话框 -->
-        <el-dialog title="秘密详情" :visible.sync="dialogFormVisible" center>
+        <el-dialog title="秘密详情" :visible.sync="dialogFormVisible" center top="2%">
           <!-- <el-form :model="form"> -->
             <el-form
               :model="secret"
@@ -93,7 +93,6 @@
                 <el-input v-model="secret.content" disabled></el-input>
               </el-form-item>
               <el-form-item label="权限" :label-width="formLabelWidth">
-                <!-- <el-input v-model="secret.power" disabled>{{secret.power? '私有' : '公开' }}</el-input> -->
                 <el-select v-model="secret.power" placeholder="权限" disabled>
                   <el-option label="公开" :value="0"></el-option>
                   <el-option label="私有" :value="1"></el-option>
@@ -108,6 +107,13 @@
                   disabled>
                 </el-date-picker>
               </el-form-item>
+              <el-form-item label="照片" :label-width="formLabelWidth" v-if="secret.pictures && secret.pictures.length > 0">
+                <el-image v-for="item in secret.pictures" :key="item.pictureId"
+                  style="width: 30%; float: left; margin-right: 2%"
+                  :src="$baseImgUrl + item.path" >
+                </el-image>
+              </el-form-item>
+              
             </el-form>
           <!-- </el-form> -->
         </el-dialog>
@@ -168,6 +174,7 @@ export default {
         username: ""
       },
       formLabelWidth: "70px",
+      pictures: []
     }
   },
   created() {

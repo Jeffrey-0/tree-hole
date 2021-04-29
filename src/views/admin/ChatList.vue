@@ -30,8 +30,8 @@
             <el-form-item>
               <el-select v-model="formInline.type" placeholder="类型">
                 <el-option label="类型" value=""></el-option>
-                <el-option label="文本" :value="true"></el-option>
                 <el-option label="图片" :value="false"></el-option>
+                <el-option label="文本" :value="true"></el-option>
               </el-select>
             </el-form-item>
             <el-form-item>
@@ -74,7 +74,7 @@
           </el-table-column>
         </el-table>
         <!-- 查看资料对话框 -->
-        <el-dialog title="消息详情" :visible.sync="dialogFormVisible" center>
+        <el-dialog title="消息详情" :visible.sync="dialogFormVisible" center  top="2%">
           <!-- <el-form :model="form"> -->
             <el-form
               :model="chat"
@@ -115,7 +115,7 @@
               <el-form-item label="内容" :label-width="formLabelWidth">
                 <el-input v-model="chat.content" disabled v-if="chat.type"></el-input>
                 <el-image  v-else
-                  style="width: 300px; height: 300px"
+                  style="width: 50%; float: left"
                   :src="$baseImgUrl + chat.content" >
                 </el-image>
               </el-form-item>
@@ -268,7 +268,7 @@ export default {
       }
     },
     forType(row) {
-      return row.type  ? "图片" : "文本"  
+      return row.type  ? "文本" : "图片"  
     },
     forDate(row) {
       return this.$moment(row.createTime).format('YYYY-MM-DD HH:mm')

@@ -45,6 +45,8 @@
 </template>
 
 <script>
+// 导入百度API接口
+import {textReview, imgReview} from '@/network/baidu'
 import BScroll from 'better-scroll'
 import {selectChatById, showAllChatByPage, deleteChatById, insertChat, updateChatById, showAllByTowUserId, updateChatLook} from '@/network/chat'
 import MessageItem from '@/components/MessageItem'
@@ -125,25 +127,42 @@ export default {
         createTime: this.$moment(new Date()).format('YYYY-MM-DD HH:mm:ss'),
         type: 1
       }
-      insertChat(chat).then(res => {
-        if (res) {
-          console.log('发送成功', res)
-          // 利用websocket去通知接收者
-          this.sendMessage()
 
-          this.chatInput = ''
-          chat.chatId = res
-          this.messages.push(chat)
-          // 滚动到底部
-          let that = this
-        setTimeout(function () {
-            that.myScroll.refresh()
-            that.myScroll.scrollTo(0, that.myScroll.maxScrollY)
-          }, 200)
+                        // 调用百度文库，查看是否有不文明词汇，若有则提示，若无则调用添加接口
+      textReview(chat.content).then( res => {
+        // loadingInstance.close()
+        if (res && res.conclusionType === 2) {
+          let messages = []
+          console.log('审核结果：', res)
+          res.data.map(item => {
+            item.hits.map(item2 => {
+              messages = messages.concat(item2.words)
+            })
+          })
+          this.$message.error('存在不文明词汇:' + messages.toString())
         } else {
-          this.$message.error('发送失败!')
+          insertChat(chat).then(res => {
+            if (res) {
+              console.log('发送成功', res)
+              // 利用websocket去通知接收者
+              this.sendMessage()
+
+              this.chatInput = ''
+              chat.chatId = res
+              this.messages.push(chat)
+              // 滚动到底部
+              let that = this
+            setTimeout(function () {
+                that.myScroll.refresh()
+                that.myScroll.scrollTo(0, that.myScroll.maxScrollY)
+              }, 200)
+            } else {
+              this.$message.error('发送失败!')
+            }
+          })
         }
-      })
+      }) 
+      
     },
     // 下拉加载之前历史记录
     pullingDown () {
@@ -188,11 +207,28 @@ export default {
     // 发送图片之前
     beforePicUpload (file) {
       console.log('上传之前', file)
-      const isJPG = file.type === 'image/jpeg' || file.type === 'image/png' || file.type==="image/jpg";
 
+      const isJPG = file.type === 'image/jpeg' || file.type === 'image/png' || file.type==="image/jpg"
       if (!isJPG) {
         this.$message.error('只能上传图片!');
+        return false
       }
+    // 调用百度图片审核API，查看是否有不文明图片，若有则提示，若无则调用添加接口
+      imgReview(file).then( res => {
+        console.log('调用图片审核', res)
+        // loadingInstance.close()
+        if (res && res.conclusionType !== 1) {
+          // let messages = []
+          // console.log('审核结果：', res)
+          // res.data.map(item => {
+          //   item.hits.map(item2 => {
+          //     messages = messages.concat(item2.words)
+          //   })
+          // })
+          this.$message.error('禁止上传不文明图片')
+          return false
+        }
+      }) 
       return isJPG;
     },
     // 

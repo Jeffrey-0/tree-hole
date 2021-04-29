@@ -128,7 +128,7 @@
           </el-table-column>
         </el-table>
         <!-- 查看资料对话框 -->
-        <el-dialog title="用户资料" :visible.sync="dialogFormVisible" center>
+        <el-dialog title="用户资料" :visible.sync="dialogFormVisible" center  top="2%">
           <el-form :model="form">
             <el-form
               :model="user"
@@ -153,7 +153,7 @@
               </el-form-item>
               <el-form-item label="头像" :label-width="formLabelWidth" v-if="user.portrait">
                 <el-image 
-                  style="width: 300px; height: 300px"
+                  style="width: 50%; float:left"
                   :src="$baseImgUrl + user.portrait" >
                 </el-image>
               </el-form-item>

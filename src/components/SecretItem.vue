@@ -95,6 +95,8 @@
 </template>
 
 <script>
+// 导入百度API接口
+import {textReview} from '@/network/baidu'
 import {selectLikeById, showAllLikeByPage, deleteLikeById, insertLike, updateLikeById} from '@/network/like'
 import {selectCommentById, showAllCommentByPage, deleteCommentById, insertComment, updateCommentById} from '@/network/comment'
 import {selectSecretById, showAllSecretByPage, deleteSecretById, insertSecret, updateSecretById} from '@/network/secret'
@@ -252,17 +254,34 @@ export default {
         replyname: this.replyname
       }
       console.log('发送评论', comment)
-      insertComment(comment).then(res => {
-        if (res) {
-          console.log('评论成功，返回id' + res)
-          comment.commentId = res
-          this.$message.success('评论成功!')
-          this.secret.comments.push(comment)
-          this.commentInput = ''
+      // let loadingInstance = this.$loading.service({text: '文本审核中'})
+            // 调用百度文库，查看是否有不文明词汇，若有则提示，若无则调用添加接口
+      textReview(comment.content).then( res => {
+        // loadingInstance.close()
+        if (res && res.conclusionType === 2) {
+          let messages = []
+          console.log('审核结果：', res)
+          res.data.map(item => {
+            item.hits.map(item2 => {
+              messages = messages.concat(item2.words)
+            })
+          })
+          this.$message.error('存在不文明词汇:' + messages.toString())
         } else {
-          this.$message.error('评论失败!')
+          insertComment(comment).then(res => {
+            if (res) {
+              console.log('评论成功，返回id' + res)
+              comment.commentId = res
+              this.$message.success('评论成功!')
+              this.secret.comments.push(comment)
+              this.commentInput = ''
+            } else {
+              this.$message.error('评论失败!')
+            }
+          })
         }
-      })
+      }) 
+      
     },
     // 查看某人主页
     toUserHome (item) {

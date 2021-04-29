@@ -67,7 +67,7 @@
           </el-table-column>
         </el-table>
         <!-- 查看资料对话框 -->
-        <el-dialog title="相册详情" :visible.sync="dialogFormVisible" center>
+        <el-dialog title="相册详情" :visible.sync="dialogFormVisible" center  top="2%">
           <!-- <el-form :model="form"> -->
             <el-form
               :model="album"
@@ -84,9 +84,6 @@
               <el-form-item label="用户名" :label-width="formLabelWidth">
                 <el-input v-model="album.username" disabled></el-input>
               </el-form-item>
-              <el-form-item label="路径" :label-width="formLabelWidth">
-                <el-input v-model="album.path" disabled></el-input>
-              </el-form-item>
               <el-form-item label="创建时间" :label-width="formLabelWidth">
                 <!-- <el-input v-model="album.createTime" disabled></el-input> -->
                 <el-date-picker
@@ -96,6 +93,14 @@
                   disabled>
                 </el-date-picker>
               </el-form-item>
+              <el-form-item label="图片" :label-width="formLabelWidth">
+                <!-- <el-input v-model="album.path" disabled></el-input> -->
+                <el-image 
+                  style="width: 50%; float:left"
+                  :src="$baseImgUrl + album.path" >
+                </el-image>
+              </el-form-item>
+              
             </el-form>
           <!-- </el-form> -->
         </el-dialog>

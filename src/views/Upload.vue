@@ -153,7 +153,8 @@
 <script>
 import {selectPlanById, showAllPlanByPage, deletePlanById, insertPlan, updatePlanById, showAllPlanByUserId, showAllByCurrentDate, updatePlanByIdSelective} from '@/network/plan'
 import {selectSecretById, showAllSecretByPage, deleteSecretById, insertSecret, updateSecretById, showAllSecretByUserId} from '@/network/secret'
-
+// 导入百度API接口
+import {textReview} from '@/network/baidu'
 
 import Chat from '@/components/Chat'
 import CommentList from '@/components/CommentList'
@@ -196,7 +197,7 @@ export default {
         repeats: []
       },
       formLabelWidth: '0',
-      activeName: 'third',
+      activeName: 'first',
       records: [],
       iconsVisible: false,
       dialogImageUrl: '',
@@ -309,22 +310,37 @@ export default {
           })
           this.form.createTime = this.$moment(new Date()).format('YYYY-MM-DD HH:mm:ss')
           this.form.userId = this.$user.userId
-          insertPlan(this.form).then(res => {
-            console.log(res)
-            if (res) {
-              this.$message.success('添加目标成功')
-              this.dialogFormVisible = false
-              this.form =  {
-                name: '',
-                content: 'el-icon-edit', // 图标
-                startTime: '',
-                endTime: '',
-                repeats: []
-              }
+          // 调用百度文库，查看是否有不文明词汇，若有则提示，若无则调用添加接口
+          textReview(this.form.name).then( res => {
+            if (res && res.conclusionType === 2) {
+              let messages = []
+              res.data.map(item => {
+                item.hits.map(item2 => {
+                  messages = messages.concat(item2.words)
+                })
+              })
+              this.$message.error('存在不文明词汇:' + messages.toString())
             } else {
-              this.$message.error('添加目标失败')
+              insertPlan(this.form).then(res => {
+                console.log(res)
+                if (res) {
+                  this.$message.success('添加目标成功')
+                  this.dialogFormVisible = false
+                  this.form =  {
+                    name: '',
+                    content: 'el-icon-edit', // 图标
+                    startTime: '',
+                    endTime: '',
+                    repeats: []
+                  }
+                } else {
+                  this.$message.error('添加目标失败')
+                }
+              })
             }
-          })
+          })   
+
+          
         } else {
           console.log('error submit!!');
           return false;
@@ -341,24 +357,40 @@ export default {
       } 
       console.log('添加秘密')
       this.formSecret.createTime = this.$moment(new Date()).format('YYYY-MM-DD HH:mm:ss')
-      insertSecret(this.formSecret).then(res => {
-        console.log(res)
-        if (res) {
-          console.log('添加秘密成功，返回id' + res)
-          this.$message.success('添加秘密成功')
-          this.currentSecret.secretId = res
-          // 上传图片
-          this.$refs.uploadSecret.submit()
-          // this.fileListSecret = []
-          this.formSecret =  {
-            content: '',
-            power: 1,
-            userId: this.$user.userId
-          }
+
+// 调用百度文库，查看是否有不文明词汇，若有则提示，若无则调用添加接口
+      textReview(this.formSecret.content).then( res => {
+        if (res && res.conclusionType === 2) {
+          let messages = []
+          res.data.map(item => {
+            item.hits.map(item2 => {
+              messages = messages.concat(item2.words)
+            })
+          })
+          this.$message.error('存在不文明词汇:' + messages.toString())
         } else {
-          this.$message.error('添加秘密失败')
+          insertSecret(this.formSecret).then(res => {
+            console.log(res)
+            if (res) {
+              console.log('添加秘密成功，返回id' + res)
+              this.$message.success('添加秘密成功')
+              this.currentSecret.secretId = res
+              // 上传图片
+              this.$refs.uploadSecret.submit()
+              // this.fileListSecret = []
+              this.formSecret =  {
+                content: '',
+                power: 1,
+                userId: this.$user.userId
+              }
+            } else {
+              this.$message.error('添加秘密失败')
+            }
+          })
         }
-      })
+      })      
+
+
     },
     // 上传相册
     submitUpload () {
