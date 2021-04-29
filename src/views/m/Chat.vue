@@ -206,30 +206,40 @@ export default {
     },
     // 发送图片之前
     beforePicUpload (file) {
-      console.log('上传之前', file)
-
-      const isJPG = file.type === 'image/jpeg' || file.type === 'image/png' || file.type==="image/jpg"
-      if (!isJPG) {
-        this.$message.error('只能上传图片!');
-        return false
-      }
-    // 调用百度图片审核API，查看是否有不文明图片，若有则提示，若无则调用添加接口
-      imgReview(file).then( res => {
-        console.log('调用图片审核', res)
-        // loadingInstance.close()
-        if (res && res.conclusionType !== 1) {
-          // let messages = []
-          // console.log('审核结果：', res)
-          // res.data.map(item => {
-          //   item.hits.map(item2 => {
-          //     messages = messages.concat(item2.words)
-          //   })
-          // })
-          this.$message.error('禁止上传不文明图片')
+      return new Promise((resolve, reject) => {
+        // 判断上传格式*****************
+        const isJPG = file.type === 'image/jpeg' || file.type === 'image/png' || file.type==="image/jpg"
+        // const isLt2M = file.size / 1024 / 1024 < 2;
+        if (!isJPG) {
+          this.$message.error('上传图片只能是 JPG、JPEG、PNG 格式!');
+          reject()
           return false
         }
-      }) 
-      return isJPG;
+      this.$message.info('图片审核中...')
+        let that = this
+        let reader = new FileReader()
+        reader.readAsDataURL(file)
+        let image = null
+        reader.onload = function (e) {
+          image =  this.result
+          let index = image.indexOf(',')
+          console.log(',位置：' ,index)
+          image = image.slice(index + 1)
+          
+          console.log('image', image)
+          // 调用百度图片审核API，查看是否有不文明图片，若有则提示，若无则调用添加接口
+          imgReview(image).then( res => {
+            console.log('调用图片审核', res)
+            if (res && res.conclusionType !== 1) {
+              that.$message.error('禁止上传不文明图片')
+              reject()
+            } else {
+              // that.$message.success('可上传该图片')
+              resolve()
+            }
+          }) 
+        }
+	    })
     },
     // 
     uploadSuccess (item) {

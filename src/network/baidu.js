@@ -6,7 +6,7 @@ function request (config) {
   const instance = axios.create({
     // baseURL: 'https://aip.baidubce.com/', // 百度服务器接口地址
     baseURL: '/baiduApi/', // 百度服务器接口地址
-    timeout: 5000
+    timeout: 50000
   })
 
   // 2.axios的拦截器
@@ -27,8 +27,6 @@ function request (config) {
   return instance(config)
 }
 
-
-
 // 获取新的access_token
 export function getNewAccessToken (grant_type, client_id, client_secret) {
   return request({
@@ -42,15 +40,12 @@ export function getNewAccessToken (grant_type, client_id, client_secret) {
   })
 }
 
-
-
-
 // 文本审核
 export function textReview (text) {
   return request({
     url: 'rest/2.0/solution/v1/text_censor/v2/user_defined',
     params: {
-      access_token : JSON.parse(window.localStorage.getItem('access_token')).access_token
+      access_token: JSON.parse(window.localStorage.getItem('access_token')).access_token
     },
     method: 'post',
     data: {
@@ -84,7 +79,7 @@ export function imgReview (image, imgUrl) {
   return request({
     url: 'rest/2.0/solution/v1/img_censor/v2/user_defined',
     params: {
-      access_token : JSON.parse(window.localStorage.getItem('access_token')).access_token
+      access_token: JSON.parse(window.localStorage.getItem('access_token')).access_token
     },
     method: 'post',
     data: img,

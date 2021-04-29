@@ -18,6 +18,7 @@
                   :on-success="uploadSecretSuccess"
                   :on-error="uploadError"
                   :on-remove="handleRemove"
+                  :before-upload="beforePicUpload"
                   :limit="6"
                   ref="uploadSecret"
                   :auto-upload="false">
@@ -129,6 +130,7 @@
                 :on-success="uploadSuccess"
                 :on-error="uploadError"
                 :data="$user"
+                :before-upload="beforePicUpload"
                 :headers="{accessToken : accessToken}"
                 :auto-upload="false">
                 <i class="el-icon-plus"></i>
@@ -154,7 +156,7 @@
 import {selectPlanById, showAllPlanByPage, deletePlanById, insertPlan, updatePlanById, showAllPlanByUserId, showAllByCurrentDate, updatePlanByIdSelective} from '@/network/plan'
 import {selectSecretById, showAllSecretByPage, deleteSecretById, insertSecret, updateSecretById, showAllSecretByUserId} from '@/network/secret'
 // 导入百度API接口
-import {textReview} from '@/network/baidu'
+import {textReview, imgReview} from '@/network/baidu'
 
 import Chat from '@/components/Chat'
 import CommentList from '@/components/CommentList'
@@ -431,6 +433,43 @@ export default {
     //   console.log('上传秘密之前', file, fileList)
     //   return false
     // }
+        // 发送图片之前
+    beforePicUpload (file) {
+      return new Promise((resolve, reject) => {
+        // 判断上传格式*****************
+        const isJPG = file.type === 'image/jpeg' || file.type === 'image/png' || file.type==="image/jpg"
+        // const isLt2M = file.size / 1024 / 1024 < 2;
+        if (!isJPG) {
+          this.$message.error('上传图片只能是 JPG、JPEG、PNG 格式!');
+          reject()
+          return false
+        }
+      this.$message.info('图片审核中...')
+        let that = this
+        let reader = new FileReader()
+        reader.readAsDataURL(file)
+        let image = null
+        reader.onload = function (e) {
+          image =  this.result
+          let index = image.indexOf(',')
+          console.log(',位置：' ,index)
+          image = image.slice(index + 1)
+          
+          console.log('image', image)
+          // 调用百度图片审核API，查看是否有不文明图片，若有则提示，若无则调用添加接口
+          imgReview(image).then( res => {
+            console.log('调用图片审核', res)
+            if (res && res.conclusionType !== 1) {
+              that.$message.error('禁止上传不文明图片')
+              reject()
+            } else {
+              resolve()
+            }
+          }) 
+        }
+	    })
+	// 返回false不会自动上传
+    },
   },
   mounted () {
 
