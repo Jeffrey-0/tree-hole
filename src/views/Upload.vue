@@ -55,6 +55,7 @@
               <el-select v-model="formSecret.power">
                 <el-option label="公开" :value="1"></el-option>
                 <el-option label="私有" :value="0"></el-option>
+                <el-option label="匿名" :value="2"></el-option>
               </el-select>
             </el-form-item>
             <el-button @click="addSecret">上传</el-button>

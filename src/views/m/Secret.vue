@@ -4,7 +4,7 @@
       <el-tab-pane label="广场" name="first">
         <div class="wrapper" ref="wrapper1">
           <div class="secretList">
-            <secret-item v-for="secret in SecretList.first" :key="secret.secretId" :secret="secret" @deleteSecret="deleteSecret"></secret-item>
+            <secret-item v-for="(secret, index) in SecretList.first" :key="index" :secret="secret" @deleteSecret="deleteSecret"></secret-item>
           </div>
         </div>
         
@@ -12,14 +12,14 @@
       <el-tab-pane label="关注" name="second">
         <div class="wrapper" ref="wrapper2">
           <div class="secretList">
-            <secret-item v-for="secret in SecretList.second" :key="secret.secretId" :secret="secret" @deleteSecret="deleteSecret"></secret-item>
+            <secret-item v-for="(secret, index) in SecretList.second" :key="index" :secret="secret" @deleteSecret="deleteSecret"></secret-item>
           </div>
         </div>
       </el-tab-pane>
       <el-tab-pane label="私人" name="third">
         <div class="wrapper" ref="wrapper3">
           <div class="secretList">
-            <secret-item v-for="secret in SecretList.third" :key="secret.secretId" :secret="secret" @deleteSecret="deleteSecret"></secret-item>
+            <secret-item v-for="(secret, index) in SecretList.third" :key="index" :secret="secret" @deleteSecret="deleteSecret"></secret-item>
           </div>
         </div>
       </el-tab-pane>

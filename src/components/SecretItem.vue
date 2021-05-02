@@ -1,8 +1,10 @@
 <template>
   <div id="secret">
     <div class="user">
-      <img class="portrait" :src=" $baseImgUrl + secret.portrait" @click="toUserHome(secret)">
-      <div class="username">{{ secret.username }}</div>
+      <img class="portrait" v-if="secret.power === 2 && secret.userId !== $user.userId" src="../assets/img/匿名.jpg">
+      <img class="portrait" v-else :src=" $baseImgUrl + secret.portrait" @click="toUserHome(secret)">
+      <div class="username"  v-if="secret.power === 2 && secret.userId !== $user.userId">{{ '匿名' }}</div>
+      <div class="username" v-else>{{ secret.username }}</div>
       <div class="create_time">{{ isOverOneDay(secret.createTime) ? $moment(secret.createTime).format('YYYY-MM-DD h:mm') : $moment(secret.createTime).fromNow()}}</div>
     </div>
     <div class="content">{{ secret.content }}</div>
